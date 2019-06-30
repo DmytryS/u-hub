@@ -1,0 +1,14 @@
+[2019-06-30 20:19:02.545] [Level { level: 20000, levelStr: 'INFO' }] Application - Express server listening on port 3000
+[2019-06-30 20:19:02.555] [Level { level: 40000, levelStr: 'ERROR' }] Application - Unhandled exception { inspect: [Function: inspect] }
+[2019-06-30 20:19:02.558] [Level { level: 40000, levelStr: 'ERROR' }] database - { inspect: [Function: inspect] }
+[2019-06-30 20:19:02.559] [Level { level: 40000, levelStr: 'ERROR' }] Application - Unhandled rejection { inspect: [Function: inspect] }
+[2019-06-30 20:19:21.647] [Level { level: 20000, levelStr: 'INFO' }] Application - Service stopped, terminating...
+[2019-06-30 20:19:26.068] [Level { level: 20000, levelStr: 'INFO' }] Application - Express server listening on port 4000
+[2019-06-30 20:19:26.080] [Level { level: 40000, levelStr: 'ERROR' }] Application - Unhandled exception { inspect: [Function: inspect] }
+[2019-06-30 20:19:26.088] [Level { level: 40000, levelStr: 'ERROR' }] database - { inspect: [Function: inspect] }
+[2019-06-30 20:19:26.089] [Level { level: 40000, levelStr: 'ERROR' }] Application - Unhandled rejection { inspect: [Function: inspect] }
+[2019-06-30 20:19:44.368] [Level { level: 20000, levelStr: 'INFO' }] Application - Service stopped, terminating...
+[2019-06-30 20:19:48.326] [Level { level: 20000, levelStr: 'INFO' }] Application - Express server listening on port 4000
+[2019-06-30 20:19:48.338] [Level { level: 40000, levelStr: 'ERROR' }] Application - Unhandled exception { inspect: [Function: inspect] }
+[2019-06-30 20:19:48.344] [Level { level: 40000, levelStr: 'ERROR' }] database - { inspect: [Function: inspect] }
+[2019-06-30 20:19:48.346] [Level { level: 40000, levelStr: 'ERROR' }] Application - Unhandled rejection { inspect: [Function: inspect] }

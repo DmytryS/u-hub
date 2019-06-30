@@ -18,7 +18,7 @@ module.exports = webpackMerge(webpackCommon, {
   plugins: [
     new webpack.HotModuleReplacementPlugin(),
     new HtmlWebpackPlugin({
-      // template: "./src/entry/main.hbs",
+      template: "./index.html",
       filename: "index.html",
       chunks: ["main", "vendors"],
       inject: "body"
@@ -31,13 +31,13 @@ module.exports = webpackMerge(webpackCommon, {
     },
     // https: true,
     port: 3000,
-    proxy: {
-      "/bapi/**": {
-        target: "https://development.legatics.com",
-        secure: false,
-        changeOrigin: true
-      }
-    },
+    // proxy: {
+    //   "/bapi/**": {
+    //     target: "https://development.legatics.com",
+    //     secure: false,
+    //     changeOrigin: true
+    //   }
+    // },
     hot: true,
     stats: "minimal",
     clientLogLevel: "info",

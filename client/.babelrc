@@ -1,0 +1,28 @@
+{
+  "presets": ["env", "react", "flow"],
+  "plugins": [
+    "transform-object-assign",
+    "syntax-class-properties",
+    "transform-class-properties",
+    "transform-object-rest-spread",
+    "transform-async-to-generator",
+    "dynamic-import-webpack",
+    "syntax-dynamic-import",
+    "styled-components",
+    [
+      "lodash",
+      {
+        "id": ["lodash", "recompose", "ramda"]
+      }
+    ]
+  ],
+  "env": {
+    "production": {
+      "sourceMaps": false
+    },
+    "development": {
+      "sourceMaps": "inline",
+      "plugins": ["flow-react-proptypes"]
+    }
+  }
+}
