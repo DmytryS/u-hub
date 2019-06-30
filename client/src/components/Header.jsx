@@ -1,0 +1,28 @@
+
+
+import React from 'react';
+import { Navbar, Nav } from 'react-bootstrap';
+import { Link } from 'react-router-dom';
+
+class Header extends React.Component {
+  constructor(props) {
+    super(props);
+  }
+
+  render() {
+    return (
+      <Navbar>
+        <Navbar.Header>
+          <Navbar.Brand>
+            <Link to="/">Main</Link>
+          </Navbar.Brand>
+          <Navbar.Brand>
+            <Link to="/schedules">Schedules</Link>
+          </Navbar.Brand>
+        </Navbar.Header>
+      </Navbar>
+    );
+  }
+}
+
+module.exports = Header;

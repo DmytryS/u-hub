@@ -1,0 +1,3 @@
+.react-datetime-picker, .react-datetime-picker *, .react-datetime-picker *:before, .react-datetime-picker *:after {
+    z-index: 999;
+}
