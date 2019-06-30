@@ -1,0 +1,35 @@
+{
+  "name": "homekit-server",
+  "version": "0.0.1",
+  "description": "HomeKit Accessory Server microservice",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm; else node -r esm src/index; fi",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DmytryS/u-hub.git"
+  },
+  "keywords": [
+    "homekit",
+    "apple",
+    "microservice"
+  ],
+  "author": "Dmytro Shvaika",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DmytryS/u-hub/issues"
+  },
+  "homepage": "https://github.com/DmytryS/u-hub#readme",
+  "dependencies": {
+    "dotenv": "^8.0.0",
+    "esm": "^3.2.25",
+    "hap-nodejs": "^0.4.52",
+    "nextport": "^1.0.0",
+    "nodemon": "^1.19.1",
+    "obj-ease": "^1.0.1",
+    "qrcode-terminal": "^0.12.0",
+    "yalm": "^4.1.0"
+  }
+}
