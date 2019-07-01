@@ -1,8 +1,5 @@
-'use strict';
-
-import log4js from 'log4js';
-let logger = log4js.getLogger('errorHandler'),
-  id = 1;
+import * as log from "loglevel";
+let id = 1;
 
 /**
  * Middleware function that handles exceptions
@@ -13,7 +10,7 @@ let logger = log4js.getLogger('errorHandler'),
  * @param {Function} next next function
  */
 export function errorHandler(err, req, res, next) {
-  logger.error('Request error #[' + id + ']', err);
+  log.error("Request error #[" + id + "]", err);
   res.status(err.status || 500);
 
   res.send(_composeErrorObject(err));
@@ -31,8 +28,8 @@ export function errorHandler(err, req, res, next) {
  * @returns {Promise} promise
  */
 export function websocketsErrorHandler(socket, requestId, error) {
-  logger.error('Request error #[' + id + ']', error);
-  socket.emit('processingError', _composeErrorObject(error, requestId));
+  log.error("Request error #[" + id + "]", error);
+  socket.emit("processingError", _composeErrorObject(error, requestId));
   if (id < 0) {
     id = 1;
   }
@@ -66,7 +63,6 @@ function _composeErrorObject(err, requestId) {
  * Base class for API errors. Contains indication of HTTP status.
  */
 export class ApiError extends Error {
-
   /**
    * ApiError constructor
    * @param {Function} clazz error name
@@ -119,34 +115,30 @@ export class ApiError extends Error {
   get arguments() {
     return this._args;
   }
-
 }
 
 /**
  * Represents DatabaseError. This error is to be thrown on database error.
  */
 export class DatabaseError extends ApiError {
-
   /**
    * Constructs database error
    * @param {Object} details error details
    */
   constructor(details) {
-    super(DatabaseError, 'Database error', 500);
+    super(DatabaseError, "Database error", 500);
     /**
      * Database error details
      * @type {Object}
      */
     this.details = details;
   }
-
 }
 
 /**
  * Throwing this error results in 404 (Not Found) HTTP response code.
  */
 export class NotFoundError extends ApiError {
-
   /**
    * Represents NotFoundError.
    * @param {string} message error message
@@ -154,14 +146,12 @@ export class NotFoundError extends ApiError {
   constructor(message) {
     super(NotFoundError, message, 404);
   }
-
 }
 
 /**
  * Throwing this error results in 403 (Forbidden) HTTP response code.
  */
 export class ForbiddenError extends ApiError {
-
   /**
    * Constructs forbidden error.
    * @param {string} message error message
@@ -169,14 +159,12 @@ export class ForbiddenError extends ApiError {
   constructor(message) {
     super(ForbiddenError, message, 403);
   }
-
 }
 
 /**
  * Throwing this error results in 401 (Unautorized) HTTP response code.
  */
 export class UnauthorizedError extends ApiError {
-
   /**
    * Constructs unauthorized error.
    * @param {string} message error message
@@ -184,14 +172,12 @@ export class UnauthorizedError extends ApiError {
   constructor(message) {
     super(UnauthorizedError, message, 401);
   }
-
 }
 
 /**
  * Represents validation error. Throwing this error results in 400 (Bad Request) HTTP response code.
  */
 export class ValidationError extends ApiError {
-
   /**
    * Constructs validation error.
    * @param {string} message error message
@@ -205,14 +191,12 @@ export class ValidationError extends ApiError {
      */
     this.details = details;
   }
-
 }
 
 /**
  * Represents unexpected error. Throwing this error results in 500 (Internal Error) HTTP response code.
  */
 export class InternalError extends ApiError {
-
   /**
    * Constructs unexpected error.
    * @param {string} message error message
@@ -220,7 +204,6 @@ export class InternalError extends ApiError {
   constructor(message) {
     super(InternalError, message, 500);
   }
-
 }
 
 /**

@@ -1,19 +1,18 @@
-'use strict';
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 export default function nodeModel(config) {
   return new NodeModel(config);
 }
-nodeModel.$inject = ['config'];
+nodeModel.$inject = ["config"];
 
 export class NodeModel {
   constructor(config) {
     this._config = config;
 
     const nodeSchema = new Schema({
-      name: {type: String, required: true},
-      registered: {type: Boolean, required: true}
+      name: { type: String, required: true },
+      registered: { type: Boolean, required: true }
     });
 
     nodeSchema.statics.saveNewNode = saveNewNode;
@@ -27,7 +26,7 @@ export class NodeModel {
      * @returns {Promise<Node>} promise to return node added
      */
     function saveNewNode(name) {
-      return new this({name: name, registered: false}).save();
+      return new this({ name: name, registered: false }).save();
     }
 
     /**
@@ -36,7 +35,7 @@ export class NodeModel {
      * @returns {Promise<Node>} promise to return found node
      */
     async function findNodeByName(nodeName) {
-      return await this.findOne({'name': nodeName});
+      return await this.findOne({ name: nodeName });
     }
 
     /**
@@ -48,15 +47,14 @@ export class NodeModel {
       let skipRecords = 0;
       let limitRecords = 10;
 
-      if (filterParams['skip']) {
+      if (filterParams["skip"]) {
         skipRecords = parseInt(filterParams.skip);
       }
-      if (filterParams['limit']) {
+      if (filterParams["limit"]) {
         limitRecords = parseInt(filterParams.limit);
       }
 
-      return await this
-        .aggregate()
+      return await this.aggregate()
         .skip(skipRecords)
         .limit(limitRecords)
         .exec();
@@ -68,13 +66,13 @@ export class NodeModel {
      * @returns {Promise<Node>} promise to return found nodes
      */
     async function findByIds(nodeIds) {
-      return await this.find({'_id': {$in: nodeIds}}).exec();
+      return await this.find({ _id: { $in: nodeIds } }).exec();
     }
 
     delete mongoose.connection.models.Node;
-    this._Node = mongoose.model('Node', nodeSchema);
+    this._Node = mongoose.model("Node", nodeSchema);
   }
-  
+
   get Node() {
     return this._Node;
   }

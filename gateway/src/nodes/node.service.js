@@ -1,32 +1,74 @@
-'use strict';
-import log4js from 'log4js';
-import mqttClient from 'mqtt';
-import {ValidationError, NotFoundError} from '../lib/errorHandler/errorHandler';
-import moment from 'moment';
-import cronParser from 'cron-parser';
+import mqttClient from "mqtt";
+import {
+  ValidationError,
+  NotFoundError
+} from "../lib/errorHandler/errorHandler";
+import moment from "moment";
+import cronParser from "cron-parser";
 
-export default function nodeService(config, automaticActionModel, scheduledActionModel, valueModel,
-  nodeModel, validation, actionNodeModel, container, sensorModel) {
-  return new NodeService(config, automaticActionModel, scheduledActionModel, valueModel,
-    nodeModel, validation, actionNodeModel, container, sensorModel);
+export default function nodeService(
+  config,
+  automaticActionModel,
+  scheduledActionModel,
+  valueModel,
+  nodeModel,
+  validation,
+  actionNodeModel,
+  container,
+  sensorModel
+) {
+  return new NodeService(
+    config,
+    automaticActionModel,
+    scheduledActionModel,
+    valueModel,
+    nodeModel,
+    validation,
+    actionNodeModel,
+    container,
+    sensorModel
+  );
 }
-nodeService.$inject = ['config', 'automaticActionModel', 'scheduledActionModel', 'valueModel',
-  'nodeModel', 'validation', 'actionNodeModel', 'container', 'sensorModel'];
+nodeService.$inject = [
+  "config",
+  "automaticActionModel",
+  "scheduledActionModel",
+  "valueModel",
+  "nodeModel",
+  "validation",
+  "actionNodeModel",
+  "container",
+  "sensorModel"
+];
 
 export class NodeService {
-  constructor(config, automaticActionModel, scheduledActionModel, valueModel,
-    nodeModel, validation, actionNodeModel, container, sensorModel) {
+  constructor(
+    config,
+    automaticActionModel,
+    scheduledActionModel,
+    valueModel,
+    nodeModel,
+    validation,
+    actionNodeModel,
+    container,
+    sensorModel
+  ) {
     this._config = config;
-    this._logger = log4js.getLogger('NodeService');
+    this._logger = log4js.getLogger("NodeService");
     this._automaticActionModel = automaticActionModel;
     this._scheduledActionModel = scheduledActionModel;
     this._valueModel = valueModel;
     this._nodeModel = nodeModel;
     this._validation = validation;
     this._actionNodeModel = actionNodeModel;
-    this._scheduledActionCheckerJob = container.get('scheduledActionCheckerJob');
+    this._scheduledActionCheckerJob = container.get(
+      "scheduledActionCheckerJob"
+    );
     this._sensorModel = sensorModel;
-    this._mqttClient = mqttClient.connect(`mqtt://127.0.0.1:${this._config.mosca.port}`, {clientId: 'NodeService'});
+    this._mqttClient = mqttClient.connect(
+      `mqtt://127.0.0.1:${this._config.mosca.port}`,
+      { clientId: "NodeService" }
+    );
 
     this._scheduledActionCheckerJob._initJobs();
   }
@@ -54,7 +96,6 @@ export class NodeService {
   get getLastNodeValues() {
     return this._getLastNodeValues.bind(this);
   }
-
 
   /**
    * Returns endpoint which returns values array
@@ -187,19 +228,27 @@ export class NodeService {
 
       nodes.forEach(node => {
         delete node.__v;
-          if (req.query.onlyActionNodes) {
-            const onlyActionNodes = req.query.onlyActionNodes.toString() === 'true';
-            const filteredSensors = sensors.filter(sensor => sensor.nodeId === node._id.toString())
-              .filter(sensor => sensor.types.find(type => this._isActionType(type._doc.type) === onlyActionNodes));
+        if (req.query.onlyActionNodes) {
+          const onlyActionNodes =
+            req.query.onlyActionNodes.toString() === "true";
+          const filteredSensors = sensors
+            .filter(sensor => sensor.nodeId === node._id.toString())
+            .filter(sensor =>
+              sensor.types.find(
+                type => this._isActionType(type._doc.type) === onlyActionNodes
+              )
+            );
 
-            if (filteredSensors.length > 0) {
-              node.sensors = filteredSensors;
-              result.push(node);
-            }
-          } else {
-            node.sensors = sensors.filter(sensor => sensor.nodeId === node._id.toString());
+          if (filteredSensors.length > 0) {
+            node.sensors = filteredSensors;
             result.push(node);
           }
+        } else {
+          node.sensors = sensors.filter(
+            sensor => sensor.nodeId === node._id.toString()
+          );
+          result.push(node);
+        }
       });
 
       res.status(200).json(result);
@@ -217,15 +266,24 @@ export class NodeService {
       const sensor = await this._checkIfSensorExists(sensorId);
       const newValue = this._validateValueToSet(req, next);
 
-      const sensorType = sensor.types.find(typeObject => typeObject.type === type);
+      const sensorType = sensor.types.find(
+        typeObject => typeObject.type === type
+      );
       if (!sensorType) {
-        throw new NotFoundError(`${type} not found in sensor with id of ${sensorId}`);
+        throw new NotFoundError(
+          `${type} not found in sensor with id of ${sensorId}`
+        );
       }
-      if(sensorType.control !== 'MANUAL'){
-        throw new ValidationError(`Can not set value to ${type} in sensor with id of ${sensorId}, because control type not 'MANUAL'`)
+      if (sensorType.control !== "MANUAL") {
+        throw new ValidationError(
+          `Can not set value to ${type} in sensor with id of ${sensorId}, because control type not 'MANUAL'`
+        );
       }
 
-      await this._mqttClient.publish(`cmnd/${node.name}/${sensor.name}/${type}/`, newValue.value);
+      await this._mqttClient.publish(
+        `cmnd/${node.name}/${sensor.name}/${type}/`,
+        newValue.value
+      );
 
       res.sendStatus(204);
     } catch (err) {
@@ -241,18 +299,22 @@ export class NodeService {
       const node = await this._checkifNodeExists(nodeId);
       const sensor = await this._checkIfSensorExists(sensorId);
 
-      let values = await this._valueModel.Value.findLastValuesBySensorId(sensorId);
+      let values = await this._valueModel.Value.findLastValuesBySensorId(
+        sensorId
+      );
       if (!values) {
-        throw new NotFoundError(`Values for sensor with specified id of ${sensorId} not found`);
+        throw new NotFoundError(
+          `Values for sensor with specified id of ${sensorId} not found`
+        );
       }
 
       let result = values.map(value => ({
         type: value.doc.type,
-        timestamp: moment(value.doc.created_at).format('x'),
+        timestamp: moment(value.doc.created_at).format("x"),
         value: value.doc.value
       }));
 
-      res.status(200).json({values: result});
+      res.status(200).json({ values: result });
     } catch (err) {
       next(err);
     }
@@ -270,11 +332,20 @@ export class NodeService {
       const sensor = await this._checkIfSensorExists(sensorId);
       this._checkIfSensorTypeExistsInSensor(sensor, sensorType);
 
-      const last = await this._valueModel.Value.findLastValuesBySensorId(sensorId);
+      const last = await this._valueModel.Value.findLastValuesBySensorId(
+        sensorId
+      );
 
-      const sensorValues = await this._valueModel.Value.findValuesBySensorIdAndType(sensorId, sensorType, filterObject);
+      const sensorValues = await this._valueModel.Value.findValuesBySensorIdAndType(
+        sensorId,
+        sensorType,
+        filterObject
+      );
 
-      const result = sensorValues.map(sensorValue => ({value: sensorValue.value, timestamp: sensorValue.created_at}));
+      const result = sensorValues.map(sensorValue => ({
+        value: sensorValue.value,
+        timestamp: sensorValue.created_at
+      }));
 
       res.status(200).json(result);
     } catch (err) {
@@ -291,7 +362,10 @@ export class NodeService {
       const sensor = await this._checkIfSensorExists(sensorId);
       this._checkIfSensorTypeExistsInSensor(sensor, sensorType);
 
-      let actionsForSensor = await this._automaticActionModel.AutomaticAction.findActionsBySensorIdAndType(sensorId, sensorType);
+      let actionsForSensor = await this._automaticActionModel.AutomaticAction.findActionsBySensorIdAndType(
+        sensorId,
+        sensorType
+      );
       let result = [];
       actionsForSensor.map(action => {
         result.push({
@@ -321,9 +395,11 @@ export class NodeService {
       let actionObject = this._validateAction(req, next);
       actionObject.sensorId = sensorId;
       actionObject.sensorType = sensorType;
-      const action = await this._automaticActionModel.AutomaticAction.createAutomaticAction(actionObject);
+      const action = await this._automaticActionModel.AutomaticAction.createAutomaticAction(
+        actionObject
+      );
 
-      res.status(200).json({_id: action._id});
+      res.status(200).json({ _id: action._id });
     } catch (err) {
       next(err);
     }
@@ -366,7 +442,9 @@ export class NodeService {
       this._checkIfSensorTypeExistsInSensor(sensor, sensorType);
 
       const actionToDelete = await this._checkIfAutomaticActionExists(actionId);
-      await this._actionNodeModel.ActionNode.find({reasonId: actionId}).remove().exec();
+      await this._actionNodeModel.ActionNode.find({ reasonId: actionId })
+        .remove()
+        .exec();
       await actionToDelete.remove();
 
       res.sendStatus(204);
@@ -377,11 +455,10 @@ export class NodeService {
 
   async _getActionNodes(req, res, next) {
     try {
-
-      const emitterType = req.params.actionId ? 'AUTOMATIC' : 'SCHEDULED';
+      const emitterType = req.params.actionId ? "AUTOMATIC" : "SCHEDULED";
       const emitterId = req.params.actionId || req.params.schedulerId;
 
-      if (emitterType === 'AUTOMATIC') {
+      if (emitterType === "AUTOMATIC") {
         const nodeId = req.params.nodeId;
         const sensorId = req.params.sensorId;
         const sensorType = req.params.type;
@@ -394,7 +471,9 @@ export class NodeService {
         await this._checkIfScheduledActionExists(emitterId);
       }
 
-      const actionNodes = await this._actionNodeModel.ActionNode.findActionNodesByEmitterId(emitterId);
+      const actionNodes = await this._actionNodeModel.ActionNode.findActionNodesByEmitterId(
+        emitterId
+      );
 
       const result = actionNodes.map(actionNode => ({
         _id: actionNode._id,
@@ -411,10 +490,10 @@ export class NodeService {
 
   async _createActionNode(req, res, next) {
     try {
-      const emitterType = req.params.actionId ? 'AUTOMATIC' : 'SCHEDULED';
+      const emitterType = req.params.actionId ? "AUTOMATIC" : "SCHEDULED";
       const emitterId = req.params.actionId || req.params.schedulerId;
 
-      if (emitterType === 'AUTOMATIC') {
+      if (emitterType === "AUTOMATIC") {
         const nodeId = req.params.nodeId;
         await this._checkIfAutomaticActionExists(emitterId);
         await this._checkifNodeExists(nodeId);
@@ -423,17 +502,29 @@ export class NodeService {
       }
 
       const actionNode = this._validateActionNode(req, next);
-      let sensor = await this._sensorModel.Sensor.findById(actionNode.targetSensorId);
+      let sensor = await this._sensorModel.Sensor.findById(
+        actionNode.targetSensorId
+      );
 
-      if(sensor.types.find(typeObject => typeObject.type === actionNode.targetSensorType).control !== emitterType){
-        throw new ValidationError(`Can not set value to node with id of ${actionNode.nodeId}, because control type not ${emitterType}`)
+      if (
+        sensor.types.find(
+          typeObject => typeObject.type === actionNode.targetSensorType
+        ).control !== emitterType
+      ) {
+        throw new ValidationError(
+          `Can not set value to node with id of ${
+            actionNode.nodeId
+          }, because control type not ${emitterType}`
+        );
       }
 
       actionNode.emitterId = emitterId;
       actionNode.emitterType = emitterType;
-      let addedActionNode = await new this._actionNodeModel.ActionNode(actionNode).save();
+      let addedActionNode = await new this._actionNodeModel.ActionNode(
+        actionNode
+      ).save();
 
-      res.status(200).json({_id: addedActionNode._id});
+      res.status(200).json({ _id: addedActionNode._id });
     } catch (err) {
       next(err);
     }
@@ -441,11 +532,11 @@ export class NodeService {
 
   async _updateActionNode(req, res, next) {
     try {
-      const reasonType = req.params.nodeId ? 'AUTOMATIC' : 'SCHEDULED';
+      const reasonType = req.params.nodeId ? "AUTOMATIC" : "SCHEDULED";
       const reasonId = req.params.nodeId || req.params.schedulerId;
       const actionNodeId = req.params.actionNodeId;
 
-      if (reasonType === 'AUTOMATIC') {
+      if (reasonType === "AUTOMATIC") {
         const nodeId = req.params.nodeId;
         const sensorType = req.params.type;
         const sensorId = req.params.sensorId;
@@ -474,11 +565,10 @@ export class NodeService {
 
   async _deleteActionNode(req, res, next) {
     try {
-
-      const reasonType = req.params.actionId ? 'AUTOMATIC' : 'SCHEDULED';
+      const reasonType = req.params.actionId ? "AUTOMATIC" : "SCHEDULED";
       const reasonId = req.params.actionId || req.params.schedulerId;
 
-      if (reasonType === 'AUTOMATIC') {
+      if (reasonType === "AUTOMATIC") {
         const nodeId = req.params.nodeId;
         await this._checkIfAutomaticActionExists(reasonId);
         await this._checkifNodeExists(nodeId);
@@ -501,7 +591,7 @@ export class NodeService {
       const sensorId = req.params.sensorId;
       const sensorType = req.params.type;
 
-      const controlType =  this._validateControlType(req, next);
+      const controlType = this._validateControlType(req, next);
       await this._checkifNodeExists(nodeId);
       const sensor = await this._checkIfSensorExists(sensorId);
       this._checkIfSensorTypeExistsInSensor(sensor, sensorType);
@@ -510,16 +600,24 @@ export class NodeService {
         .filter(node => node.action)
         .map(node => node.name);
 
-      if(!this._isActionType(sensorType)) {
-        throw new ValidationError(`type should be either of ${onlyActionTypes.join('\', \'')}`);
+      if (!this._isActionType(sensorType)) {
+        throw new ValidationError(
+          `type should be either of ${onlyActionTypes.join("', '")}`
+        );
       }
 
-      const typeIndex = sensor.types.findIndex(typeObject => typeObject.type === sensorType);
+      const typeIndex = sensor.types.findIndex(
+        typeObject => typeObject.type === sensorType
+      );
       if (typeIndex === -1) {
-        throw new ValidationError(`Type ${sensorType} not exists in node with id of ${nodeId}`);
+        throw new ValidationError(
+          `Type ${sensorType} not exists in node with id of ${nodeId}`
+        );
       }
 
-      await this._actionNodeModel.ActionNode.find({targetSensorId: sensorId}).remove().exec();
+      await this._actionNodeModel.ActionNode.find({ targetSensorId: sensorId })
+        .remove()
+        .exec();
 
       await sensor.changeControlType(controlType, typeIndex);
       res.sendStatus(204);
@@ -544,7 +642,9 @@ export class NodeService {
         nodeName: node.name,
         sensorName: sensor.name,
         sensorType: sensorType,
-        controlType: sensor.types.find(typeObject => typeObject.type === sensorType).control
+        controlType: sensor.types.find(
+          typeObject => typeObject.type === sensorType
+        ).control
       };
 
       res.status(200).json(response);
@@ -556,7 +656,9 @@ export class NodeService {
   async _getScheduledActions(req, res, next) {
     try {
       this._validateSchedulerFilterParams(req);
-      let scheduledActions = await this._scheduledActionModel.ScheduledAction.findScheduledActions(req.query);
+      let scheduledActions = await this._scheduledActionModel.ScheduledAction.findScheduledActions(
+        req.query
+      );
       scheduledActions.forEach(scheduledAction => delete scheduledAction.__v);
       res.status(200).json(scheduledActions);
     } catch (err) {
@@ -567,12 +669,14 @@ export class NodeService {
   async _creteScheduledAction(req, res, next) {
     try {
       const scheduledActionObject = this._validateScheduledAction(req, next);
-      const scheduledAction = await new this._scheduledActionModel.ScheduledAction(scheduledActionObject).save();
+      const scheduledAction = await new this._scheduledActionModel.ScheduledAction(
+        scheduledActionObject
+      ).save();
 
       this._scheduledActionCheckerJob.stopJobs();
       this._scheduledActionCheckerJob._initJobs();
 
-      res.status(200).json({_id: scheduledAction._id});
+      res.status(200).json({ _id: scheduledAction._id });
     } catch (err) {
       next(err);
     }
@@ -581,7 +685,9 @@ export class NodeService {
   async _updateScheduledAction(req, res, next) {
     try {
       const schedulerId = req.params.schedulerId;
-      let oldScheduledAction = await this._checkIfScheduledActionExists(schedulerId);
+      let oldScheduledAction = await this._checkIfScheduledActionExists(
+        schedulerId
+      );
       let newScheduledActionObject = this._validateScheduledAction(req, next);
       await oldScheduledAction.updateScheduledAction(newScheduledActionObject);
 
@@ -597,8 +703,12 @@ export class NodeService {
   async _deleteScheduledAction(req, res, next) {
     try {
       const schedulerId = req.params.schedulerId;
-      let scheduledAction = await this._checkIfScheduledActionExists(schedulerId);
-      await this._actionNodeModel.ActionNode.find({reasonId: schedulerId}).remove();
+      let scheduledAction = await this._checkIfScheduledActionExists(
+        schedulerId
+      );
+      await this._actionNodeModel.ActionNode.find({
+        reasonId: schedulerId
+      }).remove();
       await scheduledAction.remove();
 
       this._scheduledActionCheckerJob.stopJobs();
@@ -621,57 +731,78 @@ export class NodeService {
   async _checkIfSensorExists(sensorId) {
     const sensor = await this._sensorModel.Sensor.findById(sensorId).exec();
     if (!sensor) {
-      throw new NotFoundError(`Sensor with specified id of ${sensorId} not found`);
+      throw new NotFoundError(
+        `Sensor with specified id of ${sensorId} not found`
+      );
     }
     return sensor;
   }
 
   async _checkIfAutomaticActionExists(automaticActionId) {
-    const automaticAction = this._automaticActionModel.AutomaticAction.findById(automaticActionId).exec();
+    const automaticAction = this._automaticActionModel.AutomaticAction.findById(
+      automaticActionId
+    ).exec();
     if (!automaticAction) {
-      throw new NotFoundError(`Automatic action with specified id of ${automaticActionId} not found`);
+      throw new NotFoundError(
+        `Automatic action with specified id of ${automaticActionId} not found`
+      );
     }
     return automaticAction;
   }
 
   async _checkIfScheduledActionExists(scheduledActionId) {
-    const scheduledAction = this._scheduledActionModel.ScheduledAction.findById(scheduledActionId).exec();
+    const scheduledAction = this._scheduledActionModel.ScheduledAction.findById(
+      scheduledActionId
+    ).exec();
     if (!scheduledAction) {
-      throw new NotFoundError(`Scheduled action with specified id of ${scheduledActionId} not found`);
+      throw new NotFoundError(
+        `Scheduled action with specified id of ${scheduledActionId} not found`
+      );
     }
     return scheduledAction;
   }
 
   async _checkIfActionNodeExists(actionNodeId) {
-    const actionNode = this._actionNodeModel.ActionNode.findById(actionNodeId).exec();
+    const actionNode = this._actionNodeModel.ActionNode.findById(
+      actionNodeId
+    ).exec();
     if (!actionNode) {
-      throw new NotFoundError(`ActionNode with specified id of ${actionNodeId} not found`);
+      throw new NotFoundError(
+        `ActionNode with specified id of ${actionNodeId} not found`
+      );
     }
     return actionNode;
   }
 
   _checkIfSensorTypeExistsInSensor(sensor, sensorType) {
     if (!sensor.types.find(type => type.type === sensorType)) {
-      throw new NotFoundError(`Sensor type ${sensorType} not found in sensor with id of ${sensor._id}`);
+      throw new NotFoundError(
+        `Sensor type ${sensorType} not found in sensor with id of ${sensor._id}`
+      );
     }
   }
 
   _validateAction(req, next) {
     function validateConditionParam(value, onError) {
-      const conditions = ['<', '>', '>=', '<=', '!=', '=='];
+      const conditions = ["<", ">", ">=", "<=", "!=", "=="];
       if (conditions.indexOf(value.condition) === -1) {
-        onError('Type must be either of \'<\', \'>\', \'>=\', \'<=\', \'!=\', \'==\'', 'type', null);
+        onError(
+          "Type must be either of '<', '>', '>=', '<=', '!=', '=='",
+          "type",
+          null
+        );
       }
     }
 
     const action = req.body;
     const validator = this._validation.validator;
 
-    const userRules = validator.isObject()
-      .withRequired('valueToCompare', validator.isNumber({allowString: true}))
+    const userRules = validator
+      .isObject()
+      .withRequired("valueToCompare", validator.isNumber({ allowString: true }))
       .withCustom(validateConditionParam.bind(this))
-      .withRequired('condition', validator.isString())
-      .withRequired('enabled', validator.isBoolean());
+      .withRequired("condition", validator.isString())
+      .withRequired("enabled", validator.isBoolean());
 
     if (!this._validation.validate(userRules, action, next)) {
       return;
@@ -686,17 +817,25 @@ export class NodeService {
         .map(node => node.name);
 
       if (onlyActionTypes.indexOf(value.targetSensorType) === -1) {
-        onError(`Node type must be either of '${onlyActionTypes.join('\', \'')}'`, 'targetSensorType', null);
+        onError(
+          `Node type must be either of '${onlyActionTypes.join("', '")}'`,
+          "targetSensorType",
+          null
+        );
       }
     }
     const actionNode = req.body;
     const validator = this._validation.validator;
 
-    const userRules = validator.isObject()
+    const userRules = validator
+      .isObject()
       .withCustom(validateActionTypeParam.bind(this))
-      .withRequired('valueToChangeOn', validator.isNumber({allowString: true}))
-      .withRequired('targetSensorId', validator.isString())
-      .withRequired('targetSensorType', validator.isString());
+      .withRequired(
+        "valueToChangeOn",
+        validator.isNumber({ allowString: true })
+      )
+      .withRequired("targetSensorId", validator.isString())
+      .withRequired("targetSensorType", validator.isString());
 
     if (!this._validation.validate(userRules, actionNode, next)) {
       return;
@@ -707,27 +846,36 @@ export class NodeService {
   _validateNodesFilterParams(req) {
     const validator = this._validation.validator;
 
-    const filterRules = validator.isObject()
-      .withOptional('skip', validator.isInteger({allowString: true, min: 0}))
-      .withOptional('limit', validator.isInteger({allowString: true, min: 1}))
-      .withOptional('onlyActionNodes', validator.isString({regex: /true|false/}));
+    const filterRules = validator
+      .isObject()
+      .withOptional("skip", validator.isInteger({ allowString: true, min: 0 }))
+      .withOptional("limit", validator.isInteger({ allowString: true, min: 1 }))
+      .withOptional(
+        "onlyActionNodes",
+        validator.isString({ regex: /true|false/ })
+      );
 
     this._validation.validate(filterRules, req.query);
   }
 
-  _validateControlType(req ,next) {
+  _validateControlType(req, next) {
     function validateControlTypeParam(value, onError) {
-      const controlTypes = ['AUTOMATIC', 'SCHEDULED', 'MANUAL'];
-      if (controlTypes.indexOf(value['control']) === -1) {
-        onError(`control type must be either of 'AUTOMATIC', 'SCHEDULED', 'MANUAL'`, 'control', null);
+      const controlTypes = ["AUTOMATIC", "SCHEDULED", "MANUAL"];
+      if (controlTypes.indexOf(value["control"]) === -1) {
+        onError(
+          `control type must be either of 'AUTOMATIC', 'SCHEDULED', 'MANUAL'`,
+          "control",
+          null
+        );
       }
     }
     const controlType = req.body;
     const validator = this._validation.validator;
 
-    const userRules = validator.isObject()
+    const userRules = validator
+      .isObject()
       .withCustom(validateControlTypeParam.bind(this))
-      .withRequired('control', validator.isString());
+      .withRequired("control", validator.isString());
 
     if (!this._validation.validate(userRules, controlType, next)) {
       return;
@@ -737,43 +885,49 @@ export class NodeService {
 
   _validateSchedulerFilterParams(req) {
     function validateEnabledParam(value, onError) {
-      if (value['enabled'] && value['enabled'] !== 'true' && value['enabled'] !== 'false') {
-        onError(`enabled must be either of 'true' or 'false'`, 'enabled', null);
+      if (
+        value["enabled"] &&
+        value["enabled"] !== "true" &&
+        value["enabled"] !== "false"
+      ) {
+        onError(`enabled must be either of 'true' or 'false'`, "enabled", null);
       }
     }
     const validator = this._validation.validator;
 
-    const filterRules = validator.isObject()
-      .withOptional('skip', validator.isInteger({allowString: true, min: 0}))
-      .withOptional('limit', validator.isInteger({allowString: true, min: 1}))
+    const filterRules = validator
+      .isObject()
+      .withOptional("skip", validator.isInteger({ allowString: true, min: 0 }))
+      .withOptional("limit", validator.isInteger({ allowString: true, min: 1 }))
       .withCustom(validateEnabledParam.bind(this))
-      .withOptional('enabled', validator.isString())
-      .withOptional('schedule', validator.isString());
+      .withOptional("enabled", validator.isString())
+      .withOptional("schedule", validator.isString());
 
     this._validation.validate(filterRules, req.query);
   }
 
-  _isActionType(type){
-    const node =  this._config.nodeTypes.find(node => node.name === type);
+  _isActionType(type) {
+    const node = this._config.nodeTypes.find(node => node.name === type);
     return node.action;
   }
 
   _validateScheduledAction(req, next) {
     function validateCronString(value, onError) {
       try {
-        cronParser.parseExpression(value['schedule']);
+        cronParser.parseExpression(value["schedule"]);
       } catch (err) {
-        onError(`not valid cron string`, 'schedule', null);
+        onError(`not valid cron string`, "schedule", null);
       }
     }
     const scheduledAction = req.body;
     const validator = this._validation.validator;
 
-    const userRules = validator.isObject()
-      .withRequired('name', validator.isString())
+    const userRules = validator
+      .isObject()
+      .withRequired("name", validator.isString())
       .withCustom(validateCronString.bind(this))
-      .withRequired('schedule', validator.isString())
-      .withRequired('enabled', validator.isBoolean());
+      .withRequired("schedule", validator.isString())
+      .withRequired("enabled", validator.isBoolean());
 
     if (!this._validation.validate(userRules, scheduledAction, next)) {
       return;
@@ -783,21 +937,39 @@ export class NodeService {
 
   _validateValueFilterParams(req, next) {
     function validateStartEndDates(value, onError) {
-      if (value.fromDate && !value.toDate || !value.fromDate && value.toDate) {
-        onError(`Both start and end date bust be defined`, 'fromDate|toDate', null);
+      if (
+        (value.fromDate && !value.toDate) ||
+        (!value.fromDate && value.toDate)
+      ) {
+        onError(
+          `Both start and end date bust be defined`,
+          "fromDate|toDate",
+          null
+        );
       } else {
         if (value.fromDate && value.toDate && value.fromDate > value.toDate) {
-          onError(`End date must be greater than start date`, 'fromDate|toDate', null);
+          onError(
+            `End date must be greater than start date`,
+            "fromDate|toDate",
+            null
+          );
         }
       }
     }
     const filterObject = req.query;
     const validator = this._validation.validator;
 
-    const userRules = validator.isObject()
+    const userRules = validator
+      .isObject()
       .withCustom(validateStartEndDates.bind(this))
-      .withOptional('fromDate', validator.isInteger({allowString: true, min: 0}))
-      .withOptional('toDate', validator.isNumber({allowString: true, min: 0}));
+      .withOptional(
+        "fromDate",
+        validator.isInteger({ allowString: true, min: 0 })
+      )
+      .withOptional(
+        "toDate",
+        validator.isNumber({ allowString: true, min: 0 })
+      );
 
     if (!this._validation.validate(userRules, filterObject, next)) {
       return;
@@ -809,13 +981,13 @@ export class NodeService {
     const valueToSet = req.body;
     const validator = this._validation.validator;
 
-    const userRules = validator.isObject()
-      .withOptional('value', validator.isInteger({allowString: true}));
+    const userRules = validator
+      .isObject()
+      .withOptional("value", validator.isInteger({ allowString: true }));
 
     if (!this._validation.validate(userRules, valueToSet, next)) {
       return;
     }
     return valueToSet;
   }
-
 }

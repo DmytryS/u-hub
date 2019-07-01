@@ -1,6 +1,4 @@
-'use strict';
-
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 export default function scheduledActionModel() {
@@ -11,9 +9,9 @@ scheduledActionModel.$inject = [];
 export class ScheduledActionModel {
   constructor() {
     const shceduledActionSchema = new Schema({
-      name: {type: String, required: true},
-      schedule: {type: String, required: true},
-      enabled: {type: Boolean, required: true}
+      name: { type: String, required: true },
+      schedule: { type: String, required: true },
+      enabled: { type: Boolean, required: true }
     });
 
     shceduledActionSchema.statics.findScheduledActions = findScheduledActions;
@@ -31,21 +29,20 @@ export class ScheduledActionModel {
       let skipRecords = 0;
       let limitRecords = 10;
 
-      if (filterParams['skip']) {
+      if (filterParams["skip"]) {
         skipRecords = parseInt(filterParams.skip);
       }
-      if (filterParams['limit']) {
+      if (filterParams["limit"]) {
         limitRecords = parseInt(filterParams.limit);
       }
-      if (filterParams['enabled']) {
-        filterObject.enabled = (filterParams['enabled'] === 'true');
+      if (filterParams["enabled"]) {
+        filterObject.enabled = filterParams["enabled"] === "true";
       }
-      if (filterParams['schedule']) {
-        filterObject.schedule = filterParams['schedule'];
+      if (filterParams["schedule"]) {
+        filterObject.schedule = filterParams["schedule"];
       }
 
-      return await this
-        .aggregate()
+      return await this.aggregate()
         .match(filterObject)
         .skip(skipRecords)
         .limit(limitRecords)
@@ -78,11 +75,14 @@ export class ScheduledActionModel {
      * @returns {Promise<ScheduledAction>} promise to return cursor
      */
     function enabledScheduledActionsCursor() {
-      return this.find({enabled: true}).exec();
+      return this.find({ enabled: true }).exec();
     }
 
     delete mongoose.connection.models.ScheduledAction;
-    this._ShceduledAction = mongoose.model('ScheduledAction', shceduledActionSchema);
+    this._ShceduledAction = mongoose.model(
+      "ScheduledAction",
+      shceduledActionSchema
+    );
   }
 
   get ScheduledAction() {

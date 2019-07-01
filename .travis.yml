@@ -1,0 +1,27 @@
+sudo: required
+language: node_js
+node_js:
+  - "12"
+services:
+  - docker
+branches:
+  only:
+    - master
+before_script:
+  - export REVISION=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo ${TRAVIS_COMMIT::8} ; fi`
+  - export CLIENT_IMAGE_TAG=$DOCKER_REPO_CLIENT:$REVISION
+  - export GATEWAY_IMAGE_TAG=$DOCKER_REPO_GATEWAY:$REVISION
+  - export HOMEKIT_IMAGE_TAG=$DOCKER_REPO_HOMEKIT_SERVER:$REVISION
+  - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+script:
+  - docker build -t $CLIENT_IMAGE_TAG ./client
+  - docker run $CLIENT_IMAGE_TAG run lint
+  - docker push $CLIENT_IMAGE_TAG
+
+  - docker build -t $GATEWAY_IMAGE_TAG ./gateway
+  - docker run $GATEWAY_IMAGE_TAG run lint
+  - docker push $GATEWAY_IMAGE_TAG
+
+  - docker build -t $HOMEKIT_IMAGE_TAG ./homekit-server
+  - docker run $HOMEKIT_IMAGE_TAG run lint
+  - docker push $HOMEKIT_IMAGE_TAG

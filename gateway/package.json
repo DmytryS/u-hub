@@ -1,6 +1,6 @@
 {
   "name": "smart-grid-manager",
-  "version": "0.0.0",
+  "version": "0.0.1",
   "scripts": {
     "start": "node -r esm ./src/index.js",
     "nodemon": "nodemon -r esm ./app.js",
@@ -14,9 +14,8 @@
     "esm": "^3.2.25",
     "express": "^4.16.2",
     "intravenous": "^0.1.4-beta",
-    "jade": "^1.11.0",
     "lodash": "^4.17.11",
-    "log4js": "^0.6.31",
+    "loglevel": "^1.6.3",
     "moment": "^2.21.0",
     "mongoose": "^5.6.2",
     "mosca": "^2.8.3",

@@ -4,9 +4,6 @@ module.exports = {
     type: "mongo",
     url: "mongodb://127.0.0.1/smart-grid-manager"
   },
-  log4js: {
-    path: "logs"
-  },
   baseUrl: "api/v1",
   mosca: {
     port: 1883,

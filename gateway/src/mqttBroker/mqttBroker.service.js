@@ -1,22 +1,50 @@
-'use strict';
-import log4js from 'log4js';
-import mqttClient from 'mqtt';
+import mqttClient from "mqtt";
 
-export default function mqttBrokerService(config, automaticActionModel, valueModel, nodeModel, actionNodeModel, sensorModel) {
-  return new MqttBrokerService(config, automaticActionModel, valueModel, nodeModel, actionNodeModel, sensorModel);
+export default function mqttBrokerService(
+  config,
+  automaticActionModel,
+  valueModel,
+  nodeModel,
+  actionNodeModel,
+  sensorModel
+) {
+  return new MqttBrokerService(
+    config,
+    automaticActionModel,
+    valueModel,
+    nodeModel,
+    actionNodeModel,
+    sensorModel
+  );
 }
-mqttBrokerService.$inject = ['config', 'automaticActionModel', 'valueModel', 'nodeModel', 'actionNodeModel', 'sensorModel'];
+mqttBrokerService.$inject = [
+  "config",
+  "automaticActionModel",
+  "valueModel",
+  "nodeModel",
+  "actionNodeModel",
+  "sensorModel"
+];
 
 export class MqttBrokerService {
-  constructor(config, automaticActionModel, valueModel, nodeModel, actionNodeModel, sensorModel) {
+  constructor(
+    config,
+    automaticActionModel,
+    valueModel,
+    nodeModel,
+    actionNodeModel,
+    sensorModel
+  ) {
     this._config = config;
-    this._logger = log4js.getLogger('MqttBrokerService');
     this._automaticActionModel = automaticActionModel;
     this._valueModel = valueModel;
     this._nodeModel = nodeModel;
     this._actionNodeModel = actionNodeModel;
     this._sensorModel = sensorModel;
-    this._mqttClient = mqttClient.connect(`mqtt://127.0.0.1:${this._config.mosca.port}`, {clientId: 'MqttBrokerService'});
+    this._mqttClient = mqttClient.connect(
+      `mqtt://127.0.0.1:${this._config.mosca.port}`,
+      { clientId: "MqttBrokerService" }
+    );
   }
 
   get mqttBrokerReady() {
@@ -35,57 +63,74 @@ export class MqttBrokerService {
     return this._messagePublished.bind(this);
   }
 
-  _mqttBrokerReady(){
-    this._logger.debug(`Mqtt broker is running`);
+  _mqttBrokerReady() {
+    log.debug(`Mqtt broker is running`);
   }
 
   _clientConnected(client) {
-    this._logger.debug(`Client connected ${client.id}`);
+    log.debug(`Client connected ${client.id}`);
   }
 
   _clientDisconnected(client) {
-    this._logger.debug(`Client disconnected ${client.id}`);
+    log.debug(`Client disconnected ${client.id}`);
   }
 
-  async _messagePublished(packet, client){
-    if(!this._config.nodeTypes.find(node => node.name === packet.topic.split('/')[3]) || packet.topic.split('/')[0] !== 'stat') {
+  async _messagePublished(packet, client) {
+    if (
+      !this._config.nodeTypes.find(
+        node => node.name === packet.topic.split("/")[3]
+      ) ||
+      packet.topic.split("/")[0] !== "stat"
+    ) {
       return;
     }
 
-    const nodeName = packet.topic.split('/')[1];
-    const sensorName = packet.topic.split('/')[2];
-    const sensorType = packet.topic.split('/')[3];
+    const nodeName = packet.topic.split("/")[1];
+    const sensorName = packet.topic.split("/")[2];
+    const sensorType = packet.topic.split("/")[3];
     const value = parseFloat(String.fromCharCode.apply(null, packet.payload));
-    if(isNaN(value)) {
+    if (isNaN(value)) {
       return;
     }
 
     const node = await this._createNodeIfNotExists(nodeName, sensorType);
-    const sensor = await this._createSensorIfNotExists(node._id, sensorName, sensorType);
+    const sensor = await this._createSensorIfNotExists(
+      node._id,
+      sensorName,
+      sensorType
+    );
     await this._valueModel.Value.addNewValue(sensor._id, sensorType, value);
 
     await this._checkActionCondition(sensor._id, sensorType, value);
   }
 
-  async _createNodeIfNotExists(name){
+  async _createNodeIfNotExists(name) {
     let node = await this._nodeModel.Node.findNodeByName(name);
-    if(!node) {
+    if (!node) {
       node = await this._nodeModel.Node.saveNewNode(name);
     }
     return node;
   }
 
   async _createSensorIfNotExists(nodeId, sensorName, sensorType) {
-    let sensor = await this._sensorModel.Sensor.findByNodeIdAndName(nodeId, sensorName);
+    let sensor = await this._sensorModel.Sensor.findByNodeIdAndName(
+      nodeId,
+      sensorName
+    );
     if (!sensor) {
-      sensor = await this._sensorModel.Sensor.addNewSensor(nodeId, sensorName, sensorType, 'MANUAL');
+      sensor = await this._sensorModel.Sensor.addNewSensor(
+        nodeId,
+        sensorName,
+        sensorType,
+        "MANUAL"
+      );
     } else {
       if (!sensor.types.find(type => type.type === sensorType)) {
         let controlType;
         if (this._isActionType(sensorType)) {
-          controlType = 'MANUAL';
+          controlType = "MANUAL";
         } else {
-          controlType = 'CAN_NOT_BE_CONTROLLED'
+          controlType = "CAN_NOT_BE_CONTROLLED";
         }
         await sensor.addType(sensorType, controlType);
       }
@@ -95,37 +140,39 @@ export class MqttBrokerService {
   }
 
   async _checkActionCondition(sensorId, sensorType, lastValue) {
-    const actions = await this._automaticActionModel.AutomaticAction
-      .findActionsBySensorIdAndType(sensorId, sensorType);
+    const actions = await this._automaticActionModel.AutomaticAction.findActionsBySensorIdAndType(
+      sensorId,
+      sensorType
+    );
     if (actions.length) {
-      actions.forEach(async action =>{
+      actions.forEach(async action => {
         switch (action.condition) {
-          case '<':
+          case "<":
             if (lastValue < action.valueToCompare) {
               await this._applyActionToNodes(action);
             }
             break;
-          case '>':
+          case ">":
             if (lastValue > action.valueToCompare) {
               await this._applyActionToNodes(action);
             }
             break;
-          case '<=':
+          case "<=":
             if (lastValue <= action.valueToCompare) {
               await this._applyActionToNodes(action);
             }
             break;
-          case '>=':
+          case ">=":
             if (lastValue >= action.valueToCompare) {
               await this._applyActionToNodes(action);
             }
             break;
-          case '!=':
+          case "!=":
             if (lastValue !== action.valueToCompare) {
               await this._applyActionToNodes(action);
             }
             break;
-          case '==':
+          case "==":
             if (lastValue === action.valueToCompare) {
               await this._applyActionToNodes(action);
             }
@@ -136,23 +183,29 @@ export class MqttBrokerService {
   }
 
   async _applyActionToNodes(actionObject) {
-    const actionNodes = await this._actionNodeModel.ActionNode
-      .findActionNodesByEmitterIdAndType(actionObject._id, 'AUTOMATIC');
+    const actionNodes = await this._actionNodeModel.ActionNode.findActionNodesByEmitterIdAndType(
+      actionObject._id,
+      "AUTOMATIC"
+    );
     const sensorIds = actionNodes.map(actionNode => actionNode.targetSensorId);
     const sensors = await this._sensorModel.Sensor.findBySensorIds(sensorIds);
     const nodeIds = sensors.map(sensor => sensor.nodeId);
     const nodes = await this._nodeModel.Node.findByIds(nodeIds);
 
     actionNodes.forEach(async actionNode => {
-      const sensor = sensors.find(sensor => sensor._id.toString() === actionNode.targetSensorId);
+      const sensor = sensors.find(
+        sensor => sensor._id.toString() === actionNode.targetSensorId
+      );
       const node = nodes.find(node => node._id.toString() === sensor.nodeId);
 
-      await this._mqttClient.publish(`cmnd/${node.name}/${sensor.name}/${actionNode.targetSensorType}/`,
-        actionNode.valueToChangeOn.toString());
+      await this._mqttClient.publish(
+        `cmnd/${node.name}/${sensor.name}/${actionNode.targetSensorType}/`,
+        actionNode.valueToChangeOn.toString()
+      );
     });
   }
 
-  _isActionType(type){
+  _isActionType(type) {
     let node = this._config.nodeTypes.find(node => node.name === type);
     return node.action;
   }

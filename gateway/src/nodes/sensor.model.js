@@ -1,12 +1,11 @@
-'use strict';
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
-import moment from 'moment';
+import moment from "moment";
 
 export default function sensorModel(config) {
   return new SensorModel(config);
 }
-sensorModel.$inject = ['config'];
+sensorModel.$inject = ["config"];
 
 export class SensorModel {
   constructor(config) {
@@ -15,23 +14,29 @@ export class SensorModel {
     const allTypes = this._config.nodeTypes.map(node => node.name);
     const nodeTypes = {
       values: allTypes,
-      message: `node type must be either of '${allTypes.join('\', \'')}'`
+      message: `node type must be either of '${allTypes.join("', '")}'`
     };
     const controlTypes = {
-      values: ['AUTOMATIC', 'SCHEDULED', 'MANUAL', 'CAN_NOT_BE_CONTROLLED'],
-      message: 'control must be either of \'AUTOMATIC\', \'SCHEDULED\', \'MANUAL\' or \'CAN_NOT_BE_CONTROLLED\''
+      values: ["AUTOMATIC", "SCHEDULED", "MANUAL", "CAN_NOT_BE_CONTROLLED"],
+      message:
+        "control must be either of 'AUTOMATIC', 'SCHEDULED', 'MANUAL' or 'CAN_NOT_BE_CONTROLLED'"
     };
 
-    const sensorSchema = new Schema({
-      name: {type: String, required: true},
-      types: [{
-        type: {type: String, enum: nodeTypes, required: true},
-        control: {type: String, enum: controlTypes, required: true}
-      }],
-      nodeId: {type: String, required: true},
-    },{
-      usePushEach: true
-    });
+    const sensorSchema = new Schema(
+      {
+        name: { type: String, required: true },
+        types: [
+          {
+            type: { type: String, enum: nodeTypes, required: true },
+            control: { type: String, enum: controlTypes, required: true }
+          }
+        ],
+        nodeId: { type: String, required: true }
+      },
+      {
+        usePushEach: true
+      }
+    );
 
     sensorSchema.statics.addNewSensor = addNewSensor;
     sensorSchema.methods.addType = addType;
@@ -53,7 +58,7 @@ export class SensorModel {
     function addNewSensor(nodeId, name, type, control) {
       return this({
         name: name,
-        types: [{type, control}],
+        types: [{ type, control }],
         nodeId: nodeId.toString(),
         date: moment()
       }).save();
@@ -66,7 +71,7 @@ export class SensorModel {
      * @returns {Promise<Sensor>} promise which will be resolved when sensor edited
      */
     function addType(type, control) {
-      this.types.push({type, control});
+      this.types.push({ type, control });
       return this.save();
     }
 
@@ -97,7 +102,7 @@ export class SensorModel {
      * @returns {Promise<Array<Sensor>>} promise with sensors which will be resolved when sensors found
      */
     async function findByNodeId(nodeId) {
-      return await this.find({nodeId}).exec();
+      return await this.find({ nodeId }).exec();
     }
 
     /**
@@ -107,7 +112,7 @@ export class SensorModel {
      * @returns {Promise<Sensor>} promise with sensor which will be resolved when sensor found
      */
     async function findByNodeIdAndName(nodeId, name) {
-      return await this.findOne({nodeId, name}).exec();
+      return await this.findOne({ nodeId, name }).exec();
     }
 
     /**
@@ -116,7 +121,7 @@ export class SensorModel {
      * @returns {Promise<Array<Sensor>>} promise with sensors will be resolve when sensors found
      */
     async function findBySensorIds(sensorIds) {
-      return await this.find({_id: {$in: sensorIds}}).exec();
+      return await this.find({ _id: { $in: sensorIds } }).exec();
     }
 
     /**
@@ -125,11 +130,11 @@ export class SensorModel {
      * @returns {Promise<Array<Sensor>>} promise with sensors will be resolve when sensors found
      */
     async function findByNodeIds(nodeIds) {
-      return  await this.find({nodeId: {$in: nodeIds}}).exec();
+      return await this.find({ nodeId: { $in: nodeIds } }).exec();
     }
 
     delete mongoose.connection.models.Sensor;
-    this._SensorModel = mongoose.model('Sensor', sensorSchema);
+    this._SensorModel = mongoose.model("Sensor", sensorSchema);
   }
 
   get Sensor() {

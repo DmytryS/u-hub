@@ -1,0 +1,19 @@
+---
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: api
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  tls:
+  - hosts:
+    - {{DOMAIN}}
+  rules:
+  - host: {{DOMAIN}}
+    http:
+      paths:
+      - path: /api/v0
+        backend:
+          serviceName: apollo
+          servicePort: 80

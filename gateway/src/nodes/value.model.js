@@ -1,13 +1,11 @@
-'use strict';
-
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
-import moment from 'moment';
+import moment from "moment";
 
 export default function valueModel(config) {
   return new ValueModel(config);
 }
-valueModel.$inject = ['config'];
+valueModel.$inject = ["config"];
 
 export class ValueModel {
   constructor(config) {
@@ -16,21 +14,23 @@ export class ValueModel {
     const allTypes = this._config.nodeTypes.map(node => node.name);
     const nodeTypes = {
       values: allTypes,
-      message: `node type must be either of '${allTypes.join('\', \'')}'`
+      message: `node type must be either of '${allTypes.join("', '")}'`
     };
 
-    const valueSchema = new Schema({
-      sensorId: {type: String, required: true},
-      value: {type: Number, required: true},
-      type: {type: String, enum: nodeTypes, requiered: true},
-    },{
-      timestamps: { createdAt: 'created_at' }
-    });
+    const valueSchema = new Schema(
+      {
+        sensorId: { type: String, required: true },
+        value: { type: Number, required: true },
+        type: { type: String, enum: nodeTypes, requiered: true }
+      },
+      {
+        timestamps: { createdAt: "created_at" }
+      }
+    );
 
     valueSchema.statics.findLastValuesBySensorId = findLastValuesBySensorId;
     valueSchema.statics.findValuesBySensorIdAndType = findValuesBySensorIdAndType;
     valueSchema.statics.addNewValue = addNewValue;
-
 
     /**
      * Finds last values for sensor
@@ -39,9 +39,12 @@ export class ValueModel {
      */
     async function findLastValuesBySensorId(sensorId) {
       return await this.aggregate()
-        .match({sensorId})
-        .sort({'created_at': 'desc'})
-        .group({_id: {sensorId: '$sensorId', type: '$type'}, doc: {$first: '$$ROOT'}})
+        .match({ sensorId })
+        .sort({ created_at: "desc" })
+        .group({
+          _id: { sensorId: "$sensorId", type: "$type" },
+          doc: { $first: "$$ROOT" }
+        })
         .exec();
     }
 
@@ -53,10 +56,12 @@ export class ValueModel {
      * @returns {Promise<Value>} promise with found values
      */
     async function findValuesBySensorIdAndType(sensorId, type, filterObject) {
-      let fromDate = moment().subtract(6, 'hours').toDate();
-      let toDate =  moment().toDate();
+      let fromDate = moment()
+        .subtract(6, "hours")
+        .toDate();
+      let toDate = moment().toDate();
 
-      if(filterObject.fromDate) {
+      if (filterObject.fromDate) {
         fromDate = moment(parseInt(filterObject.fromDate)).toDate();
       }
       if (filterObject.toDate) {
@@ -66,7 +71,7 @@ export class ValueModel {
       return await this.find({
         sensorId: sensorId,
         type: type,
-        created_at: {$gte: fromDate, $lt: toDate}
+        created_at: { $gte: fromDate, $lt: toDate }
       }).exec();
     }
 
@@ -86,7 +91,7 @@ export class ValueModel {
     }
 
     delete mongoose.connection.models.Value;
-    this._Value = mongoose.model('Value', valueSchema);
+    this._Value = mongoose.model("Value", valueSchema);
   }
 
   get Value() {

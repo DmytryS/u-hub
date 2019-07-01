@@ -1,6 +1,4 @@
-'use strict';
-
-import schedule from 'node-schedule';
+import schedule from "node-schedule";
 
 /**
  * Return scheduler service
@@ -14,7 +12,6 @@ export default function scheduler() {
  * Job scheduler
  */
 export class Scheduler {
-
   /**
    * Constructs job scheduler
    */
@@ -38,10 +35,9 @@ export class Scheduler {
    * Stops all running jobs
    */
   stopJobs() {
-    this._jobs.forEach(function (job) {
+    this._jobs.forEach(function(job) {
       job.cancel();
     });
     this._jobs = [];
   }
-
 }

@@ -1,34 +1,32 @@
-'use strict';
-
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 const Schema = mongoose.Schema;
 
 export default function automaticActionModel(config) {
   return new AutomaticActionModel(config);
 }
-automaticActionModel.$inject = ['config'];
+automaticActionModel.$inject = ["config"];
 
 export class AutomaticActionModel {
   constructor(config) {
     this._config = config;
 
     const conditionList = {
-      values: ['<', '>', '>=', '<=', '!=', '=='],
-      message: 'condition must be either of \'<\', \'>\', \'>=\', \'<=\', \'!=\', \'==\''
+      values: ["<", ">", ">=", "<=", "!=", "=="],
+      message: "condition must be either of '<', '>', '>=', '<=', '!=', '=='"
     };
 
     const allTypes = this._config.nodeTypes.map(node => node.name);
     const nodeTypes = {
       values: allTypes,
-      message: `node type must be either of '${allTypes.join('\', \'')}'`
+      message: `node type must be either of '${allTypes.join("', '")}'`
     };
 
     const automaticActionSchema = new Schema({
-      sensorId: {type: String, required: true},
-      sensorType: {type: String, enum: nodeTypes, required: true},
-      valueToCompare: {type: Number, required: true},
-      condition: {type: String, enum: conditionList, required: true},
-      enabled: {type: Boolean, required: true}
+      sensorId: { type: String, required: true },
+      sensorType: { type: String, enum: nodeTypes, required: true },
+      valueToCompare: { type: Number, required: true },
+      condition: { type: String, enum: conditionList, required: true },
+      enabled: { type: Boolean, required: true }
     });
 
     automaticActionSchema.statics.createAutomaticAction = createAutomaticAction;
@@ -51,7 +49,7 @@ export class AutomaticActionModel {
      * @returns {Promise<AutomaticAction>} promise to return found action nodes
      */
     async function findActionsBySensorId(sensorId) {
-      return await this.find({sensorId}).exec();
+      return await this.find({ sensorId }).exec();
     }
 
     /**
@@ -60,9 +58,8 @@ export class AutomaticActionModel {
      * @returns {Promise<AutomaticAction>} promise with found automatic actions
      */
     async function findAutomaticActionsBySensorIds(sensorIds) {
-      return await this.find({'sensorId': {$in: sensorIds}}).exec();
+      return await this.find({ sensorId: { $in: sensorIds } }).exec();
     }
-
 
     /**
      * Finds automatic action for node with type
@@ -71,11 +68,14 @@ export class AutomaticActionModel {
      * @returns {Promise<AutomaticAction>} promise to return found action node
      */
     async function findActionsBySensorIdAndType(sensorId, sensorType) {
-      return await this.find({sensorId, sensorType}).exec();
+      return await this.find({ sensorId, sensorType }).exec();
     }
 
     delete mongoose.connection.models.AutomaticAction;
-    this._AutomaticAction = mongoose.model('AutomaticAction', automaticActionSchema);
+    this._AutomaticAction = mongoose.model(
+      "AutomaticAction",
+      automaticActionSchema
+    );
   }
 
   get AutomaticAction() {
