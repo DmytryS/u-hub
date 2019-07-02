@@ -17,10 +17,11 @@ spec:
       containers:
       - name: client
         image: loginkr/u-hub_client:latest
+        imagePullPolicy: Always
         envFrom:
         - configMapRef:
             name: amqp
         - configMapRef:
             name: mongo
         ports:
-        - containerPort: 80
+        - containerPort: 3000
