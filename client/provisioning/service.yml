@@ -9,6 +9,6 @@ spec:
   selector:
     app: client
   ports:
-  - port: 3000
-    targetPort: 80
+  - port: 80
+    targetPort: 3000
     name: http
