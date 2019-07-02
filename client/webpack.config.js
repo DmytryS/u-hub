@@ -30,14 +30,7 @@ module.exports = webpackMerge(webpackCommon, {
       "Access-Control-Allow-Origin": "*"
     },
     // https: true,
-    port: 3000,
-    // proxy: {
-    //   "/bapi/**": {
-    //     target: "https://development.legatics.com",
-    //     secure: false,
-    //     changeOrigin: true
-    //   }
-    // },
+    port: 80,
     hot: true,
     stats: "minimal",
     clientLogLevel: "info",

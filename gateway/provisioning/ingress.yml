@@ -1,19 +1,16 @@
----
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: api
+  name: gateway
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: '0'
 spec:
-  tls:
-  - hosts:
-    - {{DOMAIN}}
   rules:
   - host: {{DOMAIN}}
     http:
       paths:
-      - path: /api/v0
+      - path: /api/v1
         backend:
-          serviceName: apollo
+          serviceName: gateway
           servicePort: 80

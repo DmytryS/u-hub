@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: gateway
+  name: client
   labels:
-    name: gateway
+    name: client
 spec:
   clusterIP: None
   selector:
-    app: gateway
+    app: client
   ports:
   - port: 80
     targetPort: 80

@@ -1,22 +1,22 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gateway
+  name: client
   labels:
-    app: gateway
+    app: client
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: gateway
+      app: client
   template:
     metadata:
       labels:
-        app: gateway
+        app: client
     spec:
       containers:
-      - name: gateway
-        image: loginkr/u-hub_gateway:latest
+      - name: client
+        image: loginkr/u-hub_client:latest
         envFrom:
         - configMapRef:
             name: amqp
