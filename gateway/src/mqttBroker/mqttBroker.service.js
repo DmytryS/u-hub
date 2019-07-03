@@ -1,4 +1,5 @@
 import mqttClient from "mqtt";
+import * as log from "loglevel";
 
 export default function mqttBrokerService(
   config,
