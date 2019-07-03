@@ -54,7 +54,7 @@ export class NodeService {
     sensorModel
   ) {
     this._config = config;
-    this._logger = log4js.getLogger("NodeService");
+
     this._automaticActionModel = automaticActionModel;
     this._scheduledActionModel = scheduledActionModel;
     this._valueModel = valueModel;
