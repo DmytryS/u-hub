@@ -14,6 +14,7 @@ spec:
       labels:
         app: client
     spec:
+      # hostNetwork: true
       containers:
       - name: client
         image: loginkr/u-hub_client:latest
