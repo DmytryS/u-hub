@@ -8,21 +8,18 @@ const autoprefixer = require("autoprefixer");
 const Dotenv = require("dotenv-webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
-// const { BundleAnalyzerPlugin } = require('webpack-bundle-analyzer')
-
 module.exports = {
   plugins: [
-    // new BundleAnalyzerPlugin(),
     new MiniCssExtractPlugin(),
     new Dotenv({
-      safe: true,
-      systemvars: true,
-      path: "./.env"
+      safe: false,
+      silent: false,
+      path: path.resolve(__dirname, "./.env")
     }),
     new webpack.LoaderOptionsPlugin({
       options: {
         context: __dirname,
-        postcss: [] // without it will throw exception "Error: No PostCSS Config found in:..."
+        postcss: []
       }
     }),
     new HappyPack({
