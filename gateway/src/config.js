@@ -1,8 +1,8 @@
 module.exports = {
-  port: process.env.PORT || 4000,
+  port: process.env.PORT,
   db: {
     type: "mongo",
-    url: "mongodb://127.0.0.1/smart-grid-manager"
+    url: process.env.MONGODB_URI
   },
   baseUrl: "api/v1",
   mosca: {

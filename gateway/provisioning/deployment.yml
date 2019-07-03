@@ -17,11 +17,15 @@ spec:
       containers:
       - name: gateway
         image: loginkr/u-hub_gateway:latest
+        imagePullPolicy: Always
+        ports:
+        - name: http
+          containerPort: 3000
         envFrom:
         - configMapRef:
             name: amqp
         - configMapRef:
             name: mongo
         env:
-        - name: PORT
-          value: 3000
+        - name : PORT
+          value: '3000'
