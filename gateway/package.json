@@ -2,7 +2,7 @@
   "name": "smart-grid-manager",
   "version": "0.0.1",
   "scripts": {
-    "start": "node -r esm ./src/index.js",
+    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm; else node -r esm src/index; fi",
     "nodemon": "nodemon -r esm ./app.js",
     "test": "mocha --compilers js:babel-register --recursive ./test/"
   },

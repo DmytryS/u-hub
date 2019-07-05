@@ -1,0 +1,21 @@
+apiVersion: settings.k8s.io/v1alpha1
+kind: PodPreset
+metadata:
+  name: gateway
+spec:
+  selector:
+    matchLabels:
+      app: gateway
+  env:
+  - name: NODE_ENV
+    value: development
+  - name: CHOKIDAR_USEPOLLING
+    value: 'true'
+  volumeMounts:
+  - name: app
+    mountPath: /usr/src/app
+    subPath: gateway
+  volumes:
+  - name: app
+    persistentVolumeClaim:
+      claimName: app
