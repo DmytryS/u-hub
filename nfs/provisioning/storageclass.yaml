@@ -1,0 +1,22 @@
+# use default for default class, not prefered since we have different namespaces and shouldn't use default,
+# both for namespaces and storage classes
+
+# setting some storage class by class name as a default one (don't do this), we moved to using named class names
+# kubectl patch storageclass {{classname}} -p '{"metadata": {"annotations":{"storageclass.kubernetes.io/is-default-class":"true"}}}'
+
+kind: StorageClass
+apiVersion: storage.k8s.io/v1
+metadata:
+  name: standard
+provisioner: kubernetes.io/aws-ebs
+parameters:
+  type: gp2
+reclaimPolicy: Retain
+mountOptions:
+  - debug
+volumeBindingMode: Immediate
+
+# parameters:
+#   type: io1
+#   iopsPerGB: "10"
+#   fsType: ext4

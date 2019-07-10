@@ -12,10 +12,10 @@ spec:
   - name: CHOKIDAR_USEPOLLING
     value: 'true'
   volumeMounts:
-  - name: app
+  - name: u-hub
     mountPath: /usr/src/app
     subPath: gateway
   volumes:
-  - name: app
+  - name: u-hub
     persistentVolumeClaim:
-      claimName: app
+      claimName: u-hub
