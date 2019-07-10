@@ -5,13 +5,15 @@ https://stackoverflow.com/questions/52430091/can-i-use-an-insecure-endpoint-for-
 To enable NFS:
 
 Enable PodPreset on mac os
-screen ~/Library/Containers/com.docker.docker/Data/vms/0/tty
-vi /etc/kubernetes/manifests/kube-apiserver.yaml
+
+`screen ~/Library/Containers/com.docker.docker/Data/vms/0/tty`
+
+`vi /etc/kubernetes/manifests/kube-apiserver.yaml`
 
 add lines:
-
+```
 - --runtime-config=settings.k8s.io/v1alpha1=true
 - --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,PodPreset
-
+```
 
 edit path to project in `nfs/provisioning/pvc.yml`
