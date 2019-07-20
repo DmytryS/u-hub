@@ -3,30 +3,30 @@ import "dotenv/config";
 
 // const { uuid, Bridge, Accessory, Service, Characteristic } = HAP;
 
-const fs = require("fs");
+// const fs = require("fs");
 const path = require("path");
 // const crypto = require("crypto");
 // const Mqtt = require("mqtt");
 const qrcode = require("qrcode-terminal");
 const nextport = require("nextport");
-const oe = require("obj-ease");
+// const oe = require("obj-ease");
 
-const log = require("yalm");
+
 const HAP = require("hap-nodejs");
 const pkgHap = require("hap-nodejs/package.json");
 const pkg = require("../package.json");
 // const config = require("./config.js");
 
-const config = {
-  username: "CC:22:3D:E3:CE:F6",
-  c: "031-45-154",
-  port: 51826,
-  mapfile: path.join(__dirname, "/tmp.json") // path.join(__dirname, "/example-homekit2mqtt.json")
-};
+import { logger } from './lib'
 
-log.setLevel(process.env.NODE_ENV !== "production" ? "info" : "debug");
-
-log(pkg.name + " " + pkg.version + " starting");
+// const config = {
+//   username: "CC:22:3D:E3:CE:F6",
+//   c: "031-45-154",
+//   port: 51826,
+//   // mapfile: path.join(__dirname, "/tmp.json") // path.join(__dirname, "/example-homekit2mqtt.json")
+// };
+logger.info({ message: 'TEST: 1' })
+logger.info(pkg.name + " " + pkg.version + " starting");
 process.title = pkg.name;
 
 // const mqttStatusRaw = {}; // Holds the payloads of the last-received message, keys are the topics.
@@ -45,7 +45,7 @@ process.title = pkg.name;
 let bridgeListening;
 // const topics = [];
 
-// log.info("mqtt trying to connect", config.url);
+// logger.info("mqtt trying to connect", config.url);
 // const mqtt = Mqtt.connect(config.url, {
 //   will: { topic: config.name + "/connected", payload: "0", retain: true },
 //   rejectUnauthorized: !config.insecure
@@ -53,7 +53,7 @@ let bridgeListening;
 
 // mqtt.on("connect", () => {
 //   mqttConnected = true;
-//   log.info("mqtt connected " + config.url);
+//   logger.info("mqtt connected " + config.url);
 //   /* istanbul ignore next */
 //   if (!bridgeListening) {
 //     mqttPub(config.name + "/connected", "1", { retain: true });
@@ -62,25 +62,25 @@ let bridgeListening;
 
 // /* istanbul ignore next */
 // mqtt.on("reconnect", () => {
-//   log.info("mqtt reconnect");
+//   logger.info("mqtt reconnect");
 // });
 
 // /* istanbul ignore next */
 // mqtt.on("offline", () => {
-//   log.info("mqtt offline");
+//   logger.info("mqtt offline");
 // });
 
 // /* istanbul ignore next */
 // mqtt.on("close", () => {
 //   if (mqttConnected) {
 //     mqttConnected = false;
-//     log.info("mqtt closed " + config.url);
+//     logger.info("mqtt closed " + config.url);
 //   }
 // });
 
 // /* istanbul ignore next */
 // mqtt.on("error", err => {
-//   log.error("mqtt error " + err);
+//   logger.error("mqtt error " + err);
 // });
 
 function typeGuess(payload) {
@@ -105,7 +105,7 @@ function typeGuess(payload) {
 //   topic = String(topic);
 //   /* istanbul ignore next */
 //   if (topic === "") {
-//     log.error("trying to subscribe empty topic");
+//     logger.error("trying to subscribe empty topic");
 //     return;
 //   }
 //   /* istanbul ignore if */
@@ -124,11 +124,11 @@ function typeGuess(payload) {
 //       mqttCallbacks[topic].push({ attr, callback });
 //     } else {
 //       mqttCallbacks[topic] = [{ attr, callback }];
-//       log.debug("mqtt subscribe", topic);
+//       logger.debug("mqtt subscribe", topic);
 //       mqtt.subscribe(topic);
 //     }
 //   } else {
-//     log.debug("mqtt subscribe", topic);
+//     logger.debug("mqtt subscribe", topic);
 //     mqtt.subscribe(topic);
 //   }
 // }
@@ -137,7 +137,7 @@ function typeGuess(payload) {
 // function mqttPub(topic, payload, options) {
 //   /* istanbul ignore if */
 //   if (!topic || typeof topic !== "string") {
-//     log.error("mqttPub invalid topic", topic);
+//     logger.error("mqttPub invalid topic", topic);
 //   } else {
 //     /* istanbul ignore if */
 //     if (typeof payload === "object") {
@@ -148,7 +148,7 @@ function typeGuess(payload) {
 //     } else if (typeof payload !== "string") {
 //       payload = String(payload);
 //     }
-//     log.debug("> mqtt", topic, payload);
+//     logger.debug("> mqtt", topic, payload);
 
 //     /* istanbul ignore if */
 //     if (config.retain) {
@@ -160,19 +160,19 @@ function typeGuess(payload) {
 //     mqtt.publish(topic, payload, options, err => {
 //       /* istanbul ignore next */
 //       if (err) {
-//         log.error("mqtt publish error " + err);
+//         logger.error("mqtt publish error " + err);
 //       }
 //     });
 //   }
 // }
 
-log.info("using hap-nodejs version", pkgHap.version);
+logger.info("using hap-nodejs version", pkgHap.version);
 
 const { uuid, Bridge, Accessory, Service, Characteristic } = HAP;
 
 /* istanbul ignore next */
 // if (config.storagedir) {
-//   log.info("using directory " + config.storagedir + " for persistent storage");
+//   logger.info("using directory " + config.storagedir + " for persistent storage");
 // }
 
 // If storagedir is not set it uses HAP-Nodejs default
@@ -186,20 +186,21 @@ const bridge = new Bridge(bridgename, uuid.generate(bridgename));
 // Listen for Bridge identification event
 /* istanbul ignore next */
 bridge.on("identify", (paired, callback) => {
-  log("< hap bridge identify", paired ? "(paired)" : "(unpaired)");
+  logger.info("< hap bridge identify", paired ? "(paired)" : "(unpaired)");
   callback();
 });
+
 
 // Handler for Accessory identification events
 /* istanbul ignore next */
 // function identify(settings, paired, callback) {
-//   log.debug(
+//   logger.debug(
 //     "< hap identify",
 //     settings.name,
 //     paired ? "(paired)" : "(unpaired)"
 //   );
 //   if (settings.topicIdentify) {
-//     log.debug("> mqtt", settings.topicIdentify, settings.payloadIdentify);
+//     logger.debug("> mqtt", settings.topicIdentify, settings.payloadIdentify);
 //     mqttPub(settings.topicIdentify, settings.payloadIdentify);
 //   }
 //   callback();
@@ -219,7 +220,7 @@ bridge.on("identify", (paired, callback) => {
 // }
 
 function newAccessory(settings) {
-  log.debug(
+  logger.debug(
     "creating new accessory",
     '"' + settings.name + '"',
     '"' + settings.id + '"',
@@ -257,7 +258,7 @@ const addService = {};
 
 function loadService(service) {
   const file = "services/" + service + ".js";
-  log.debug("loading", file);
+  logger.debug("loading", file);
   addService[service] = require(path.join(__dirname, file))({
     mqttPub,
     mqttSub,
@@ -314,7 +315,7 @@ function convertMapping() {
     }
   });
   if (isConverted) {
-    log.info("mapping file converted");
+    logger.info("mapping file converted");
     saveMapping();
   }
 }
@@ -330,7 +331,7 @@ function createBridge() {
   //       } catch (err) {}
   //     }
   //     const state = typeGuess(payload);
-  //     log.debug("< mqtt", topic, state, payload);
+  //     logger.debug("< mqtt", topic, state, payload);
 
   //     mqttStatusRaw[topic] = json || state;
   //     mqttStatus[topic] =
@@ -358,88 +359,89 @@ function createBridge() {
   //   });
 
   // Load and create all accessories
-  log.info("loading HomeKit to MQTT mapping file " + config.mapfile);
-  mapping = JSON.parse(fs.readFileSync(config.mapfile));
-  convertMapping();
-  accCount = 0;
-  let accCountBridged = 0;
-  Object.keys(mapping).forEach(id => {
-    const accConfig = mapping[id];
-    accConfig.id = id;
-    const acc = newAccessory(accConfig);
+  // logger.info("loading HomeKit to MQTT mapping file " + config.mapfile);
+  // mapping = JSON.parse(fs.readFileSync(config.mapfile));
+  // convertMapping();
+  // accCount = 0;
+  // let accCountBridged = 0;
+  // Object.keys(mapping).forEach(id => {
+  //   const accConfig = mapping[id];
+  //   accConfig.id = id;
+  //   const acc = newAccessory(accConfig);
 
-    let cam = false;
-    const camName = accConfig.name;
-    accConfig.services.forEach((s, i) => {
-      if (s.service === "CameraRTSPStreamManagement") {
-        cam = true;
-      }
-      if (!addService[s.service]) {
-        loadService(s.service);
-      }
-      if (!s.json) {
-        s.json = {};
-      }
-      log.debug("adding service", s.service, "to accessory", accConfig.name);
-      addService[s.service](acc, s, String(i));
-    });
+  //   let cam = false;
+  //   const camName = accConfig.name;
+  //   accConfig.services.forEach((s, i) => {
+  //     if (s.service === "CameraRTSPStreamManagement") {
+  //       cam = true;
+  //     }
+  //     if (!addService[s.service]) {
+  //       loadService(s.service);
+  //     }
+  //     if (!s.json) {
+  //       s.json = {};
+  //     }
+  //     logger.debug("adding service", s.service, "to accessory", accConfig.name);
+  //     addService[s.service](acc, s, String(i));
+  //   });
 
-    if (cam) {
-      nextport(config.port, port => {
-        const username = mac(acc.UUID);
-        log.debug("hap publishing camera accessory " + accConfig.name);
-        acc.publish({
-          username,
-          port,
-          pincode: config.c,
-          category: Accessory.Categories.CAMERA
-        });
+  //   if (cam) {
+  //     nextport(config.port, port => {
+  //       const username = mac(acc.UUID);
+  //       logger.debug("hap publishing camera accessory " + accConfig.name);
+  //       acc.publish({
+  //         username,
+  //         port,
+  //         pincode: config.c,
+  //         category: Accessory.Categories.CAMERA
+  //       });
 
-        log.debug(
-          'hap publishing camera accessory "' +
-            camName +
-            '" username=' +
-            username,
-          "port=" + port,
-          "pincode=" + config.c,
-          "setupURI=" + acc.setupURI()
-        );
-        acc._server.on("listening", () => {
-          bridgeListening = true;
-          mqttPub(config.name + "/connected", "2", { retain: true });
-          log("hap camera", camName, "listening on port", port);
+  //       logger.debug(
+  //         'hap publishing camera accessory "' +
+  //         camName +
+  //         '" username=' +
+  //         username,
+  //         "port=" + port,
+  //         "pincode=" + config.c,
+  //         "setupURI=" + acc.setupURI()
+  //       );
+  //       acc._server.on("listening", () => {
+  //         bridgeListening = true;
+  //         mqttPub(config.name + "/connected", "2", { retain: true });
+  //         logger.info("hap camera", camName, "listening on port", port);
 
-          console.log(
-            "  \nScan this code with your HomeKit app on your iOS device to pair with",
-            camName
-          );
-          qrcode.generate(acc.setupURI());
-          console.log("  ");
-        });
+  //         logger.info(
+  //           "  \nScan this code with your HomeKit app on your iOS device to pair with",
+  //           camName
+  //         );
+  //         qrcode.generate(acc.setupURI());
+  //         // console.logger("  ");
 
-        /* istanbul ignore next */
-        acc._server.on("pair", username => {
-          log("hap camera", camName, "paired", username);
-        });
+  //       });
 
-        /* istanbul ignore next */
-        acc._server.on("unpair", username => {
-          log("hap camera", camName, "unpaired", username);
-        });
+  //       /* istanbul ignore next */
+  //       acc._server.on("pair", username => {
+  //         logger.info("hap camera", camName, "paired", username);
+  //       });
 
-        /* istanbul ignore next */
-        acc._server.on("verify", () => {
-          log("hap camera", camName, "verify");
-        });
-      });
-      accCount++;
-    } else {
-      log.debug("addBridgedAccessory " + accConfig.name);
-      bridge.addBridgedAccessory(acc);
-      accCountBridged++;
-    }
-  });
-  log.info(
+  //       /* istanbul ignore next */
+  //       acc._server.on("unpair", username => {
+  //         logger.info("hap camera", camName, "unpaired", username);
+  //       });
+
+  //       /* istanbul ignore next */
+  //       acc._server.on("verify", () => {
+  //         logger.info("hap camera", camName, "verify");
+  //       });
+  //     });
+  //     accCount++;
+  //   } else {
+  //     log('debug', "addBridgedAccessory " + accConfig.name);
+  //     bridge.addBridgedAccessory(acc);
+  //     accCountBridged++;
+  //   }
+  // });
+  logger.info(
     "hap created",
     accCount,
     "Camera Accessories and",
@@ -448,59 +450,54 @@ function createBridge() {
   );
 
   bridge.publish({
-    username: config.username,
-    port: config.port,
-    pincode: config.c,
+    username: process.env.USERNAME,
+    port: process.env.PORT,
+    pincode: process.env.CODE,
     category: Accessory.Categories.OTHER
   });
-  log.debug(
+  logger.debug(
     'hap publishing bridge "' +
-      config.bridgename +
-      '" username=' +
-      config.username,
-    "port=" + config.port,
-    "pincode=" + config.c,
+    process.env.BRIDGENAME +
+    '" username=' +
+    process.env.USERNAME,
+    "port=" + process.env.PORT,
+    "pincode=" + process.env.CODE,
     "setupURI=" + bridge.setupURI()
   );
 
   bridge._server.on("listening", () => {
     bridgeListening = true;
     // mqttPub(config.name + "/connected", "2", { retain: true });
-    log("hap Bridge listening on port", config.port);
+    logger.info("hap Bridge listening on port", process.env.PORT);
 
-    console.log(
+    logger.info(
       "\nScan this code with your HomeKit app on your iOS device to pair with the bridge"
     );
     qrcode.generate(bridge.setupURI());
-    console.log(
+    logger.info(
       "Or enter this code with your HomeKit app on your iOS device to pair with homekit2mqtt:"
     );
-    console.log("                       ");
-    console.log("    ┌────────────┐     ");
-    console.log("    │ " + config.c + " │     ");
-    console.log("    └────────────┘     ");
-    console.log("                       ");
-    console.log("");
+    logger.info('code', 1, process.env.CODE)
   });
 
   bridge._server.on("pair", username => {
-    log("hap bridge paired", username);
+    logger.info("hap bridge paired", username);
   });
 
   /* istanbul ignore next */
   bridge._server.on("unpair", username => {
-    log("hap bridge unpaired", username);
+    logger.info("hap bridge unpaired", username);
   });
 
   /* istanbul ignore next */
   bridge._server.on("verify", () => {
-    log("hap bridge verify");
+    logger.info("hap bridge verify");
   });
 }
 
-function saveMapping() {
-  fs.writeFileSync(config.mapfile, JSON.stringify(mapping, null, "  "));
-  log.info("saved config to", config.mapfile);
-}
+// function saveMapping() {
+//   fs.writeFileSync(config.mapfile, JSON.stringify(mapping, null, "  "));
+//   logger.info("saved config to", config.mapfile);
+// }
 
 createBridge();

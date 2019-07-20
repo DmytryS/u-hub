@@ -1,0 +1,21 @@
+apiVersion: settings.k8s.io/v1alpha1
+kind: PodPreset
+metadata:
+  name: homekit-server
+spec:
+  selector:
+    matchLabels:
+      app: homekit-server
+  env:
+  - name: NODE_ENV
+    value: development
+  - name: CHOKIDAR_USEPOLLING
+    value: 'true'
+  volumeMounts:
+  - name: u-hub
+    mountPath: /usr/src/app
+    subPath: homekit-server
+  volumes:
+  - name: u-hub
+    persistentVolumeClaim:
+      claimName: u-hub

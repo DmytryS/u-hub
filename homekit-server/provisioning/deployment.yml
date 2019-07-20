@@ -1,27 +1,32 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: client
+  name: homekit-server
   labels:
-    app: client
+    app: homekit-server
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: client
+      app: homekit-server
   template:
     metadata:
       labels:
-        app: client
+        app: homekit-server
     spec:
       containers:
-      - name: client
-        image: loginkr/u-hub_client:latest
+      - name: homekit-server
+        image: loginkr/u-hub_homekit-server:latest
         envFrom:
         - configMapRef:
             name: amqp
         - configMapRef:
             name: mongo
-        env:
-        - name: PORT
-          value: 3000
+        - configMapRef:
+            name: homekit-server
+        ports:
+        - name: hap
+          containerPort: 51826
+        # env:
+        # - name: PORT
+        #   value: 3000

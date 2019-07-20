@@ -21,7 +21,8 @@
     "mosca": "^2.8.3",
     "mqtt": "^2.16.0",
     "node-schedule": "^1.3.0",
-    "node-validator": "^0.1.27"
+    "node-validator": "^0.1.27",
+    "winston": "^3.2.1"
   },
   "devDependencies": {
     "nodemon": "^1.19.1"
