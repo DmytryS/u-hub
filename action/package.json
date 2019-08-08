@@ -1,0 +1,29 @@
+{
+  "name": "action",
+  "version": "1.0.0",
+  "description": "Action microservice",
+  "main": "src/index.js",
+  "dependencies": {
+    "amqplib": "^0.5.5",
+    "esm": "^3.2.25",
+    "nodemon": "^1.19.1"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm src/index.js; else node -r esm src/index.js; fi",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DmytryS/u-hub.git"
+  },
+  "keywords": [
+    "amqp"
+  ],
+  "author": "Dmytro Shvaika",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DmytryS/u-hub/issues"
+  },
+  "homepage": "https://github.com/DmytryS/u-hub#readme"
+}

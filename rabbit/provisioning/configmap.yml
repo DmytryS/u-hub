@@ -6,3 +6,5 @@ data:
   RABBIT_MQ_URI: amqp://rabbit-0.rabbit
   RABBIT_RECONNECT_INTERVAL: "10000"
   AMQP_DEVICE_QUEUE: device
+  AMQP_ACTION_QUEUE: action
+  GATEWAY_QUEUE: gateway

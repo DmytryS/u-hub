@@ -1,30 +1,25 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gateway
+  name: action
   labels:
-    app: gateway
+    app: action
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: gateway
+      app: action
   template:
     metadata:
       labels:
-        app: gateway
+        app: action
     spec:
       containers:
-      - name: gateway
-        image: loginkr/u-hub_gateway:latest
+      - name: action
+        image: loginkr/u-hub_action:latest
         imagePullPolicy: Always
-        ports:
-        - name: http
-          containerPort: 80
         envFrom:
         - configMapRef:
             name: amqp
         - configMapRef:
             name: mongo
-        - configMapRef:
-            name: gateway

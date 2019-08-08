@@ -1,0 +1,27 @@
+{
+  "name": "action-checker-cronjob",
+  "version": "1.0.0",
+  "description": "Cronjob for checking actions",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm src/index.js; else node -r esm src/index.js; fi",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DmytryS/u-hub.git"
+  },
+  "keywords": [
+    "cron"
+  ],
+  "author": "Dmytro Shvaika",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DmytryS/u-hub/issues"
+  },
+  "homepage": "https://github.com/DmytryS/u-hub#readme",
+  "dependencies": {
+    "esm": "^3.2.25",
+    "nodemon": "^1.19.1"
+  }
+}

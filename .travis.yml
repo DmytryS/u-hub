@@ -12,6 +12,12 @@ before_script:
   - export CLIENT_IMAGE_TAG=$DOCKER_REPO_CLIENT:$REVISION
   - export GATEWAY_IMAGE_TAG=$DOCKER_REPO_GATEWAY:$REVISION
   - export HOMEKIT_IMAGE_TAG=$DOCKER_REPO_HOMEKIT_SERVER:$REVISION
+
+  - export ACTION_IMAGE_TAG=$DOCKER_REPO_ACTION:$REVISION
+  - export ACTION_CHECKER_JOB_IMAGE_TAG=$DOCKER_REPO_ACTION_CHECKER_JOB:$REVISION
+  - export AUTOMATIC_ACTION_IMAGE_TAG=$DOCKER_REPO_AUTOMATIC_ACTION:$REVISION
+  - export DEVICE_IMAGE_TAG=$DOCKER_REPO_DEVICE_IMAGE:$REVISION
+  - export SCHEDULED_ACTION_IMAGE_TAG=$DOCKER_REPO_SCHEDULED_ACTION:$REVISION
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 script:
   - docker build -t $CLIENT_IMAGE_TAG ./client
@@ -25,3 +31,23 @@ script:
   - docker build -t $HOMEKIT_IMAGE_TAG ./homekit-server
   - docker run $HOMEKIT_IMAGE_TAG run lint
   - docker push $HOMEKIT_IMAGE_TAG
+
+  - docker build -t $ACTION_IMAGE_TAG ./action
+  - docker run $ACTION_IMAGE_TAG run lint
+  - docker push $ACTION_IMAGE_TAG
+
+  - docker build -t $ACTION_CHECKER_JOB_IMAGE_TAG ./action-checker-cronjob
+  - docker run $ACTION_CHECKER_JOB_IMAGE_TAG run lint
+  - docker push $ACTION_CHECKER_JOB_IMAGE_TAG
+
+  - docker build -t $AUTOMATIC_ACTION_IMAGE_TAG ./automatic-action
+  - docker run $AUTOMATIC_ACTION_IMAGE_TAG run lint
+  - docker push $AUTOMATIC_ACTION_IMAGE_TAG
+
+  - docker build -t $DEVICE_IMAGE_TAG ./device
+  - docker run $DEVICE_IMAGE_TAG run lint
+  - docker push $DEVICE_IMAGE_TAG
+
+  - docker build -t $SCHEDULED_ACTION_IMAGE_TAG ./scheduled-action
+  - docker run $SCHEDULED_ACTION_IMAGE_TAG run lint
+  - docker push $SCHEDULED_ACTION_IMAGE_TAG
