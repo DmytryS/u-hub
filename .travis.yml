@@ -34,6 +34,7 @@ script:
 
   - docker build -t $ACTION_IMAGE_TAG ./action
   - docker run $ACTION_IMAGE_TAG run lint
+  - docker run $ACTION_IMAGE_TAG run test
   - docker push $ACTION_IMAGE_TAG
 
   - docker build -t $ACTION_CHECKER_JOB_IMAGE_TAG ./action-checker-cronjob

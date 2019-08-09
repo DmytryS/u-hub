@@ -5,8 +5,8 @@ const { Schema } = mongoose;
 const sensorSchema = new Schema({
   type: {
     type: String,
-    required: true
-  }
+    required: true,
+  },
 });
 
 const deviceSchema = new Schema({

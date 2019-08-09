@@ -1,32 +1,54 @@
-import amqp from "amqplib"
-import winston from "winston"
+import amqp from 'amqplib';
+import winston from 'winston';
 
-amqplib.connect('amqp://localhost')
+import create from './create';
+import { readAll, readOne } from './read';
+import remove from './remove';
+import update from './update';
 
-import create from './create'
-
-const logger = winston.createLogger()
+const logger = winston.createLogger({
+  level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
+  format: winston.format.combine(
+    winston.format.colorize(),
+    winston.format.timestamp({
+      format: 'YYYY-MM-DD HH:mm:ss',
+    }),
+    winston.format.printf(info => `${info.timestamp} [${info.level}]: ${info.message}`),
+  ),
+  transports: [new winston.transports.Console()],
+});
 
 const listener = (message) => {
-    logger.info("MESSAGE:", message)
+  logger.info('MESSAGE:', message);
 
-    try {
-        switch (message.info.action) {
-            case 'CREATE':
-                return create(message)
-                break;
-            case 'UPDATE':
-                break;
-            case 'READ':
-                break;
-            case 'READ_ALL':
-                break;
-            case 'DELETE':
-                break;
-        }
-    } catch (err) {
-        logger.error('ERROR', err)
-    }
-}
+  switch (message.info.action) {
+    case 'CREATE':
+      return create(message);
+    case 'UPDATE':
+      return update(message);
+    case 'READ':
+      return readOne(message);
+    case 'READ_ALL':
+      return readAll(message);
+    case 'DELETE':
+      return remove(message);
+    default:
+      throw new Error('Unknown action');
+  }
+};
 
-amqp.on(process.env.AMQP_ACTION_QUEUE, listener)
+amqp.connect(process.env.AMQP_MQ_URI).then((conn) => {
+  process.once('SIGINT', () => { conn.close(); });
+  return conn.createChannel().then((ch) => {
+    const q = process.env.AMQP_ACTION_QUEUE;
+    let ok = ch.assertQueue(q, { durable: false });
+
+    ok = ok.then(() => {
+      ch.prefetch(1);
+      return ch.consume(q, listener);
+    });
+    return ok.then(() => {
+      logger.info('Awaiting RPC requests');
+    });
+  });
+}).catch(logger.warn);

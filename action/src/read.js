@@ -1,17 +1,13 @@
-import { Action } from './models'
+import Action from './models/action';
 
-import { isActionExists } from './helpers'
+import { isActionExists } from './helpers';
 
-export const read_one = async (message) => {
-    return isActionExists(message.data.id)
-}
+export const readOne = async message => isActionExists(message.data.id);
 
-export const read_all = async (message) => {
-    return Action.aggregate({
-        $match: {
-            emitter: message.data.emitter
-        }
-    })
-        .skip(message.metadata.skip || 0)
-        .limit(message.metadata.limit || 20);
-}
+export const readAll = async message => Action.aggregate({
+  $match: {
+    emitter: message.data.emitter,
+  },
+})
+  .skip(message.metadata.skip || 0)
+  .limit(message.metadata.limit || 20);

@@ -3,8 +3,11 @@ apiVersion: v1
 metadata:
   name: amqp
 data:
-  RABBIT_MQ_URI: amqp://rabbit-0.rabbit
-  RABBIT_RECONNECT_INTERVAL: "10000"
+  AMQP_MQ_URI: amqp://rabbit-0.rabbit
+  AMQP_RECONNECT_INTERVAL: "10000"
   AMQP_DEVICE_QUEUE: device
   AMQP_ACTION_QUEUE: action
-  GATEWAY_QUEUE: gateway
+  AMQP_GATEWAY_QUEUE: gateway
+  AMQP_ACTION_CHECKER_JOB_QUEUE: action_checker
+  AMQP_AUTOMATIC_ACTION: automatic_action
+  AMQP_SCHEDULED_ACTION: scheduled_action
