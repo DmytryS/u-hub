@@ -26,10 +26,12 @@ script:
 
   - docker build -t $GATEWAY_IMAGE_TAG ./gateway
   - docker run $GATEWAY_IMAGE_TAG run lint
+  - docker run $GATEWAY_IMAGE_TAG run test
   - docker push $GATEWAY_IMAGE_TAG
 
   - docker build -t $HOMEKIT_IMAGE_TAG ./homekit-server
   - docker run $HOMEKIT_IMAGE_TAG run lint
+  - docker run $HOMEKIT_IMAGE_TAG run test
   - docker push $HOMEKIT_IMAGE_TAG
 
   - docker build -t $ACTION_IMAGE_TAG ./action
@@ -39,16 +41,20 @@ script:
 
   - docker build -t $ACTION_CHECKER_JOB_IMAGE_TAG ./action-checker-cronjob
   - docker run $ACTION_CHECKER_JOB_IMAGE_TAG run lint
+  - docker run $ACTION_CHECKER_JOB_IMAGE_TAG run test
   - docker push $ACTION_CHECKER_JOB_IMAGE_TAG
 
   - docker build -t $AUTOMATIC_ACTION_IMAGE_TAG ./automatic-action
   - docker run $AUTOMATIC_ACTION_IMAGE_TAG run lint
+  - docker run $AUTOMATIC_ACTION_IMAGE_TAG run test
   - docker push $AUTOMATIC_ACTION_IMAGE_TAG
 
   - docker build -t $DEVICE_IMAGE_TAG ./device
   - docker run $DEVICE_IMAGE_TAG run lint
+  - docker run $DEVICE_IMAGE_TAG run test
   - docker push $DEVICE_IMAGE_TAG
 
   - docker build -t $SCHEDULED_ACTION_IMAGE_TAG ./scheduled-action
   - docker run $SCHEDULED_ACTION_IMAGE_TAG run lint
+  - docker run $SCHEDULED_ACTION_IMAGE_TAG run test
   - docker push $SCHEDULED_ACTION_IMAGE_TAG

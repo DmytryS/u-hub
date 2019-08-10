@@ -1,5 +1,5 @@
 import '../src'
 
-describe('Action service', () => {
-    it('should start succesfully', () => { })
+describe('Gateway service', () => {
+    it('Should start succesfully', () => { })
 })
