@@ -4,9 +4,12 @@
   "scripts": {
     "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm src/index.js; else node -r esm src/index.js; fi",
     "nodemon": "nodemon -r esm ./app.js",
-    "test": "mocha --compilers js:babel-register --recursive ./test/"
+    "test": "mocha --recursive ./tests --require esm",
+    "lint": "eslint src/**",
+    "lint:fix": "eslint src/** --fix"
   },
   "dependencies": {
+    "amqplib": "^0.5.5",
     "axios": "^0.19.0",
     "body-parser": "^1.18.2",
     "cookie-parser": "^1.4.3",
@@ -14,17 +17,22 @@
     "esm": "^3.2.25",
     "express": "^4.16.2",
     "intravenous": "^0.1.4-beta",
-    "lodash": "^4.17.11",
+    "lodash": "^4.17.15",
     "loglevel": "^1.6.3",
     "moment": "^2.21.0",
-    "mongoose": "^5.6.2",
+    "mongoose": "^5.6.9",
     "mosca": "^2.8.3",
     "mqtt": "^2.16.0",
     "node-schedule": "^1.3.0",
     "node-validator": "^0.1.27",
+    "nodemon": "^1.19.1",
+    "restify-errors": "^8.0.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {
-    "nodemon": "^1.19.1"
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.2",
+    "mocha": "^6.2.0"
   }
 }

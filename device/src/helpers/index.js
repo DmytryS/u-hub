@@ -1,1 +1,2 @@
-export { isDeviceExists as isDeviceExists } from './existance'
+// eslint-disable-next-line
+export { isDeviceExists } from './existance';

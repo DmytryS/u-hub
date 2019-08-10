@@ -5,7 +5,9 @@
   "main": "src/index.js",
   "scripts": {
     "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm; else node -r esm src/index; fi",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha --recursive ./tests --require esm",
+    "lint": "eslint src/**",
+    "lint:fix": "eslint src/** --fix"
   },
   "repository": {
     "type": "git",
@@ -23,14 +25,22 @@
   },
   "homepage": "https://github.com/DmytryS/u-hub#readme",
   "dependencies": {
+    "amqplib": "^0.5.5",
     "dotenv": "^8.0.0",
     "esm": "^3.2.25",
     "hap-nodejs": "^0.4.52",
+    "mongoose": "^5.6.9",
     "nextport": "^1.0.0",
     "nodemon": "^1.19.1",
     "obj-ease": "^1.0.1",
     "qrcode-terminal": "^0.12.0",
-    "winston": "^3.2.1",
-    "yalm": "^4.1.0"
+    "restify-errors": "^8.0.1",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "eslint-config-airbnb-base": "^13.2.0",
+    "eslint-plugin-import": "^2.18.2",
+    "mocha": "^6.2.0"
   }
 }

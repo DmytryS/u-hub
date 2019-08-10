@@ -37,7 +37,7 @@ const listener = (message) => {
   }
 };
 
-amqp.connect(process.env.AMQP_MQ_URI).then((conn) => {
+amqp.connect(process.env.AMQP_URI).then((conn) => {
   process.once('SIGINT', () => { conn.close(); });
   return conn.createChannel().then((ch) => {
     const q = process.env.AMQP_ACTION_QUEUE;
