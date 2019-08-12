@@ -1,12 +1,12 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
-const path = require("path");
-const webpack = require("webpack");
-const HappyPack = require("happypack");
-const precss = require("precss");
-const autoprefixer = require("autoprefixer");
-const Dotenv = require("dotenv-webpack");
-const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const path = require('path');
+const webpack = require('webpack');
+const HappyPack = require('happypack');
+const precss = require('precss');
+const autoprefixer = require('autoprefixer');
+const Dotenv = require('dotenv-webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 module.exports = {
   plugins: [
@@ -14,132 +14,132 @@ module.exports = {
     new Dotenv({
       safe: false,
       silent: false,
-      path: path.resolve(__dirname, "./.env")
+      path: path.resolve(__dirname, './.env'),
     }),
     new webpack.LoaderOptionsPlugin({
       options: {
         context: __dirname,
-        postcss: []
-      }
+        postcss: [],
+      },
     }),
     new HappyPack({
-      id: "jsHappy",
+      id: 'jsHappy',
       loaders: [
         {
-          loader: "babel-loader",
+          loader: 'babel-loader',
           options: {
-            cacheDirectory: true
-          }
-        }
-      ]
+            cacheDirectory: true,
+          },
+        },
+      ],
     }),
     new HappyPack({
-      id: "scssHappy",
+      id: 'scssHappy',
       loaders: [
         {
-          loader: "css-loader",
+          loader: 'css-loader',
           options: {
             modules: true,
             importLoaders: 1,
-            localIdentName: "[name]__[local]___[hash:base64:5]"
-          }
+            localIdentName: '[name]__[local]___[hash:base64:5]',
+          },
         },
         {
-          loader: "postcss-loader",
+          loader: 'postcss-loader',
           options: {
-            parser: "postcss-scss",
+            parser: 'postcss-scss',
             plugins() {
               return [precss, autoprefixer];
-            }
-          }
+            },
+          },
         },
-        "sass-loader"
-      ]
+        'sass-loader',
+      ],
     }),
     new HappyPack({
-      id: "cssHappy",
+      id: 'cssHappy',
       loaders: [
         {
-          loader: "css-loader"
+          loader: 'css-loader',
           // options: {
           //   importLoaders: 1,
           //   localIdentName: "[name]__[local]___[hash:base64:5]"
           // }
         },
         {
-          loader: "postcss-loader",
+          loader: 'postcss-loader',
           options: {
-            parser: "postcss-scss",
+            parser: 'postcss-scss',
             plugins() {
               return [precss, autoprefixer];
-            }
-          }
+            },
+          },
         },
-        "sass-loader"
-      ]
-    })
+        'sass-loader',
+      ],
+    }),
   ],
   resolve: {
-    modules: [path.resolve(__dirname, "src"), "node_modules"],
-    extensions: [".js", ".jsx", ".mjs", ".flow"],
+    modules: [path.resolve(__dirname, 'src'), 'node_modules'],
+    extensions: ['.js', '.jsx', '.mjs', '.flow'],
     alias: {
       // "../../theme.config$": path.join(__dirname, "/stylesheets/theme.config"),
       // "../stylesheets/site": path.join(__dirname, "/stylesheets/site"),
-      "../stylesheets": path.join(__dirname, "/stylesheets"),
-      "../fonts": path.join(__dirname, "/fonts")
-    }
+      '../stylesheets': path.join(__dirname, '/stylesheets'),
+      '../fonts': path.join(__dirname, '/fonts'),
+    },
   },
   module: {
     rules: [
       {
         test: /\.(jpe?g|png|gif|svg)$/,
-        loader: "url-loader",
-        query: "name=images/[name].[ext]&limit=4000"
+        loader: 'url-loader',
+        query: 'name=images/[name].[ext]&limit=4000',
       },
       {
         test: /\.(ttf|eot|woff|woff2)$/,
-        loader: "file-loader",
-        query: "name=fonts/[name].[ext]"
+        loader: 'file-loader',
+        query: 'name=fonts/[name].[ext]',
       },
       {
         test: /\.html$/,
-        loader: "html-loader",
-        query: "name=templates/[name].[ext]"
+        loader: 'html-loader',
+        query: 'name=templates/[name].[ext]',
       },
       {
         test: /\.hbs$/,
-        loader: "handlebars-loader"
+        loader: 'handlebars-loader',
       },
       {
         test: /\.(js|jsx|flow)$/,
-        loader: "happypack/loader?id=jsHappy",
-        include: path.join(__dirname, "src")
+        loader: 'happypack/loader?id=jsHappy',
+        include: path.join(__dirname, 'src'),
       },
       {
         test: /\.(mjs|flow)$/,
-        loader: "happypack/loader?id=jsHappy",
-        include: path.join(__dirname, "node_modules"),
-        type: "javascript/auto"
+        loader: 'happypack/loader?id=jsHappy',
+        include: path.join(__dirname, 'node_modules'),
+        type: 'javascript/auto',
       },
       {
         test: /\.scss$/,
-        loaders: ["style-loader", "happypack/loader?id=scssHappy"]
+        loaders: ['style-loader', 'happypack/loader?id=scssHappy'],
       },
       {
         test: /\.css$/,
-        loaders: ["style-loader", "happypack/loader?id=cssHappy"]
+        loaders: ['style-loader', 'happypack/loader?id=cssHappy'],
       },
       {
         test: /\.less$/,
         use: [
           {
-            loader: MiniCssExtractPlugin.loader
+            loader: MiniCssExtractPlugin.loader,
           },
-          "css-loader",
-          "less-loader"
-        ]
-      }
-    ]
+          'css-loader',
+          'less-loader',
+        ],
+      },
+    ],
   },
   optimization: {
     splitChunks: {
@@ -147,10 +147,10 @@ module.exports = {
         vendors: {
           test: /[\\/]node_modules[\\/]/,
           enforce: true,
-          name: "vendors"
-        }
+          name: 'vendors',
+        },
       },
-      chunks: "all"
-    }
-  }
+      chunks: 'all',
+    },
+  },
 };

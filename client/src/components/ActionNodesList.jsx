@@ -1,10 +1,18 @@
-
-
+import axios from 'axios';
 import React from 'react';
 import {
-  Table, Button, FormGroup, Glyphicon, FormControl, Checkbox, Grid, Row, Col, ControlLabel,
+  // Table,
+  Button,
+  FormGroup,
+  Glyphicon,
+  FormControl,
+  // Checkbox,
+  Grid,
+  Row,
+  Col,
+  ControlLabel,
 } from 'react-bootstrap';
-import axios from 'axios';
+
 
 class ActionNodesList extends React.Component {
   constructor(props, context) {
@@ -12,7 +20,7 @@ class ActionNodesList extends React.Component {
 
     this.state = {
       actionNodes: [],
-      newActionNodeType: '',
+      // newActionNodeType: '',
       newActionNodeValueToChangeOn: '',
       newActionNodeTargetNodeId: '',
       newActionNodeTargetSensorId: '',
@@ -282,7 +290,7 @@ class ActionNodesList extends React.Component {
                         key={`${node._id}-${index}`}
                         value={node._id}
                       >
-                        { node.name }
+                        {node.name}
                       </option>
                     ))
                   }

@@ -1,20 +1,20 @@
-import React from "react";
-import { fetch } from "../lib";
-import Navbar from "./Header";
-import Node from "./Node";
+import React from 'react';
+import { fetch } from '../lib';
+import Navbar from './Header';
+import Node from './Node';
 
 class NodesList extends React.Component {
   constructor(...args) {
     super(...args);
 
     this.state = {
-      nodesList: []
+      nodesList: [],
     };
   }
 
   async getAllNodes() {
     this.setState({
-      nodesList: await fetch.get("/nodes").then(result => result.data)
+      nodesList: await fetch.get('/nodes').then(result => result.data),
     });
   }
 

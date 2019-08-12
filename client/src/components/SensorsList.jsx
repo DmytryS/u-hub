@@ -12,12 +12,19 @@ class SensorsList extends React.Component {
     };
   }
 
+  async componentWillMount() {
+    await this.getSensorsValues();
+    setInterval(() => {
+      this.getSensorsValues();
+    }, 10000);
+  }
+
   async getSensorsValues() {
     this.setState({
       sensors: await axios
         .get(
           `/nodes/${this.props.sensor.nodeId}/sensors/${
-            this.props.sensor._id
+          this.props.sensor.id
           }/values`,
         )
         .then(result => result.data.values.map(sensorValue => ({
@@ -29,13 +36,6 @@ class SensorsList extends React.Component {
           sensorType: sensorValue.type,
         }))),
     });
-  }
-
-  async componentWillMount() {
-    await this.getSensorsValues();
-    setInterval(async () => {
-      await this.getSensorsValues();
-    }, 10000);
   }
 
   render() {
