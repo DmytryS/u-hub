@@ -1,23 +1,8 @@
-import amqp from 'amqplib';
-import winston from 'winston';
-// import joi from "joi"
-
-import create from './create';
-import update from './update';
-import { readAll, readOne } from './read';
-import remove from './remove';
-
-const logger = winston.createLogger({
-  level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
-  format: winston.format.combine(
-    winston.format.colorize(),
-    winston.format.timestamp({
-      format: 'YYYY-MM-DD HH:mm:ss',
-    }),
-    winston.format.printf(info => `${info.timestamp} [${info.level}]: ${info.message}`),
-  ),
-  transports: [new winston.transports.Console()],
-});
+import { logger, amqp } from './lib/index.js'
+import create from './create.js'
+import update from './update.js'
+import { readAll, readOne } from './read.js'
+import remove from './remove.js'
 
 // {
 //     info: {
@@ -32,36 +17,22 @@ const logger = winston.createLogger({
 // }
 
 const listener = async (message) => {
-  logger.info('MESSAGE:', message);
+  logger.info('MESSAGE:', message)
 
   switch (message.info.action) {
     case 'CREATE':
-      return create(message);
+      return create(message)
     case 'UPDATE':
-      return update(message);
+      return update(message)
     case 'READ':
-      return readOne(message);
+      return readOne(message)
     case 'READ_ALL':
-      return readAll(message);
+      return readAll(message)
     case 'DELETE':
-      return remove(message);
+      return remove(message)
     default:
-      throw new Error('Unknown action');
+      throw new Error('Unknown action')
   }
-};
+}
 
-amqp.connect(process.env.AMQP_URI).then((conn) => {
-  process.once('SIGINT', () => { conn.close(); });
-  return conn.createChannel().then((ch) => {
-    const q = process.env.AMQP_DEVICE_QUEUE;
-    let ok = ch.assertQueue(q, { durable: false });
-
-    ok = ok.then(() => {
-      ch.prefetch(1);
-      return ch.consume(q, listener);
-    });
-    return ok.then(() => {
-      logger.info('Awaiting RPC requests');
-    });
-  });
-}).catch(logger.warn);
+amqp.listen(process.env.AMQP_DEVICE_QUEUE, listener)

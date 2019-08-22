@@ -4,4 +4,4 @@ export {
   isSensorExists,
   isAutomaticActionExists,
   isScheduledActionExists,
-} from './existance';
+} from './existance.js'

@@ -1,11 +1,11 @@
-import { NotFoundError } from 'restify-errors';
-import { Device } from '../models';
+import errors from 'restify-errors'
+import { Device } from '../models/index.js'
 
 // eslint-disable-next-line
 export const isDeviceExists = async (deviceId) => {
-  const device = await Device.findById(deviceId);
+  const device = await Device.findById(deviceId)
   if (!device) {
-    throw new NotFoundError(`Device with id ${deviceId} not found`);
+    throw new errors.NotFoundError(`Device with id ${deviceId} not found`)
   }
-  return device;
-};
+  return device
+}

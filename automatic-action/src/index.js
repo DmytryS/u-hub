@@ -1,13 +1,8 @@
-import winston from 'winston'
+import { amqp, logger } from './lib/index.js'
 
-const logger = winston.createLogger({
-    level: process.env.NODE_ENV === 'development' ? 'debug' : 'info',
-    format: winston.format.combine(
-        winston.format.colorize(),
-        winston.format.timestamp({
-            format: 'YYYY-MM-DD HH:mm:ss',
-        }),
-        winston.format.printf(info => `${info.timestamp} [${info.level}]: ${info.message}`),
-    ),
-    transports: [new winston.transports.Console()],
-});
+const listener = (message) => {
+  logger.info('MESSAGE:', message)
+
+}
+
+amqp.listen(process.env, listener)

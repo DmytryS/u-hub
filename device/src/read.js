@@ -1,8 +1,8 @@
-import { Device } from './models';
-import { isDeviceExists } from './helpers';
+import { Device } from './models/index.js'
+import { isDeviceExists } from './helpers/index.js'
 
-export const readOne = message => isDeviceExists(message.data.id);
+export const readOne = message => isDeviceExists(message.data.id)
 
 export const readAll = message => Device.aggregate()
   .skip(message.metadata.skip || 0)
-  .limit(message.metadata.limit || 20);
+  .limit(message.metadata.limit || 20)

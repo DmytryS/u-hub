@@ -1,14 +1,14 @@
-import express from 'express';
+import express from 'express'
 
-import { values } from '../services';
+import { values } from '../services'
 
-const router = express.Router();
+const router = express.Router()
 
 router.route('/devices/:deviceId/values')
-  .get(values.getLastDeviceValues);
+  .get(values.getLastDeviceValues)
 
 router.route('/devices/:deviceId/sensors/:sensorId/values')
   .post(values.setDeviceValue)
-  .get(values.getDetailedValues);
+  .get(values.getDetailedValues)
 
-export default router;
+export default router

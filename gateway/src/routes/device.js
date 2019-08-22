@@ -1,11 +1,11 @@
-import express from 'express';
+import express from 'express'
 
-import { device } from '../services';
+import { device } from '../services'
 
-const router = express.Router();
+const router = express.Router()
 
 router.route('/devices')
-  .get(device.getDevices);
+  .get(device.getDevices)
 
 
 // router.route('/devices/:deviceId/sensors/:sensorId/type/:type/change-control-type')
@@ -24,4 +24,4 @@ router.route('/devices')
 //   .get(this._nodeService.getActionNodes)
 //   .post(this._nodeService.createActionNode);
 
-export default router;
+export default router

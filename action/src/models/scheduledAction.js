@@ -1,6 +1,6 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const { Schema } = mongoose;
+const { Schema } = mongoose
 
 const shceduledActionSchema = new Schema({
   name: {
@@ -15,7 +15,7 @@ const shceduledActionSchema = new Schema({
     type: Boolean,
     required: true,
   },
-});
+})
 
-delete mongoose.connection.models.ScheduledAction;
-export default mongoose.model('ScheduledAction', shceduledActionSchema);
+delete mongoose.connection.models.ScheduledAction
+export default mongoose.model('ScheduledAction', shceduledActionSchema)

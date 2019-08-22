@@ -1,12 +1,12 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const { Schema } = mongoose;
-const { ObjectId } = Schema;
+const { Schema } = mongoose
+const { ObjectId } = Schema
 
 const emitterType = {
   values: ['AutomaticAction', 'ScheduledAction'],
   message: 'node type must be either of \'AutomaticAction\' or \'ScheduledAction\'',
-};
+}
 
 const actionSchema = new Schema({
   emitter: {
@@ -28,7 +28,7 @@ const actionSchema = new Schema({
     type: String,
     required: true,
   },
-});
+})
 
-delete mongoose.connection.models.Action;
-export default mongoose.model('Action', actionSchema);
+delete mongoose.connection.models.Action
+export default mongoose.model('Action', actionSchema)

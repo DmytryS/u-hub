@@ -1,7 +1,7 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const { Schema } = mongoose;
-const { ObjectId } = Schema;
+const { Schema } = mongoose
+const { ObjectId } = Schema
 
 const valueSchema = new Schema(
   {
@@ -23,7 +23,7 @@ const valueSchema = new Schema(
   {
     timestamps: { createdAt: 'created_at' },
   },
-);
+)
 
-delete mongoose.connection.models.Value;
-export default mongoose.model('Value', valueSchema);
+delete mongoose.connection.models.Value
+export default mongoose.model('Value', valueSchema)

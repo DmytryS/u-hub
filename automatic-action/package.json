@@ -2,27 +2,6 @@
   "name": "automatic-action",
   "version": "1.0.0",
   "description": "Automatic action microservice",
-  "main": "src/index.js",
-  "dependencies": {
-    "amqplib": "^0.5.5",
-    "esm": "^3.2.25",
-    "mongoose": "^5.6.9",
-    "nodemon": "^1.19.1",
-    "restify-errors": "^8.0.1",
-    "winston": "^3.2.1"
-  },
-  "devDependencies": {
-    "eslint": "^6.1.0",
-    "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-plugin-import": "^2.18.2",
-    "mocha": "^6.2.0"
-  },
-  "scripts": {
-    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm src/index.js; else node -r esm src/index.js; fi",
-    "test": "mocha ./tests --require esm",
-    "lint": "eslint src/**",
-    "lint:fix": "eslint src/** --fix"
-  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/DmytryS/u-hub.git"
@@ -35,5 +14,24 @@
   "bugs": {
     "url": "https://github.com/DmytryS/u-hub/issues"
   },
-  "homepage": "https://github.com/DmytryS/u-hub#readme"
+  "homepage": "https://github.com/DmytryS/u-hub#readme",
+  "main": "src/index.js",
+  "type": "module",
+  "scripts": {
+    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon --experimental-modules src/index.js; else node --experimental-modules src/index.js; fi",
+    "test": "mocha ./tests",
+    "lint": "eslint src/**",
+    "lint:fix": "eslint src/** --fix"
+  },
+  "dependencies": {
+    "amqplib": "^0.5.5",
+    "mongoose": "^5.6.9",
+    "restify-errors": "^8.0.1",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.1"
+  }
 }

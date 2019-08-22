@@ -1,8 +1,7 @@
-import Action from './models/action';
+import Action from './models/action.js'
+import { isActionExists } from './helpers/index.js'
 
-import { isActionExists } from './helpers';
-
-export const readOne = async message => isActionExists(message.data.id);
+export const readOne = async message => isActionExists(message.data.id)
 
 export const readAll = async message => Action.aggregate({
   $match: {
@@ -10,4 +9,4 @@ export const readAll = async message => Action.aggregate({
   },
 })
   .skip(message.metadata.skip || 0)
-  .limit(message.metadata.limit || 20);
+  .limit(message.metadata.limit || 20)

@@ -1,12 +1,12 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const { Schema } = mongoose;
-const { ObjectId } = Schema;
+const { Schema } = mongoose
+const { ObjectId } = Schema
 
 const conditionList = {
   values: ['<', '>', '>=', '<=', '!=', '=='],
-  message: "condition must be either of '<', '>', '>=', '<=', '!=', '=='",
-};
+  message: 'condition must be either of \'<\', \'>\', \'>=\', \'<=\', \'!=\', \'==\'',
+}
 
 const automaticActionSchema = new Schema({
   sensor: {
@@ -26,7 +26,7 @@ const automaticActionSchema = new Schema({
   enabled: {
     type: Boolean, required: true,
   },
-});
+})
 
-delete mongoose.connection.models.AutomaticAction;
-export default mongoose.model('AutomaticAction', automaticActionSchema);
+delete mongoose.connection.models.AutomaticAction
+export default mongoose.model('AutomaticAction', automaticActionSchema)

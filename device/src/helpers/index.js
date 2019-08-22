@@ -1,2 +1,2 @@
 // eslint-disable-next-line
-export { isDeviceExists } from './existance';
+export { isDeviceExists } from './existance.js';
