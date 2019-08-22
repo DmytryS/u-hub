@@ -1,22 +1,24 @@
 // import HAP from "hap-nodejs";
-import 'dotenv/config';
+import 'dotenv/config.js'
 
-import { logger } from './lib';
+import { logger } from './lib/index.js'
 
 // const { uuid, Bridge, Accessory, Service, Characteristic } = HAP;
 
 // const path = require('path');
 
-const qrcode = require('qrcode-terminal');
+import qrcode from 'qrcode-terminal'
 // const oe = require("obj-ease");
 
 
-const HAP = require('hap-nodejs');
-const pkgHap = require('hap-nodejs/package.json');
-const pkg = require('../package.json');
+import HAP from 'hap-nodejs'
+import pkgHap from 'hap-nodejs/package.json'
+// import pkg from '../package.json'
 
-logger.info(`${pkg.name} ${pkg.version} starting`);
-process.title = pkg.name;
+const { USERNAME, PORT, CODE, BRIDGENAME } = process.env
+
+logger.info('HAP is starting')
+// process.title = pkg.name
 
 
 // function typeGuess(payload) {
@@ -35,7 +37,7 @@ process.title = pkg.name;
 // }
 
 
-logger.info('using hap-nodejs version', pkgHap.version);
+logger.info('using hap-nodejs version', pkgHap.version)
 
 const {
   uuid,
@@ -43,18 +45,18 @@ const {
   Accessory,
   // Service,
   // Characteristic
-} = HAP;
+} = HAP
 
-HAP.init(undefined); // config.storagedir ||
+HAP.init(undefined) // config.storagedir ||
 
 // Create Bridge which will host all Accessories
-const bridgename = 'TEST_BRIDGE';
-const bridge = new Bridge(bridgename, uuid.generate(bridgename));
+const bridgename = 'TEST_BRIDGE'
+const bridge = new Bridge(bridgename, uuid.generate(bridgename))
 
 bridge.on('identify', (paired, callback) => {
-  logger.info('< hap bridge identify', paired ? '(paired)' : '(unpaired)');
-  callback();
-});
+  logger.info('< hap bridge identify', paired ? '(paired)' : '(unpaired)')
+  callback()
+})
 
 
 // function newAccessory(settings) {
@@ -158,6 +160,7 @@ bridge.on('identify', (paired, callback) => {
 //   }
 // }
 
+// eslint-disable-next-line
 function createBridge() {
   logger.info(
     'hap created',
@@ -165,54 +168,54 @@ function createBridge() {
     'Camera Accessories and',
     // accCountBridged,
     'Bridged Accessories.',
-  );
+  )
 
   bridge.publish({
-    username: process.env.USERNAME,
-    port: process.env.PORT,
-    pincode: process.env.CODE,
+    username: USERNAME,
+    port: PORT,
+    pincode: CODE,
     category: Accessory.Categories.OTHER,
-  });
+  })
   logger.debug(
     `hap publishing bridge "${
-    process.env.BRIDGENAME
+      BRIDGENAME
     }" username=${
-    process.env.USERNAME}`,
-    `port=${process.env.PORT}`,
-    `pincode=${process.env.CODE}`,
+      USERNAME}`,
+    `port=${PORT}`,
+    `pincode=${CODE}`,
     `setupURI=${bridge.setupURI()}`,
-  );
+  )
 
   // eslint-disable-next-line
   bridge._server.on('listening', () => {
     // const bridgeListening = true;
     // mqttPub(config.name + "/connected", "2", { retain: true });
-    logger.info('hap Bridge listening on port', process.env.PORT);
+    logger.info('hap Bridge listening on port', PORT)
 
     logger.info(
       '\nScan this code with your HomeKit app on your iOS device to pair with the bridge',
-    );
-    qrcode.generate(bridge.setupURI());
+    )
+    qrcode.generate(bridge.setupURI())
     logger.info(
       'Or enter this code with your HomeKit app on your iOS device to pair with homekit2mqtt:',
-    );
-    logger.info('code', 1, process.env.CODE);
-  });
+    )
+    logger.info('code', 1, CODE)
+  })
 
   // eslint-disable-next-line
   bridge._server.on('pair', (username) => {
-    logger.info('hap bridge paired', username);
-  });
+    logger.info('hap bridge paired', username)
+  })
 
   // eslint-disable-next-line
   bridge._server.on('unpair', (username) => {
-    logger.info('hap bridge unpaired', username);
-  });
+    logger.info('hap bridge unpaired', username)
+  })
 
   // eslint-disable-next-line
   bridge._server.on('verify', () => {
-    logger.info('hap bridge verify');
-  });
+    logger.info('hap bridge verify')
+  })
 }
 
 

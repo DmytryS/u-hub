@@ -2,24 +2,25 @@ import http from 'http'
 import express from 'express'
 import bodyParser from 'body-parser'
 import cors from 'cors'
-import { HttpError, NotFoundError } from 'restify-errors'
+import errors from 'restify-errors' // { HttpError, NotFoundError }
 
 import { logger } from './lib/index.js'
-import * as routes from './routes/index'
+import * as routes from './routes/index.js'
 
+const { BASE_URL, PORT } = process.env
 const app = express()
 
 app.use(cors())
 app.use(bodyParser.json())
 
-app.use(process.env.BASE_URL, routes.action)
-app.use(process.env.BASE_URL, routes.automaticAction)
-app.use(process.env.BASE_URL, routes.device)
-app.use(process.env.BASE_URL, routes.scheduledAction)
-app.use(process.env.BASE_URL, routes.value)
+app.use(BASE_URL, routes.action)
+app.use(BASE_URL, routes.automaticAction)
+app.use(BASE_URL, routes.device)
+app.use(BASE_URL, routes.scheduledAction)
+app.use(BASE_URL, routes.value)
 
 app.use((req, res, next) => {
-  next(new NotFoundError(`Could not find path ${req.originalUrl}. Not found`, 404))
+  next(new errors.NotFoundError(`Could not find path ${req.originalUrl}. Not found`, 404))
 })
 
 // eslint-disable-next-line
@@ -28,7 +29,7 @@ app.use(function (err, req, res, next) {
 
   logger.error(err)
 
-  if (err instanceof HttpError) {
+  if (err instanceof errors.HttpError) {
     res.status(err.statusCode || 500).json({
       errorMessage: err.message || DEFAULT_ERR_MSG,
       status: err.statusCode || 500,
@@ -40,7 +41,7 @@ app.use(function (err, req, res, next) {
   }
 })
 
-http.createServer(app).listen(process.env.PORT, () => logger.info(`Gateway started on ${process.env.PORT}`))
+http.createServer(app).listen(PORT, () => logger.info(`Gateway started on ${PORT}`))
 
 const gracefulShutdown = () => this.stop()
   .then(() => logger.info('Service stopped, terminating...'))

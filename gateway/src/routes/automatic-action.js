@@ -1,15 +1,14 @@
 import express from 'express'
-
-import { automaticAction } from '../services'
+import resolver from '../resolver.js'
 
 const router = express.Router()
 
 router.route('/devices/:deviceId/sensors/:sensorId/type/:type/actions')
-  .get(automaticAction.getAutomaticActions)
-  .post(automaticAction.createAutomaticAction)
+  .get(resolver)
+  .post(resolver)
 
 router.route('/devices/:deviceId/sensors/:sensorId/type/:type/actions/:actionId')
-  .put(automaticAction.updateAutomaticAction)
-  .delete(automaticAction.deleteAutomaticAction)
+  .put(resolver)
+  .delete(resolver)
 
 export default router

@@ -1,6 +1,8 @@
 {
   "name": "smart-grid-manager",
   "version": "0.0.1",
+  "main": "src/index.js",
+  "type": "module",
   "scripts": {
     "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon --experimental-modules src/index.js; else node --experimental-modules src/index.js; fi",
     "test": "mocha --recursive ./tests --experimental-modules",

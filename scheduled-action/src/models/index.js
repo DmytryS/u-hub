@@ -1,5 +1,5 @@
-export { default as Action } from './action';
-export { default as AutomaticAction } from './automaticAction';
-export { default as Device } from './device';
-export { default as ScheduledAction } from './scheduledAction';
-export { default as Value } from './value';
+export { default as Action } from './action.js'
+export { default as AutomaticAction } from './automaticAction.js'
+export { default as Device } from './device.js'
+export { default as ScheduledAction } from './scheduledAction.js'
+export { default as Value } from './value.js'

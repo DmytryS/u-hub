@@ -3,9 +3,10 @@
   "version": "0.0.1",
   "description": "HomeKit Accessory Server microservice",
   "main": "src/index.js",
+  "type": "module",
   "scripts": {
-    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm; else node -r esm src/index; fi",
-    "test": "mocha --recursive ./tests --require esm",
+    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon --experimental-modules src/index.js; else node --experimental-modules src/index.js; fi",
+    "test": "mocha --recursive ./tests",
     "lint": "eslint src/**",
     "lint:fix": "eslint src/** --fix"
   },
@@ -27,7 +28,6 @@
   "dependencies": {
     "amqplib": "^0.5.5",
     "dotenv": "^8.0.0",
-    "esm": "^3.2.25",
     "hap-nodejs": "^0.4.52",
     "mongoose": "^5.6.9",
     "nextport": "^1.0.0",
@@ -39,8 +39,7 @@
   },
   "devDependencies": {
     "eslint": "^6.1.0",
-    "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-plugin-import": "^2.18.2",
-    "mocha": "^6.2.0"
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.1"
   }
 }

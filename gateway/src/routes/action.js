@@ -1,14 +1,14 @@
 import express from 'express'
-import { action } from '../services'
+import resolver from '../resolver.js'
 
 const router = express.Router()
 
 router.route('/actions')
-  .get(action.getActions)
-  .post(action.createAction)
+  .get(resolver)
+  .post(resolver)
 
 router.route('/actions/:actionId')
-  .put(action.updateAction)
-  .delete(action.deleteAction)
+  .put(resolver)
+  .delete(resolver)
 
 export default router

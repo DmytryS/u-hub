@@ -28,7 +28,7 @@ const connect = (infinityRetries) => new Promise((resolve, reject) => {
         logger.info('[AMQP] creating channel')
 
         // eslint-disable-next-line
-        CONNECTIONS.channel = await CONNECTIONS.connection.createChannel()
+                CONNECTIONS.channel = await CONNECTIONS.connection.createChannel()
         CONNECTIONS.connection.on('error', onError)
         clearInterval(this)
 
@@ -37,9 +37,9 @@ const connect = (infinityRetries) => new Promise((resolve, reject) => {
         resolve()
       } catch (err) {
         // eslint-disable-next-line
-        CONNECTIONS.channel = false
+                CONNECTIONS.channel = false
         // eslint-disable-next-line
-        CONNECTIONS.connection = false
+                CONNECTIONS.connection = false
 
         logger.error(`[AMQP] ERROR: ${JSON.stringify(err)}`)
 
@@ -112,9 +112,9 @@ export const close = async () => {
   }
 
   // eslint-disable-next-line
-  CONNECTIONS.channel = false
+    CONNECTIONS.channel = false
   // eslint-disable-next-line
-  CONNECTIONS.connection = false
+    CONNECTIONS.connection = false
 
   logger.info(`[AMQP] Disconnected from ${RABBIT_MQ_URI}`)
 }

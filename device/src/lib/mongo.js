@@ -1,6 +1,7 @@
 import mongoose from 'mongoose'
 import logger from './logger.js'
 
+const { MONGODB_URI } = process.env
 const options = {
   useCreateIndex: true,
   useNewUrlParser: true
@@ -10,7 +11,7 @@ mongoose.Promise = Promise
 
 mongoose.set('useFindAndModify', false)
 
-mongoose.connect(process.env.MONGODB_URI, options)
+mongoose.connect(MONGODB_URI, options)
 
 mongoose.connection.on('connected', () => {
   logger.info('[MONGO] Connected to MongoDB')
@@ -21,7 +22,7 @@ mongoose.connection.on('error', error => {
 })
 
 mongoose.connection.on('disconnected', () => {
-  logger.info(`[MONGO] Disconnected from ${process.env.MONGODB_URI}`)
+  logger.info(`[MONGO] Disconnected from ${MONGODB_URI}`)
 })
 
 mongoose.connection.on('close', () => {
