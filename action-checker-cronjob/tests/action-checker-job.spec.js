@@ -1,5 +1,5 @@
-import '../src'
+// import '../src'
 
 describe('Automatic action service', () => {
-    it('should start succesfully', () => { })
+  it('should start succesfully', () => { })
 })
