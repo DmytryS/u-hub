@@ -1,13 +1,13 @@
-import mongoose from 'mongoose';
+import mongoose from 'mongoose'
 
-const { Schema } = mongoose;
+const { Schema } = mongoose
 
 const sensorSchema = new Schema({
   type: {
     type: String,
     required: true,
   },
-});
+})
 
 const deviceSchema = new Schema({
   name: {
@@ -19,7 +19,7 @@ const deviceSchema = new Schema({
     type: Boolean,
     required: true,
   },
-});
+})
 
 // class Device {
 //   /**
@@ -112,6 +112,6 @@ const deviceSchema = new Schema({
 // }
 
 // deviceSchema.loadClass(Device);
-delete mongoose.connection.models.Device;
+delete mongoose.connection.models.Device
 
-export default mongoose.model('Device', deviceSchema);
+export default mongoose.model('Device', deviceSchema)
