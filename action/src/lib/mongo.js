@@ -11,7 +11,7 @@ mongoose.Promise = Promise
 
 mongoose.set('useFindAndModify', false)
 
-mongoose.connect(MONGODB_URI, options)
+mongoose.connect(MONGODB_URI || 'mongodb://mongodb:27017/uz-booking', options)
 
 mongoose.connection.on('connected', () => {
   logger.info('[MONGO] Connected to MongoDB')

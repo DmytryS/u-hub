@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon --experimental-modules src/index.js; else node --experimental-modules src/index.js; fi",
-    "test": "mocha --recursive ./tests --experimental-modules",
+    "test": "mocha --recursive ./tests -r esm",
     "lint": "eslint src/**",
     "lint:fix": "eslint src/** --fix"
   },
@@ -20,6 +20,7 @@
   },
   "devDependencies": {
     "eslint": "^6.1.0",
+    "esm": "^3.2.25",
     "mocha": "^6.2.0",
     "nodemon": "^1.19.1"
   }

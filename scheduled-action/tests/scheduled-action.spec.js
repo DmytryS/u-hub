@@ -1,5 +1,5 @@
-import '../src'
+// import '../src'
 
 describe('Scheduled action service', () => {
-    it('Should start succesfully', () => { })
+  it('Should start succesfully', () => { })
 })

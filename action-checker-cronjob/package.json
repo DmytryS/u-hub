@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm src/index.js; else node -r esm src/index.js; fi",
-    "test": "mocha ./tests --require esm",
+    "test": "mocha ./tests -r esm",
     "lint": "eslint src/**",
     "lint:fix": "eslint src/** --fix"
   },
@@ -24,16 +24,14 @@
   "homepage": "https://github.com/DmytryS/u-hub#readme",
   "dependencies": {
     "amqplib": "^0.5.5",
-    "esm": "^3.2.25",
     "mongoose": "^5.6.9",
-    "nodemon": "^1.19.1",
     "restify-errors": "^8.0.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {
     "eslint": "^6.1.0",
-    "eslint-config-airbnb-base": "^13.2.0",
-    "eslint-plugin-import": "^2.18.2",
-    "mocha": "^6.2.0"
+    "esm": "^3.2.25",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.1"
   }
 }
