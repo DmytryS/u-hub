@@ -1,6 +1,5 @@
-
-
 import React from 'react'
+import PropTypes from 'prop-types'
 import {
   Button, FormGroup, Glyphicon, FormControl, Checkbox, Panel, Row, Col, Grid, ControlLabel,
 } from 'react-bootstrap'
@@ -19,47 +18,69 @@ class AutomaticActionsList extends React.Component {
     }
   }
 
+  static get propTypes() {
+    return {
+      sensor: PropTypes.shape({
+        nodeId: PropTypes.string.isRequired,
+        sensorId: PropTypes.string.isRequired,
+        sensorType: PropTypes.string.isRequired,
+        // controlType: PropTypes.string.isRequired,
+      }).isRequired,
+      schedulerId: PropTypes.string.isRequired,
+      actionId: PropTypes.string.isRequired,
+      emitter: PropTypes.string,
+    }
+  }
+
   componentWillMount() {
     this.loadAutomaticActions()
   }
 
   async loadAutomaticActions() {
+    const { nodeId, sensorId, sensorType } = this.props.sensor
+
+    const response = await axios.get(`/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions`)
+
     this.setState({
-      automaticActions: await axios.get(`/nodes/${this.props.sensor.nodeId}`
-        + `/sensors/${this.props.sensor.sensorId}/type/${this.props.sensor.sensorType}/actions`)
-        .then(response => response.data),
+      automaticActions: response.data,
     })
   }
 
-  async addAutomaticAction(index) {
-    await axios.post(`/nodes/${this.props.sensor.nodeId}/`
-      + `sensors/${this.props.sensor.sensorId}/type/${this.props.sensor.sensorType}/actions`,
-    {
-      valueToCompare: this.state.newActionValueToCompare,
-      condition: this.state.newActionCondition,
-      enabled: this.state.newActionEnabled,
-    })
+  async addAutomaticAction() {
+    const { nodeId, sensorId, sensorType } = this.props.sensor
+
+    await axios
+      .post(`/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions`,
+        {
+          valueToCompare: this.state.newActionValueToCompare,
+          condition: this.state.newActionCondition,
+          enabled: this.state.newActionEnabled,
+        })
+
     await this.loadAutomaticActions()
   }
 
   async updateAutomaticAction(index) {
+    const { nodeId, sensorId, sensorType } = this.props.sensor
     const actionToEdit = this.state.automaticActions[index]
 
-    await axios.post(`/nodes/${this.props.sensor.nodeId}/`
-      + `sensors/${this.props.sensor.sensorId}/type/${this.props.sensor.sensorType}/actions/${actionToEdit._id}`,
-    {
-      valueToCompare: actionToEdit.valueToCompare,
-      condition: actionToEdit.condition,
-      enabled: actionToEdit.enabled,
-    })
+    await axios
+      .post(`/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions/${actionToEdit._id}`,
+        {
+          valueToCompare: actionToEdit.valueToCompare,
+          condition: actionToEdit.condition,
+          enabled: actionToEdit.enabled,
+        })
+
     await this.loadAutomaticActions()
   }
 
   async deleteAutomaticAction(index) {
+    const { nodeId, sensorId, sensorType } = this.props.sensor
     const actionToDelete = this.state.automaticActions[index]
 
-    await axios.delete(`/nodes/${this.props.sensor.nodeId}/`
-      + `sensors/${this.props.sensor.sensorId}/type/${this.props.sensor.sensorType}/actions/${actionToDelete._id}`)
+    await axios
+      .delete(`/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions/${actionToDelete._id}`)
     await this.loadAutomaticActions()
   }
 
@@ -88,7 +109,11 @@ class AutomaticActionsList extends React.Component {
   }
 
   validateValueToCompare(index) {
-    const valueToCompare = index !== false ? this.state.automaticActions[index].valueToCompare : this.state.newActionValueToCompare
+    let valueToCompare = this.state.newActionValueToCompare
+    if (index !== false) {
+      valueToCompare = this.state.automaticActions[index].valueToCompare
+    }
+
     if (!isNaN(valueToCompare) && valueToCompare !== '') {
       return 'success'
     }
@@ -204,7 +229,7 @@ class AutomaticActionsList extends React.Component {
                   </Button>
                 </Col>
               </Row>
-              <Panel key={index} expanded={this.state.automaticActions[index].showActionNodes} onToggle={() => {}}>
+              <Panel key={index} expanded={this.state.automaticActions[index].showActionNodes} onToggle={() => { }}>
                 <Panel.Collapse>
                   <Panel.Body>
                     <ActionNodesList

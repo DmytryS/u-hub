@@ -31,24 +31,14 @@ class ActionNodesList extends React.Component {
     }
   }
 
-  setDefaults(nodes) {
-    if (nodes && nodes.length) {
-      this.setState({
-        newActionNodeTargetNodeId: nodes[0]._id,
-        newActionNodeTargetSensorId: nodes[0].sensors[0]._id,
-        newActionNodeTargetSensorType: nodes[0].sensors[0].types[0].type,
-      })
-    }
-  }
-
   static get propTypes() {
     return {
-      // sensor: PropTypes.shape({
-      //   nodeId: PropTypes.string.isRequired,
-      //   sensorId: PropTypes.string.isRequired,
-      //   sensorType: PropTypes.string.isRequired,
-      //   controlType: PropTypes.string.isRequired,
-      // }).isRequired,
+      sensor: PropTypes.shape({
+        nodeId: PropTypes.string.isRequired,
+        sensorId: PropTypes.string.isRequired,
+        sensorType: PropTypes.string.isRequired,
+        // controlType: PropTypes.string.isRequired,
+      }).isRequired,
       schedulerId: PropTypes.string,
       actionId: PropTypes.string,
     }
@@ -59,15 +49,26 @@ class ActionNodesList extends React.Component {
     await this.loadActionNodes()
   }
 
+  setDefaults(nodes) {
+    if (nodes && nodes.length) {
+      this.setState({
+        newActionNodeTargetNodeId: nodes[0]._id,
+        newActionNodeTargetSensorId: nodes[0].sensors[0]._id,
+        newActionNodeTargetSensorType: nodes[0].sensors[0].types[0].type,
+      })
+    }
+  }
+
   async loadActionNodes() {
+    const {
+      actionId, schedulerId, emitter, sensor: { nodeId, sensorId, sensorType },
+    } = this.props
     let getUrl
-    const me = this
-    if (this.props.emitter === 'SCHEDULE') {
-      getUrl = `/scheduled-actions/${this.props.schedulerId}/nodes`
+
+    if (emitter === 'SCHEDULE') {
+      getUrl = `/scheduled-actions/${schedulerId}/nodes`
     } else {
-      getUrl = `/nodes/${this.props.sensor.nodeId}`
-        + `/sensors/${this.props.sensor.sensorId}/type/${this.props.sensor.sensorType}`
-        + `/actions/${this.props.actionId}/nodes`
+      getUrl = `/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions/${actionId}/nodes`
     }
 
     const response = await axios.get(getUrl)
@@ -168,13 +169,15 @@ class ActionNodesList extends React.Component {
   }
 
   async deleteActionNode(index) {
+    const {
+      actionId, schedulerId, emitter, sensor: { nodeId, sensorId, sensorType },
+    } = this.props
     const actionNodeToDelete = this.state.actionNodes[index]
     let deleteUrl
-    if (this.props.emitter === 'SCHEDULE') {
-      deleteUrl = `/scheduled-actions/${this.props.schedulerId}/nodes/${actionNodeToDelete._id}`
+    if (emitter === 'SCHEDULE') {
+      deleteUrl = `/scheduled-actions/${schedulerId}/nodes/${actionNodeToDelete._id}`
     } else {
-      deleteUrl = `/nodes/${this.props.sensor.nodeId}/sensors/${this.props.sensor.sensorId}`
-        + `/type/${this.props.sensor.sensorType}/actions/${this.props.actionId}/nodes/${actionNodeToDelete._id}`
+      deleteUrl = `/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions/${actionId}/nodes/${actionNodeToDelete._id}`
     }
     await axios.delete(deleteUrl)
     await this.loadActionNodes()
