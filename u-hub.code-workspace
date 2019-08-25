@@ -1,0 +1,19 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"eslint.workingDirectories": [
+			"action",
+			"action-checker-cronjob",
+			"automatic-action",
+			"client",
+			"device",
+			"gateway",
+			"homekit-server",
+			"scheduled-action"
+		]
+	}
+}
