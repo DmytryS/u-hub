@@ -39,8 +39,9 @@ class ActionNodesList extends React.Component {
         sensorType: PropTypes.string.isRequired,
         // controlType: PropTypes.string.isRequired,
       }).isRequired,
-      schedulerId: PropTypes.string,
-      actionId: PropTypes.string,
+      schedulerId: PropTypes.string.isRequired,
+      actionId: PropTypes.string.isRequired,
+      emitter: PropTypes.string.isRequired,
     }
   }
 
@@ -61,7 +62,14 @@ class ActionNodesList extends React.Component {
 
   async loadActionNodes() {
     const {
-      actionId, schedulerId, emitter, sensor: { nodeId, sensorId, sensorType },
+      actionId,
+      schedulerId,
+      emitter,
+      sensor: {
+        nodeId,
+        sensorId,
+        sensorType,
+      },
     } = this.props
     let getUrl
 
@@ -75,7 +83,9 @@ class ActionNodesList extends React.Component {
     const actionNodes = response.data.map(actionNode => Object.assign(
       actionNode,
       {
-        targetNodeId: this.state.nodes.find(node => node.sensors.find(sensor => sensor._id === actionNode.targetSensorId))._id,
+        targetNodeId: this.state.nodes
+          // eslint-disable-next-line
+          .find(node => node.sensors.find(sensor => sensor._id === actionNode.targetSensorId))._id,
       },
     ))
 
@@ -96,6 +106,7 @@ class ActionNodesList extends React.Component {
 
         node.sensors.forEach((sensor) => {
           if (sensor._id === this.props.sensor.sensorId) {
+            // eslint-disable-next-line
             sensor.types = sensor.types.filter(type => type.type !== this.props.sensor.sensorType)
             if (sensor.types.length) {
               filteredSensors.push(sensor)
@@ -104,13 +115,15 @@ class ActionNodesList extends React.Component {
             filteredSensors.push(sensor)
           }
         })
+
+        // eslint-disable-next-line
         node.sensors = filteredSensors
         if (node.sensors.length) {
           nodes.push(node)
         }
       })
     } else {
-      nodes = result.data
+      nodes = response.data
     }
 
     this.setDefaults(nodes)
@@ -125,112 +138,162 @@ class ActionNodesList extends React.Component {
     if (this.validateActionNodeValue(false) === 'success'
       && this.state.newActionNodeTargetSensorId
       && this.state.newActionNodeTargetSensorType) {
+      const {
+        actionId,
+        schedulerId,
+        emitter,
+        sensor: {
+          nodeId,
+          sensorId,
+          sensorType,
+        },
+      } = this.props
+
       let createUrl
-      if (this.props.emitter === 'SCHEDULE') {
-        createUrl = `/scheduled-actions/${this.props.schedulerId}/nodes`
+      if (emitter === 'SCHEDULE') {
+        createUrl = `/scheduled-actions/${schedulerId}/nodes`
       } else {
-        createUrl = `/nodes/${this.props.sensor.nodeId}/sensors/${this.props.sensor.sensorId}`
-          + `/type/${this.props.sensor.sensorType}/actions/${this.props.actionId}/nodes`
+        createUrl = `/nodes/${nodeId}/sensors/${sensorId}`
+          + `/type/${sensorType}/actions/${actionId}/nodes`
       }
 
-      await axios.post(createUrl, {
-        valueToChangeOn: this.state.newActionNodeValueToChangeOn,
-        targetSensorId: this.state.newActionNodeTargetSensorId,
-        targetSensorType: this.state.newActionNodeTargetSensorType,
-      }).catch(err => alert(err.response.data.message))
-      await this.loadActionNodes()
+      try {
+        await axios.post(
+          createUrl,
+          {
+            valueToChangeOn: this.state.newActionNodeValueToChangeOn,
+            targetSensorId: this.state.newActionNodeTargetSensorId,
+            targetSensorType: this.state.newActionNodeTargetSensorType,
+          },
+        )
+        await this.loadActionNodes()
+      } catch (err) {
+        // eslint-disable-next-line
+        alert(err.response.data.message)
+      }
     }
   }
 
-  async updateActionNode(index) {
-    if (this.validateActionNodeValue(false) === 'success'
-      && this.state.actionNodes[index].newActionNodeTargetSensorId
-      && this.state.actionNodes[index].newActionNodeTargetSensorType) {
-      const actionToUpdate = this.state.actionNodes[index]
-      let updateUrl
+  updateActionNode(index) {
+    return async () => {
+      if (this.validateActionNodeValue(false) === 'success'
+        && this.state.actionNodes[index].newActionNodeTargetSensorId
+        && this.state.actionNodes[index].newActionNodeTargetSensorType) {
+        const {
+          actionId,
+          schedulerId,
+          emitter,
+          sensor: {
+            nodeId,
+            sensorId,
+            sensorType,
+          },
+        } = this.props
 
-      if (this.props.emitter === 'SCHEDULE') {
-        updateUrl = `/scheduled-actions/${this.props.schedulerId}/nodes/${actionToUpdate._id}`
-      } else {
-        updateUrl = `/nodes/${this.props.sensor.nodeId}/sensors/${this.props.sensor.sensorId}`
-          + `/type/${this.props.sensor.sensorType}/actions/${this.props.actionId}/nodes/${actionToUpdate._id}`
+        const actionToUpdate = this.state.actionNodes[index]
+        let updateUrl
+
+        if (emitter === 'SCHEDULE') {
+          updateUrl = `/scheduled-actions/${schedulerId}/nodes/${actionToUpdate._id}`
+        } else {
+          updateUrl = `/nodes/${nodeId}/sensors/${sensorId}`
+            + `/type/${sensorType}/actions/${actionId}/nodes/${actionToUpdate._id}`
+        }
+
+        await axios.post(updateUrl,
+          {
+            valueToChangeOn: actionToUpdate.valueToChangeOn,
+            targetSensorId: actionToUpdate.targetSensorId,
+            targetSensorType: actionToUpdate.targetSensorType,
+          })
+
+
+        await this.loadActionNodes()
       }
-
-      await axios.post(updateUrl,
-        {
-          valueToChangeOn: actionToUpdate.valueToChangeOn,
-          targetSensorId: actionToUpdate.targetSensorId,
-          targetSensorType: actionToUpdate.targetSensorType,
-        })
-
-
-      await this.loadActionNodes()
     }
   }
 
-  async deleteActionNode(index) {
-    const {
-      actionId, schedulerId, emitter, sensor: { nodeId, sensorId, sensorType },
-    } = this.props
-    const actionNodeToDelete = this.state.actionNodes[index]
-    let deleteUrl
-    if (emitter === 'SCHEDULE') {
-      deleteUrl = `/scheduled-actions/${schedulerId}/nodes/${actionNodeToDelete._id}`
-    } else {
-      deleteUrl = `/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions/${actionId}/nodes/${actionNodeToDelete._id}`
+  deleteActionNode(index) {
+    return async () => {
+      const {
+        actionId,
+        schedulerId,
+        emitter,
+        sensor: {
+          nodeId,
+          sensorId,
+          sensorType,
+        },
+      } = this.props
+      const actionNodeToDelete = this.state.actionNodes[index]
+      let deleteUrl
+      if (emitter === 'SCHEDULE') {
+        deleteUrl = `/scheduled-actions/${schedulerId}/nodes/${actionNodeToDelete._id}`
+      } else {
+        deleteUrl = `/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions/${actionId}/nodes/${actionNodeToDelete._id}`
+      }
+      await axios.delete(deleteUrl)
+      await this.loadActionNodes()
     }
-    await axios.delete(deleteUrl)
-    await this.loadActionNodes()
   }
 
   handleEditNode(index, e) {
-    const { actionNodes } = this.state
-    const defaultSensor = this.state.nodes.find(node => node._id === e.target.value).sensors[0]
+    return () => {
+      const { actionNodes } = this.state
+      const defaultSensor = this.state.nodes.find(node => node._id === e.target.value).sensors[0]
 
-    actionNodes[index].targetNodeId = e.target.value
-    actionNodes[index].targetSensorId = defaultSensor._id
-    actionNodes[index].targetSensorType = defaultSensor.types[0].type
+      actionNodes[index].targetNodeId = e.target.value
+      actionNodes[index].targetSensorId = defaultSensor._id
+      actionNodes[index].targetSensorType = defaultSensor.types[0].type
 
-    this.setState({ actionNodes })
+      this.setState({ actionNodes })
+    }
   }
 
   handleEditSensor(index, e) {
-    const { actionNodes } = this.state
-    const sensor = this.state.nodes.find(node => node._id === actionNodes[index].targetNodeId).sensors
-      .find(sensor => sensor._id === e.target.value)
+    return () => {
+      const { actionNodes, nodes } = this.state
+      const targetSensor = nodes
+        .find(node => node._id === actionNodes[index].targetNodeId).sensors
+        .find(sensor => sensor._id === e.target.value)
 
-    actionNodes[index].targetSensorId = sensor._id
-    actionNodes[index].targetSensorType = sensor.types[0].type
+      actionNodes[index].targetSensorId = targetSensor._id
+      actionNodes[index].targetSensorType = targetSensor.types[0].type
 
-    this.setState({ actionNodes })
+      this.setState({ actionNodes })
+    }
   }
 
   handleEditSensorType(index, e) {
-    const { actionNodes } = this.state
+    return () => {
+      const { actionNodes } = this.state
 
-    actionNodes[index].targetSensorType = e.target.value
+      actionNodes[index].targetSensorType = e.target.value
 
-    this.setState({ actionNodes })
+      this.setState({ actionNodes })
+    }
   }
 
   handleEditValue(index, e) {
-    const { actionNodes } = this.state
-    actionNodes[index].valueToChangeOn = e.target.value
-    this.setState({ actionNodes })
+    return () => {
+      const { actionNodes } = this.state
+      actionNodes[index].valueToChangeOn = e.target.value
+      this.setState({ actionNodes })
+    }
   }
 
   validateActionNodeValue(index) {
-    const valueToChangeOn = false
-    if (index !== false) {
-      this.state.actionNodes[index].valueToChangeOn
-    } else {
-      this.state.newActionNodeValueToChangeOn
-    }
+    return () => {
+      let valueToChangeOn = this.state.newActionNodeValueToChangeOn
+      if (index !== false) {
+        ({ valueToChangeOn } = this.state.actionNodes[index])
+      }
 
-    if (!isNaN(valueToChangeOn) && valueToChangeOn !== '') {
-      return 'success'
+      if (!Number.isNaN(valueToChangeOn) && valueToChangeOn !== '') {
+        return 'success'
+      }
+      return 'error'
     }
-    return 'error'
   }
 
   render() {
@@ -246,7 +309,8 @@ class ActionNodesList extends React.Component {
                 onChange={e => this.setState({ newActionNodeTargetNodeId: e.target.value })}
               >
                 {
-                  this.state.nodes.map(node => <option key={node._id} value={node._id}>{node.name}</option>)
+                  this.state.nodes
+                    .map(node => <option key={node._id} value={node._id}>{node.name}</option>)
                 }
               </FormControl>
             </FormGroup>
@@ -261,8 +325,17 @@ class ActionNodesList extends React.Component {
                 onChange={e => this.setState({ newActionNodeTargetSensorId: e.target.value })}
               >
                 {
-                  this.state.nodes.length && this.state.nodes.find(node => node._id === this.state.newActionNodeTargetNodeId)
-                    .sensors.map(sensor => <option key={sensor._id} value={sensor._id}>{sensor.name}</option>)
+                  this.state.nodes.length
+                  && this.state.nodes
+                    .find(node => node._id === this.state.newActionNodeTargetNodeId).sensors
+                    .map(sensor => (
+                      <option
+                        key={sensor._id}
+                        value={sensor._id}
+                      >
+                        {sensor.name}
+                      </option>
+                    ))
                 }
               </FormControl>
             </FormGroup>
@@ -277,8 +350,11 @@ class ActionNodesList extends React.Component {
                 onChange={e => this.setState({ newActionNodeTargetSensorType: e.target.value })}
               >
                 {
-                  this.state.nodes.length && this.state.nodes.find(node => node._id === this.state.newActionNodeTargetNodeId).sensors
-                    .find(sensor => sensor._id === this.state.newActionNodeTargetSensorId).types.map(type => <option key={type.type} value={type.type}>{type.type}</option>)
+                  this.state.nodes.length
+                  && this.state.nodes
+                    .find(node => node._id === this.state.newActionNodeTargetNodeId).sensors
+                    .find(sensor => sensor._id === this.state.newActionNodeTargetSensorId).types
+                    .map(type => <option key={type.type} value={type.type}>{type.type}</option>)
                 }
               </FormControl>
             </FormGroup>
@@ -299,24 +375,24 @@ class ActionNodesList extends React.Component {
           </Col>
           <Col sm={2} md={2}>
             <br />
-            <Button bsStyle="success" onClick={this.createActionNode.bind(this)}>
+            <Button bsStyle="success" onClick={this.createActionNode}>
               <Glyphicon glyph="plus" />
             </Button>
           </Col>
         </Row>
         {
           this.state.actionNodes.map((actionNode, index) => (
-            <Row key={index}>
+            <Row>
               <Col sm={3} md={3}>
                 <FormControl
                   componentClass="select"
-                  onChange={this.handleEditNode.bind(this, index)}
+                  onChange={this.handleEditNode(index)}
                   value={this.state.actionNodes[index].targetNodeId}
                 >
                   {
                     this.state.nodes.map(node => (
                       <option
-                        key={`${node._id}-${index}`}
+                        key={node._id}
                         value={node._id}
                       >
                         {node.name}
@@ -330,10 +406,12 @@ class ActionNodesList extends React.Component {
                   componentClass="select"
                   placeholder="select"
                   value={this.state.actionNodes[index].targetSensorId}
-                  onChange={this.handleEditSensor.bind(this, index)}
+                  onChange={this.handleEditSensor(index)}
                 >
                   {
-                    this.state.nodes.length && this.state.nodes.find(node => node._id === this.state.actionNodes[index].targetNodeId).sensors
+                    this.state.nodes.length
+                    && this.state.nodes
+                      .find(node => node._id === this.state.actionNodes[index].targetNodeId).sensors
                       .map(sensor => (
                         <option
                           key={sensor._id}
@@ -350,11 +428,14 @@ class ActionNodesList extends React.Component {
                   componentClass="select"
                   placeholder="select"
                   value={this.state.actionNodes[index].targetSensorType}
-                  onChange={this.handleEditSensorType.bind(this, index)}
+                  onChange={this.handleEditSensorType(index)}
                 >
                   {
-                    this.state.nodes.length && this.state.nodes.find(node => node._id === this.state.actionNodes[index].targetNodeId).sensors
-                      .find(sensor => sensor._id === this.state.newActionNodeTargetSensorId).types.map(type => <option key={type.type} value={type.type}>{type.type}</option>)
+                    this.state.nodes.length
+                    && this.state.nodes
+                      .find(node => node._id === this.state.actionNodes[index].targetNodeId).sensors
+                      .find(sensor => sensor._id === this.state.newActionNodeTargetSensorId).types
+                      .map(type => <option key={type.type} value={type.type}>{type.type}</option>)
                   }
                 </FormControl>
               </Col>
@@ -366,16 +447,16 @@ class ActionNodesList extends React.Component {
                     type="text"
                     value={this.state.actionNodes[index].valueToChangeOn}
                     placeholder="Value"
-                    onChange={this.handleEditValue.bind(this, index)}
+                    onChange={this.handleEditValue(index)}
                   />
                 </FormGroup>
               </Col>
               <Col sm={2} md={2}>
-                <Button bsStyle="warning" onClick={this.updateActionNode.bind(this, index)}>
+                <Button bsStyle="warning" onClick={this.updateActionNode(index)}>
                   <Glyphicon glyph="pencil" />
                 </Button>
                 {'    '}
-                <Button bsStyle="danger" onClick={this.deleteActionNode.bind(this, index)}>
+                <Button bsStyle="danger" onClick={this.deleteActionNode(index)}>
                   <Glyphicon glyph="trash" />
                 </Button>
               </Col>

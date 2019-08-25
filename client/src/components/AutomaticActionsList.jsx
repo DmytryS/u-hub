@@ -22,13 +22,14 @@ class AutomaticActionsList extends React.Component {
     return {
       sensor: PropTypes.shape({
         nodeId: PropTypes.string.isRequired,
+        nodeName: PropTypes.string.isRequired,
         sensorId: PropTypes.string.isRequired,
         sensorType: PropTypes.string.isRequired,
         // controlType: PropTypes.string.isRequired,
       }).isRequired,
-      schedulerId: PropTypes.string.isRequired,
-      actionId: PropTypes.string.isRequired,
-      emitter: PropTypes.string,
+      // schedulerId: PropTypes.string.isRequired,
+      // actionId: PropTypes.string.isRequired,
+      // emitter: PropTypes.string,
     }
   }
 
@@ -61,63 +62,78 @@ class AutomaticActionsList extends React.Component {
   }
 
   async updateAutomaticAction(index) {
-    const { nodeId, sensorId, sensorType } = this.props.sensor
-    const actionToEdit = this.state.automaticActions[index]
+    return async () => {
+      const { nodeId, sensorId, sensorType } = this.props.sensor
+      const actionToEdit = this.state.automaticActions[index]
 
-    await axios
-      .post(`/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions/${actionToEdit._id}`,
-        {
-          valueToCompare: actionToEdit.valueToCompare,
-          condition: actionToEdit.condition,
-          enabled: actionToEdit.enabled,
-        })
+      await axios
+        .post(`/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions/${actionToEdit._id}`,
+          {
+            valueToCompare: actionToEdit.valueToCompare,
+            condition: actionToEdit.condition,
+            enabled: actionToEdit.enabled,
+          })
 
-    await this.loadAutomaticActions()
+      await this.loadAutomaticActions()
+    }
   }
 
-  async deleteAutomaticAction(index) {
-    const { nodeId, sensorId, sensorType } = this.props.sensor
-    const actionToDelete = this.state.automaticActions[index]
+  deleteAutomaticAction(index) {
+    return async () => {
+      const { nodeId, sensorId, sensorType } = this.props.sensor
+      const actionToDelete = this.state.automaticActions[index]
 
-    await axios
-      .delete(`/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions/${actionToDelete._id}`)
-    await this.loadAutomaticActions()
+      await axios
+        .delete(`/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/actions/${actionToDelete._id}`)
+      await this.loadAutomaticActions()
+    }
   }
 
   handleEditValue(index, e) {
-    const { automaticActions } = this.state
-    automaticActions[index].valueToCompare = e.target.value
-    this.setState({ automaticActions })
+    return () => {
+      const { automaticActions } = this.state
+      automaticActions[index].valueToCompare = e.target.value
+      this.setState({ automaticActions })
+    }
   }
 
   handleEditCondition(index, e) {
-    const { automaticActions } = this.state
-    automaticActions[index].condition = e.target.value
-    this.setState({ automaticActions })
+    return () => {
+      const { automaticActions } = this.state
+      automaticActions[index].condition = e.target.value
+      this.setState({ automaticActions })
+    }
   }
 
   handleEditEnabled(index, e) {
-    const { automaticActions } = this.state
-    automaticActions[index].enabled = e.target.checked
-    this.setState({ automaticActions })
+    return () => {
+      const { automaticActions } = this.state
+      automaticActions[index].enabled = e.target.checked
+      this.setState({ automaticActions })
+    }
   }
 
   hanleShowActionNodes(index) {
-    const { automaticActions } = this.state
-    automaticActions[index].showActionNodes = !automaticActions[index].showActionNodes
-    this.setState({ automaticActions })
+    return () => {
+      const { automaticActions } = this.state
+      automaticActions[index].showActionNodes = !automaticActions[index].showActionNodes
+      this.setState({ automaticActions })
+    }
   }
 
   validateValueToCompare(index) {
-    let valueToCompare = this.state.newActionValueToCompare
-    if (index !== false) {
-      valueToCompare = this.state.automaticActions[index].valueToCompare
-    }
+    return () => {
+      let valueToCompare = this.state.newActionValueToCompare
+      if (index !== false) {
+        // eslint-disable-next-line
+        valueToCompare = this.state.automaticActions[index].valueToCompare
+      }
 
-    if (!isNaN(valueToCompare) && valueToCompare !== '') {
-      return 'success'
+      if (!Number.isNaN(valueToCompare) && valueToCompare !== '') {
+        return 'success'
+      }
+      return 'error'
     }
-    return 'error'
   }
 
   render() {
@@ -168,7 +184,7 @@ class AutomaticActionsList extends React.Component {
             <Col sm={3} md={3}>
               <FormGroup>
                 <br />
-                <Button bsStyle="success" onClick={this.addAutomaticAction.bind(this)}>
+                <Button bsStyle="success" onClick={this.addAutomaticAction}>
                   <Glyphicon glyph="plus" />
                 </Button>
               </FormGroup>
@@ -177,14 +193,14 @@ class AutomaticActionsList extends React.Component {
         </Grid>
         {
           this.state.automaticActions.map((automaticAction, index) => (
-            <Grid key={index}>
+            <Grid>
               <Row>
                 <Col sm={3} md={3}>
                   <FormControl
                     componentClass="select"
                     placeholder="select"
                     value={automaticAction.condition}
-                    onChange={this.handleEditCondition.bind(this, index)}
+                    onChange={this.handleEditCondition(index)}
                   >
                     <option value="<">&lt;</option>
                     <option value=">">&gt;</option>
@@ -202,7 +218,7 @@ class AutomaticActionsList extends React.Component {
                       type="text"
                       value={automaticAction.valueToCompare}
                       placeholder="Enter value"
-                      onChange={this.handleEditValue.bind(this, index)}
+                      onChange={this.handleEditValue(index)}
                     />
                   </FormGroup>
                 </Col>
@@ -211,25 +227,28 @@ class AutomaticActionsList extends React.Component {
                     <Checkbox
                       inline
                       checked={automaticAction.enabled}
-                      onChange={this.handleEditEnabled.bind(this, index)}
+                      onChange={this.handleEditEnabled(index)}
                     />
                   </FormGroup>
                 </Col>
                 <Col sm={3} md={3}>
-                  <Button bsStyle="warning" onClick={this.updateAutomaticAction.bind(this, index)}>
+                  <Button bsStyle="warning" onClick={this.updateAutomaticAction(index)}>
                     <Glyphicon glyph="pencil" />
                   </Button>
                   {'    '}
-                  <Button bsStyle="danger" onClick={this.deleteAutomaticAction.bind(this, index)}>
+                  <Button bsStyle="danger" onClick={this.deleteAutomaticAction(index)}>
                     <Glyphicon glyph="trash" />
                   </Button>
                   {'    '}
-                  <Button bsStyle="primary" onClick={this.hanleShowActionNodes.bind(this, index)}>
+                  <Button bsStyle="primary" onClick={this.hanleShowActionNodes(index)}>
                     <Glyphicon glyph="tasks" />
                   </Button>
                 </Col>
               </Row>
-              <Panel key={index} expanded={this.state.automaticActions[index].showActionNodes} onToggle={() => { }}>
+              <Panel
+                expanded={this.state.automaticActions[index].showActionNodes}
+                onToggle={() => { }}
+              >
                 <Panel.Collapse>
                   <Panel.Body>
                     <ActionNodesList

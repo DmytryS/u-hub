@@ -12,14 +12,14 @@ class NodesList extends React.Component {
     }
   }
 
+  async componentDidMount() {
+    await this.getAllNodes()
+  }
+
   async getAllNodes() {
     this.setState({
       nodesList: await fetch.get('/nodes').then(result => result.data),
     })
-  }
-
-  async componentDidMount() {
-    await this.getAllNodes()
   }
 
   render() {

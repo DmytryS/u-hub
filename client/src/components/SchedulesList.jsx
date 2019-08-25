@@ -29,16 +29,16 @@ class SchedulesList extends React.Component {
     }
   }
 
-  async loadSchedules() {
-    this.setState({
-      schedules: await axios
-        .get('/scheduled-actions')
-        .then(result => result.data),
-    })
-  }
-
   async componentDidMount() {
     await this.loadSchedules()
+  }
+
+  async loadSchedules() {
+    const response = await axios.get('/scheduled-actions')
+
+    this.setState({
+      schedules: response.data,
+    })
   }
 
   async handleCreateSchedule() {
@@ -46,15 +46,22 @@ class SchedulesList extends React.Component {
       this.validateScheduleName(false) === 'success'
       && this.validateCronString(false) === 'success'
     ) {
-      await axios
-        .post('/scheduled-actions', {
-          name: this.state.newScheduleName,
-          schedule: this.state.newCronString,
-          enabled: this.state.newScheduleEnabled,
-        })
-        .catch(err => alert(err.response.data.message))
+      try {
+        await axios
+          .post(
+            '/scheduled-actions',
+            {
+              name: this.state.newScheduleName,
+              schedule: this.state.newCronString,
+              enabled: this.state.newScheduleEnabled,
+            },
+          )
 
-      await this.loadSchedules()
+        await this.loadSchedules()
+      } catch (err) {
+        // eslint-disable-next-line
+        alert(err.response.data.message)
+      }
     }
   }
 
@@ -74,60 +81,79 @@ class SchedulesList extends React.Component {
     }
   }
 
-  async deleteSchedule(index) {
-    const scheduleToDelete = this.state.schedules[index]
+  deleteSchedule(index) {
+    return async () => {
+      const scheduleToDelete = this.state.schedules[index]
 
-    await axios.delete(`/scheduled-actions/${scheduleToDelete._id}`)
-    await this.loadSchedules()
+      await axios.delete(`/scheduled-actions/${scheduleToDelete._id}`)
+      await this.loadSchedules()
+    }
   }
 
   handleEditName(index, e) {
-    const { schedules } = this.state
-    schedules[index].name = e.target.value
-    this.setState({ schedules })
+    return () => {
+      const { schedules } = this.state
+      schedules[index].name = e.target.value
+      this.setState({ schedules })
+    }
   }
 
   handleEditScheduleString(index, e) {
-    const { schedules } = this.state
-    schedules[index].schedule = e.target.value
-    this.setState({ schedules })
+    return () => {
+      const { schedules } = this.state
+      schedules[index].schedule = e.target.value
+      this.setState({ schedules })
+    }
   }
 
   handleEditEnabled(index, e) {
-    const { schedules } = this.state
-    schedules[index].enabled = e.target.checked
-    this.setState({ schedules })
+    return () => {
+      const { schedules } = this.state
+      schedules[index].enabled = e.target.checked
+      this.setState({ schedules })
+    }
   }
 
   hanleShowActionNodes(index) {
-    const { schedules } = this.state
-    schedules[index].showActionNodes = !schedules[index].showActionNodes
-    this.setState({ schedules })
+    return () => {
+      const { schedules } = this.state
+      schedules[index].showActionNodes = !schedules[index].showActionNodes
+      this.setState({ schedules })
+    }
   }
 
   validateCronString(index) {
-    const cronString = index !== false
-      ? this.state.schedules[index].schedule
-      : this.state.newCronString
-    try {
-      if (cronString.length === 0) {
+    return () => {
+      let cronString = this.state.newCronString
+      if (index !== false) {
+        cronString = this.state.schedules[index].schedule
+      }
+
+      try {
+        if (cronString.length === 0) {
+          return 'error'
+        }
+        cronParser.parseExpression(cronString)
+        return 'success'
+      } catch (err) {
         return 'error'
       }
-      cronParser.parseExpression(cronString)
-      return 'success'
-    } catch (err) {
-      return 'error'
     }
   }
 
   validateScheduleName(index) {
-    const length = index !== false
-      ? this.state.schedules[index].name.length
-      : this.state.newScheduleName.length
-    if (length > 0) {
-      return 'success'
+    return () => {
+      let { length } = this.state.newScheduleName
+      if (index !== false) {
+        // eslint-disable-next-line
+        length = this.state.schedules[index].name.length
+      }
+
+      if (length > 0) {
+        return 'success'
+      }
+      return 'error'
     }
-    return 'error'
   }
 
   render() {
@@ -179,7 +205,7 @@ class SchedulesList extends React.Component {
                 <br />
                 <Button
                   bsStyle="success"
-                  onClick={this.handleCreateSchedule.bind(this)}
+                  onClick={this.handleCreateSchedule}
                 >
                   <Glyphicon glyph="plus" />
                 </Button>
@@ -188,7 +214,7 @@ class SchedulesList extends React.Component {
           </Row>
         </Grid>
         {this.state.schedules.map((schedule, index) => (
-          <Grid key={index}>
+          <Grid>
             <Row>
               <Col sm={3} md={3}>
                 <FormGroup validationState={this.validateScheduleName(index)}>
@@ -196,7 +222,7 @@ class SchedulesList extends React.Component {
                     type="text"
                     value={this.state.schedules[index].name}
                     placeholder="schedule name"
-                    onChange={this.handleEditName.bind(this, index)}
+                    onChange={this.handleEditName(index)}
                   />
                 </FormGroup>
               </Col>
@@ -206,7 +232,7 @@ class SchedulesList extends React.Component {
                     type="text"
                     value={this.state.schedules[index].schedule}
                     placeholder="cron string"
-                    onChange={this.handleEditScheduleString.bind(this, index)}
+                    onChange={this.handleEditScheduleString(index)}
                   />
                 </FormGroup>
               </Col>
@@ -215,28 +241,28 @@ class SchedulesList extends React.Component {
                   <Checkbox
                     inline
                     checked={this.state.schedules[index].enabled}
-                    onChange={this.handleEditEnabled.bind(this, index)}
+                    onChange={this.handleEditEnabled(index)}
                   />
                 </FormGroup>
               </Col>
               <Col sm={3} md={3}>
                 <Button
                   bsStyle="warning"
-                  onClick={this.updateSchedule.bind(this, index)}
+                  onClick={this.updateSchedule(index)}
                 >
                   <Glyphicon glyph="pencil" />
                 </Button>
                 {'    '}
                 <Button
                   bsStyle="danger"
-                  onClick={this.deleteSchedule.bind(this, index)}
+                  onClick={this.deleteSchedule(index)}
                 >
                   <Glyphicon glyph="trash" />
                 </Button>
                 {'    '}
                 <Button
                   bsStyle="primary"
-                  onClick={this.hanleShowActionNodes.bind(this, index)}
+                  onClick={this.hanleShowActionNodes(index)}
                 >
                   <Glyphicon glyph="tasks" />
                 </Button>

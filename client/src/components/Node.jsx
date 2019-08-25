@@ -32,12 +32,15 @@ class Node extends React.Component {
         </Panel.Heading>
         <Panel.Collapse>
           <Panel.Body>
-            {this.props.node.sensors.map(sensor => (
-              <SensorsList
-                key={sensor._id}
-                sensor={Object.assign({ nodeId: this.props.node._id }, sensor)}
-              />
-            ))}
+            {
+              // eslint-disable-next-line
+              this.props.node.sensors.map(sensor => (
+                <SensorsList
+                  key={sensor._id}
+                  sensor={Object.assign({ nodeId: this.props.node._id }, sensor)}
+                />
+              ))
+            }
           </Panel.Body>
         </Panel.Collapse>
       </Panel>

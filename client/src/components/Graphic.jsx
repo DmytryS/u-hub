@@ -62,16 +62,22 @@ class Graphic extends React.Component {
         .get(`/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/values?fromDate=${fromDate}&toDate=${toDate}`)
       data = response.data.map(point => [Date.parse(point.timestamp), point.value])
     } catch (err) {
+      // eslint-disable-next-line
       alert(err.response.data.details[0].message)
     }
 
+    const prevState = this.state.highchartsConfig
+
     this.setState({
-      highchartsConfig: Object.assign(this.state.highchartsConfig, {
-        series: [{
-          data,
-          name: sensorType,
-        }],
-      }),
+      highchartsConfig: Object.assign(
+        prevState,
+        {
+          series: [{
+            data,
+            name: sensorType,
+          }],
+        },
+      ),
     })
   }
 
@@ -98,14 +104,14 @@ class Graphic extends React.Component {
         <Label>From</Label>
         {' '}
         <DateTimePicker
-          onChange={this.handleFromDate.bind(this)}
+          onChange={this.handleFromDate}
           value={this.state.fromDate.toDate()}
         />
         {'    '}
         <Label>To</Label>
         {' '}
         <DateTimePicker
-          onChange={this.handleToDate.bind(this)}
+          onChange={this.handleToDate}
           value={this.state.toDate.toDate()}
         />
         <ReactHighcharts

@@ -7,3 +7,4 @@ jspm_packages
 package-lock.json
 .npmrc
 .vscode
+*.code-workspace

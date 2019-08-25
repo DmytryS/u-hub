@@ -36,6 +36,7 @@ class SensorControlType extends React.Component {
   }
 
   async handleChangeControlType(e) {
+    // eslint-disable-next-line
     if (confirm('Action nodes will be deleted. Continue ?')) {
       const control = e.target.value
 
