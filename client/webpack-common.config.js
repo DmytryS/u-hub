@@ -1,12 +1,12 @@
 /* eslint-disable import/no-extraneous-dependencies */
 
-const path = require('path');
-const webpack = require('webpack');
-const HappyPack = require('happypack');
-const precss = require('precss');
-const autoprefixer = require('autoprefixer');
-const Dotenv = require('dotenv-webpack');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const path = require('path')
+const webpack = require('webpack')
+const HappyPack = require('happypack')
+const precss = require('precss')
+const autoprefixer = require('autoprefixer')
+const Dotenv = require('dotenv-webpack')
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 
 module.exports = {
   plugins: [
@@ -49,7 +49,7 @@ module.exports = {
           options: {
             parser: 'postcss-scss',
             plugins() {
-              return [precss, autoprefixer];
+              return [precss, autoprefixer]
             },
           },
         },
@@ -71,7 +71,7 @@ module.exports = {
           options: {
             parser: 'postcss-scss',
             plugins() {
-              return [precss, autoprefixer];
+              return [precss, autoprefixer]
             },
           },
         },
@@ -153,4 +153,4 @@ module.exports = {
       chunks: 'all',
     },
   },
-};
+}

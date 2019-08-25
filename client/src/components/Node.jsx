@@ -1,13 +1,25 @@
-
-
-import React from 'react';
-import { Table, Panel } from 'react-bootstrap';
-import SensorsList from './SensorsList';
+import React from 'react'
+import PropTypes from 'prop-types'
+import { Panel } from 'react-bootstrap'
+import SensorsList from './SensorsList'
 
 class Node extends React.Component {
   constructor(...args) {
-    super(...args);
-    this.state = {};
+    super(...args)
+
+    this.state = {}
+  }
+
+  static get propTypes() {
+    return {
+      node: PropTypes.shape({
+        _id: PropTypes.string.isRequired,
+        name: PropTypes.string,
+        sensors: PropTypes.shape({
+          _id: PropTypes.string.isRequired,
+        }).isRequired,
+      }).isRequired,
+    }
   }
 
   render() {
@@ -29,8 +41,8 @@ class Node extends React.Component {
           </Panel.Body>
         </Panel.Collapse>
       </Panel>
-    );
+    )
   }
 }
 
-module.exports = Node;
+module.exports = Node

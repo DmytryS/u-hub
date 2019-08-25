@@ -1,10 +1,10 @@
 /* eslint-disable import/no-extraneous-dependencies */
-const webpack = require('webpack');
-const webpackMerge = require('webpack-merge');
-const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
+const webpack = require('webpack')
+const webpackMerge = require('webpack-merge')
+const path = require('path')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-const webpackCommon = require('./webpack-common.config');
+const webpackCommon = require('./webpack-common.config')
 
 module.exports = webpackMerge(webpackCommon, {
   mode: 'development',
@@ -40,4 +40,4 @@ module.exports = webpackMerge(webpackCommon, {
     inline: true,
     historyApiFallback: true,
   },
-});
+})

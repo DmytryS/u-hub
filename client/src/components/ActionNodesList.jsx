@@ -1,5 +1,6 @@
-import axios from 'axios';
-import React from 'react';
+import axios from 'axios'
+import PropTypes from 'prop-types'
+import React from 'react'
 import {
   // Table,
   Button,
@@ -11,12 +12,12 @@ import {
   Row,
   Col,
   ControlLabel,
-} from 'react-bootstrap';
+} from 'react-bootstrap'
 
 
 class ActionNodesList extends React.Component {
   constructor(props, context) {
-    super(props, context);
+    super(props, context)
 
     this.state = {
       actionNodes: [],
@@ -25,69 +26,9 @@ class ActionNodesList extends React.Component {
       newActionNodeTargetNodeId: '',
       newActionNodeTargetSensorId: '',
       newActionNodeTargetSensorType: '',
-      emitter: '',
+      // emitter: '',
       nodes: [],
-    };
-  }
-
-  async componentWillMount() {
-    await this.loadNodes();
-    await this.loadActionNodes();
-  }
-
-  async loadActionNodes() {
-    let getUrl;
-    const me = this;
-    if (this.props.emitter === 'SCHEDULE') {
-      getUrl = `/scheduled-actions/${this.props.schedulerId}/nodes`;
-    } else {
-      getUrl = `/nodes/${this.props.sensor.nodeId}`
-        + `/sensors/${this.props.sensor.sensorId}/type/${this.props.sensor.sensorType}`
-        + `/actions/${this.props.actionId}/nodes`;
     }
-    this.setState({
-      actionNodes: await axios.get(getUrl)
-        .then(response => response.data.map(actionNode => Object.assign(
-          actionNode,
-          {
-            targetNodeId: this.state.nodes.find(node => node.sensors.find(sensor => sensor._id === actionNode.targetSensorId))._id,
-          },
-        ))),
-    });
-  }
-
-  async loadNodes() {
-    this.setState({
-      nodes: await axios.get('/nodes?onlyActionNodes=true').then((result) => {
-        let filteredNodes = [];
-
-        if (this.props.emitter === 'NODE') {
-          result.data.forEach((node) => {
-            const filteredSensors = [];
-
-            node.sensors.forEach((sensor) => {
-              if (sensor._id === this.props.sensor.sensorId) {
-                sensor.types = sensor.types.filter(type => type.type !== this.props.sensor.sensorType);
-                if (sensor.types.length) {
-                  filteredSensors.push(sensor);
-                }
-              } else {
-                filteredSensors.push(sensor);
-              }
-            });
-            node.sensors = filteredSensors;
-            if (node.sensors.length) {
-              filteredNodes.push(node);
-            }
-          });
-        } else {
-          filteredNodes = result.data;
-        }
-
-        this.setDefaults(filteredNodes);
-        return filteredNodes;
-      }),
-    });
   }
 
   setDefaults(nodes) {
@@ -96,28 +37,107 @@ class ActionNodesList extends React.Component {
         newActionNodeTargetNodeId: nodes[0]._id,
         newActionNodeTargetSensorId: nodes[0].sensors[0]._id,
         newActionNodeTargetSensorType: nodes[0].sensors[0].types[0].type,
-      });
+      })
     }
+  }
+
+  static get propTypes() {
+    return {
+      // sensor: PropTypes.shape({
+      //   nodeId: PropTypes.string.isRequired,
+      //   sensorId: PropTypes.string.isRequired,
+      //   sensorType: PropTypes.string.isRequired,
+      //   controlType: PropTypes.string.isRequired,
+      // }).isRequired,
+      schedulerId: PropTypes.string,
+      actionId: PropTypes.string,
+    }
+  }
+
+  async componentWillMount() {
+    await this.loadNodes()
+    await this.loadActionNodes()
+  }
+
+  async loadActionNodes() {
+    let getUrl
+    const me = this
+    if (this.props.emitter === 'SCHEDULE') {
+      getUrl = `/scheduled-actions/${this.props.schedulerId}/nodes`
+    } else {
+      getUrl = `/nodes/${this.props.sensor.nodeId}`
+        + `/sensors/${this.props.sensor.sensorId}/type/${this.props.sensor.sensorType}`
+        + `/actions/${this.props.actionId}/nodes`
+    }
+
+    const response = await axios.get(getUrl)
+    const actionNodes = response.data.map(actionNode => Object.assign(
+      actionNode,
+      {
+        targetNodeId: this.state.nodes.find(node => node.sensors.find(sensor => sensor._id === actionNode.targetSensorId))._id,
+      },
+    ))
+
+
+    this.setState({
+      actionNodes,
+    })
+  }
+
+  async loadNodes() {
+    const response = await axios.get('/nodes?onlyActionNodes=true')
+
+    let nodes = []
+
+    if (this.props.emitter === 'NODE') {
+      response.data.forEach((node) => {
+        const filteredSensors = []
+
+        node.sensors.forEach((sensor) => {
+          if (sensor._id === this.props.sensor.sensorId) {
+            sensor.types = sensor.types.filter(type => type.type !== this.props.sensor.sensorType)
+            if (sensor.types.length) {
+              filteredSensors.push(sensor)
+            }
+          } else {
+            filteredSensors.push(sensor)
+          }
+        })
+        node.sensors = filteredSensors
+        if (node.sensors.length) {
+          nodes.push(node)
+        }
+      })
+    } else {
+      nodes = result.data
+    }
+
+    this.setDefaults(nodes)
+
+
+    this.setState({
+      nodes,
+    })
   }
 
   async createActionNode() {
     if (this.validateActionNodeValue(false) === 'success'
       && this.state.newActionNodeTargetSensorId
       && this.state.newActionNodeTargetSensorType) {
-      let createUrl;
+      let createUrl
       if (this.props.emitter === 'SCHEDULE') {
-        createUrl = `/scheduled-actions/${this.props.schedulerId}/nodes`;
+        createUrl = `/scheduled-actions/${this.props.schedulerId}/nodes`
       } else {
         createUrl = `/nodes/${this.props.sensor.nodeId}/sensors/${this.props.sensor.sensorId}`
-          + `/type/${this.props.sensor.sensorType}/actions/${this.props.actionId}/nodes`;
+          + `/type/${this.props.sensor.sensorType}/actions/${this.props.actionId}/nodes`
       }
 
       await axios.post(createUrl, {
         valueToChangeOn: this.state.newActionNodeValueToChangeOn,
         targetSensorId: this.state.newActionNodeTargetSensorId,
         targetSensorType: this.state.newActionNodeTargetSensorType,
-      }).catch(err => alert(err.response.data.message));
-      await this.loadActionNodes();
+      }).catch(err => alert(err.response.data.message))
+      await this.loadActionNodes()
     }
   }
 
@@ -125,14 +145,14 @@ class ActionNodesList extends React.Component {
     if (this.validateActionNodeValue(false) === 'success'
       && this.state.actionNodes[index].newActionNodeTargetSensorId
       && this.state.actionNodes[index].newActionNodeTargetSensorType) {
-      const actionToUpdate = this.state.actionNodes[index];
-      let updateUrl;
+      const actionToUpdate = this.state.actionNodes[index]
+      let updateUrl
 
       if (this.props.emitter === 'SCHEDULE') {
-        updateUrl = `/scheduled-actions/${this.props.schedulerId}/nodes/${actionToUpdate._id}`;
+        updateUrl = `/scheduled-actions/${this.props.schedulerId}/nodes/${actionToUpdate._id}`
       } else {
         updateUrl = `/nodes/${this.props.sensor.nodeId}/sensors/${this.props.sensor.sensorId}`
-          + `/type/${this.props.sensor.sensorType}/actions/${this.props.actionId}/nodes/${actionToUpdate._id}`;
+          + `/type/${this.props.sensor.sensorType}/actions/${this.props.actionId}/nodes/${actionToUpdate._id}`
       }
 
       await axios.post(updateUrl,
@@ -140,68 +160,74 @@ class ActionNodesList extends React.Component {
           valueToChangeOn: actionToUpdate.valueToChangeOn,
           targetSensorId: actionToUpdate.targetSensorId,
           targetSensorType: actionToUpdate.targetSensorType,
-        });
+        })
 
 
-      await this.loadActionNodes();
+      await this.loadActionNodes()
     }
   }
 
   async deleteActionNode(index) {
-    const actionNodeToDelete = this.state.actionNodes[index];
-    let deleteUrl;
+    const actionNodeToDelete = this.state.actionNodes[index]
+    let deleteUrl
     if (this.props.emitter === 'SCHEDULE') {
-      deleteUrl = `/scheduled-actions/${this.props.schedulerId}/nodes/${actionNodeToDelete._id}`;
+      deleteUrl = `/scheduled-actions/${this.props.schedulerId}/nodes/${actionNodeToDelete._id}`
     } else {
       deleteUrl = `/nodes/${this.props.sensor.nodeId}/sensors/${this.props.sensor.sensorId}`
-        + `/type/${this.props.sensor.sensorType}/actions/${this.props.actionId}/nodes/${actionNodeToDelete._id}`;
+        + `/type/${this.props.sensor.sensorType}/actions/${this.props.actionId}/nodes/${actionNodeToDelete._id}`
     }
-    await axios.delete(deleteUrl);
-    await this.loadActionNodes();
+    await axios.delete(deleteUrl)
+    await this.loadActionNodes()
   }
 
   handleEditNode(index, e) {
-    const { actionNodes } = this.state;
-    const defaultSensor = this.state.nodes.find(node => node._id === e.target.value).sensors[0];
+    const { actionNodes } = this.state
+    const defaultSensor = this.state.nodes.find(node => node._id === e.target.value).sensors[0]
 
-    actionNodes[index].targetNodeId = e.target.value;
-    actionNodes[index].targetSensorId = defaultSensor._id;
-    actionNodes[index].targetSensorType = defaultSensor.types[0].type;
+    actionNodes[index].targetNodeId = e.target.value
+    actionNodes[index].targetSensorId = defaultSensor._id
+    actionNodes[index].targetSensorType = defaultSensor.types[0].type
 
-    this.setState({ actionNodes });
+    this.setState({ actionNodes })
   }
 
   handleEditSensor(index, e) {
-    const { actionNodes } = this.state;
+    const { actionNodes } = this.state
     const sensor = this.state.nodes.find(node => node._id === actionNodes[index].targetNodeId).sensors
-      .find(sensor => sensor._id === e.target.value);
+      .find(sensor => sensor._id === e.target.value)
 
-    actionNodes[index].targetSensorId = sensor._id;
-    actionNodes[index].targetSensorType = sensor.types[0].type;
+    actionNodes[index].targetSensorId = sensor._id
+    actionNodes[index].targetSensorType = sensor.types[0].type
 
-    this.setState({ actionNodes });
+    this.setState({ actionNodes })
   }
 
   handleEditSensorType(index, e) {
-    const { actionNodes } = this.state;
+    const { actionNodes } = this.state
 
-    actionNodes[index].targetSensorType = e.target.value;
+    actionNodes[index].targetSensorType = e.target.value
 
-    this.setState({ actionNodes });
+    this.setState({ actionNodes })
   }
 
   handleEditValue(index, e) {
-    const { actionNodes } = this.state;
-    actionNodes[index].valueToChangeOn = e.target.value;
-    this.setState({ actionNodes });
+    const { actionNodes } = this.state
+    actionNodes[index].valueToChangeOn = e.target.value
+    this.setState({ actionNodes })
   }
 
   validateActionNodeValue(index) {
-    const valueToChangeOn = index !== false ? this.state.actionNodes[index].valueToChangeOn : this.state.newActionNodeValueToChangeOn;
-    if (!isNaN(valueToChangeOn) && valueToChangeOn !== '') {
-      return 'success';
+    const valueToChangeOn = false
+    if (index !== false) {
+      this.state.actionNodes[index].valueToChangeOn
+    } else {
+      this.state.newActionNodeValueToChangeOn
     }
-    return 'error';
+
+    if (!isNaN(valueToChangeOn) && valueToChangeOn !== '') {
+      return 'success'
+    }
+    return 'error'
   }
 
   render() {
@@ -354,8 +380,8 @@ class ActionNodesList extends React.Component {
           ))
         }
       </Grid>
-    );
+    )
   }
 }
 
-module.exports = ActionNodesList;
+module.exports = ActionNodesList

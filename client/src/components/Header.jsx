@@ -1,10 +1,12 @@
-import React from 'react';
-import { Navbar } from 'react-bootstrap';
-import { Link } from 'react-router-dom';
+import React from 'react'
+import { Navbar } from 'react-bootstrap'
+import { Link } from 'react-router-dom'
 
 class Header extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
+
+    this.state = {}
   }
 
   render() {
@@ -19,8 +21,8 @@ class Header extends React.Component {
           </Navbar.Brand>
         </Navbar.Header>
       </Navbar>
-    );
+    )
   }
 }
 
-module.exports = Header;
+module.exports = Header

@@ -1,16 +1,19 @@
-
-
-import React from 'react';
-import * as reactBootstrap from 'react-bootstrap';
-import axios from 'axios';
+import React from 'react'
+import PropTypes from 'prop-types'
 
 class Schedule extends React.Component {
   constructor(...args) {
-    super(...args);
+    super(...args)
+
+    this.state = {}
   }
 
-  componentDidMount() {
-
+  static get propTypes() {
+    return {
+      node: PropTypes.shape({
+        name: PropTypes.string.isRequired,
+      }).isRequired,
+    }
   }
 
   render() {
@@ -18,8 +21,8 @@ class Schedule extends React.Component {
       <div>
         <span>{this.props.node.name}</span>
       </div>
-    );
+    )
   }
 }
 
-module.exports = Node;
+export default Schedule

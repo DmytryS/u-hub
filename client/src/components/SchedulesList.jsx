@@ -1,4 +1,4 @@
-import React from 'react';
+import React from 'react'
 import {
   Grid,
   Row,
@@ -10,23 +10,23 @@ import {
   Button,
   ControlLabel,
   Panel,
-} from 'react-bootstrap';
-import axios from 'axios';
-import cronParser from 'cron-parser';
-import Header from './Header';
-import ActioNodesList from './ActionNodesList';
+} from 'react-bootstrap'
+import axios from 'axios'
+import cronParser from 'cron-parser'
+import Header from './Header'
+import ActioNodesList from './ActionNodesList'
 
 class SchedulesList extends React.Component {
   constructor(...args) {
-    super(...args);
+    super(...args)
 
     this.state = {
       newScheduleName: '',
       newCronString: '* * * * * *',
       newScheduleEnabled: true,
       schedules: [],
-      showActionNodes: false,
-    };
+      // showActionNodes: false,
+    }
   }
 
   async loadSchedules() {
@@ -34,11 +34,11 @@ class SchedulesList extends React.Component {
       schedules: await axios
         .get('/scheduled-actions')
         .then(result => result.data),
-    });
+    })
   }
 
   async componentDidMount() {
-    await this.loadSchedules();
+    await this.loadSchedules()
   }
 
   async handleCreateSchedule() {
@@ -52,9 +52,9 @@ class SchedulesList extends React.Component {
           schedule: this.state.newCronString,
           enabled: this.state.newScheduleEnabled,
         })
-        .catch(err => alert(err.response.data.message));
+        .catch(err => alert(err.response.data.message))
 
-      await this.loadSchedules();
+      await this.loadSchedules()
     }
   }
 
@@ -63,71 +63,71 @@ class SchedulesList extends React.Component {
       this.validateScheduleName(index) === 'success'
       && this.validateCronString(index) === 'success'
     ) {
-      const scheduleToUpdate = this.state.schedules[index];
+      const scheduleToUpdate = this.state.schedules[index]
 
       await axios.post(`/scheduled-actions/${scheduleToUpdate._id}`, {
         name: scheduleToUpdate.name,
         schedule: scheduleToUpdate.schedule,
         enabled: scheduleToUpdate.enabled,
-      });
-      await this.loadSchedules();
+      })
+      await this.loadSchedules()
     }
   }
 
   async deleteSchedule(index) {
-    const scheduleToDelete = this.state.schedules[index];
+    const scheduleToDelete = this.state.schedules[index]
 
-    await axios.delete(`/scheduled-actions/${scheduleToDelete._id}`);
-    await this.loadSchedules();
+    await axios.delete(`/scheduled-actions/${scheduleToDelete._id}`)
+    await this.loadSchedules()
   }
 
   handleEditName(index, e) {
-    const { schedules } = this.state;
-    schedules[index].name = e.target.value;
-    this.setState({ schedules });
+    const { schedules } = this.state
+    schedules[index].name = e.target.value
+    this.setState({ schedules })
   }
 
   handleEditScheduleString(index, e) {
-    const { schedules } = this.state;
-    schedules[index].schedule = e.target.value;
-    this.setState({ schedules });
+    const { schedules } = this.state
+    schedules[index].schedule = e.target.value
+    this.setState({ schedules })
   }
 
   handleEditEnabled(index, e) {
-    const { schedules } = this.state;
-    schedules[index].enabled = e.target.checked;
-    this.setState({ schedules });
+    const { schedules } = this.state
+    schedules[index].enabled = e.target.checked
+    this.setState({ schedules })
   }
 
   hanleShowActionNodes(index) {
-    const { schedules } = this.state;
-    schedules[index].showActionNodes = !schedules[index].showActionNodes;
-    this.setState({ schedules });
+    const { schedules } = this.state
+    schedules[index].showActionNodes = !schedules[index].showActionNodes
+    this.setState({ schedules })
   }
 
   validateCronString(index) {
     const cronString = index !== false
       ? this.state.schedules[index].schedule
-      : this.state.newCronString;
+      : this.state.newCronString
     try {
       if (cronString.length === 0) {
-        return 'error';
+        return 'error'
       }
-      cronParser.parseExpression(cronString);
-      return 'success';
+      cronParser.parseExpression(cronString)
+      return 'success'
     } catch (err) {
-      return 'error';
+      return 'error'
     }
   }
 
   validateScheduleName(index) {
     const length = index !== false
       ? this.state.schedules[index].name.length
-      : this.state.newScheduleName.length;
+      : this.state.newScheduleName.length
     if (length > 0) {
-      return 'success';
+      return 'success'
     }
-    return 'error';
+    return 'error'
   }
 
   render() {
@@ -244,7 +244,7 @@ class SchedulesList extends React.Component {
             </Row>
             <Panel
               expanded={this.state.schedules[index].showActionNodes}
-              onToggle={() => {}}
+              onToggle={() => { }}
             >
               <Panel.Collapse>
                 <Panel.Body>
@@ -258,8 +258,8 @@ class SchedulesList extends React.Component {
           </Grid>
         ))}
       </div>
-    );
+    )
   }
 }
 
-module.exports = SchedulesList;
+module.exports = SchedulesList

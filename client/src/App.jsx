@@ -1,12 +1,12 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import { BrowserRouter as Router, Route } from 'react-router-dom';
+import React from 'react'
+import ReactDOM from 'react-dom'
+import { BrowserRouter as Router, Route } from 'react-router-dom'
 // import { createBrowserHistory } from 'history';
 
-import NodesList from './components/NodesList';
-import SchedulesList from './components/SchedulesList';
-import SensorSettings from './components/SensorSettings';
-import ScheduleSettings from './components/ScheduleSettings';
+import NodesList from './components/NodesList'
+import SchedulesList from './components/SchedulesList'
+import SensorSettings from './components/SensorSettings'
+import ScheduleSettings from './components/ScheduleSettings'
 
 // const history = createBrowserHistory();
 
@@ -22,6 +22,6 @@ const App = () => (
       />
     </div>
   </Router>
-);
+)
 
-ReactDOM.render(<App />, document.getElementById('root'));
+ReactDOM.render(<App />, document.getElementById('root'))

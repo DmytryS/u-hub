@@ -1,12 +1,12 @@
 
 
-import React from 'react';
-import Navbar from './Header';
+import React from 'react'
+import Navbar from './Header'
 
 class ScheduleSettings extends React.Component {
   constructor(...args) {
-    super(...args);
-    this.state = {};
+    super(...args)
+    this.state = {}
   }
 
   render() {
@@ -15,8 +15,8 @@ class ScheduleSettings extends React.Component {
         <Navbar />
         <h1>Settings</h1>
       </div>
-    );
+    )
   }
 }
 
-module.exports = ScheduleSettings;
+module.exports = ScheduleSettings

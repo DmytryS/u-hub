@@ -1,56 +1,68 @@
-import React from 'react';
+import React from 'react'
+import PropTypes from 'prop-types'
 import {
   Button,
   FormGroup,
   ControlLabel,
   FormControl,
-  FieldGroup,
-} from 'react-bootstrap';
-import axios from 'axios';
+} from 'react-bootstrap'
+import axios from 'axios'
 
 class SensorControlType extends React.Component {
   constructor(props) {
-    super(props);
+    super(props)
 
     this.state = {
       controlType: 'MANUAL',
       valueToSet: 0,
-    };
+    }
+  }
+
+  static get propTypes() {
+    return {
+      sensor: PropTypes.shape({
+        nodeId: PropTypes.string.isRequired,
+        sensorId: PropTypes.string.isRequired,
+        sensorType: PropTypes.string.isRequired,
+        controlType: PropTypes.string.isRequired,
+      }).isRequired,
+    }
   }
 
   componentWillMount() {
     this.setState({
       controlType: this.props.sensor.controlType,
-    });
+    })
   }
 
   async handleChangeControlType(e) {
     if (confirm('Action nodes will be deleted. Continue ?')) {
-      const control = e.target.value;
+      const control = e.target.value
+
       await axios
         .post(
           `/nodes/${this.props.sensor.nodeId}`
-            + `/sensors/${this.props.sensor.sensorId}/type/${
-              this.props.sensor.sensorType
-            }/change-control-type`,
+          + `/sensors/${this.props.sensor.sensorId}/type/${
+            this.props.sensor.sensorType
+          }/change-control-type`,
           { control },
         )
-        .then(response => this.setState({ controlType: control }));
+
+      this.setState({ controlType: control })
     }
   }
 
   async handleSetNodeValue() {
+    const { nodeId, sensorId, sensorType } = this.props.sensor
+
     await axios.post(
-      `/nodes/${this.props.sensor.nodeId}`
-        + `/sensors/${this.props.sensor.sensorId}/type/${
-          this.props.sensor.sensorType
-        }/values`,
+      `/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/values`,
       { value: this.state.valueToSet },
-    );
+    )
   }
 
   handleValueToSet(e) {
-    this.setState({ valueToSet: e.target.value });
+    this.setState({ valueToSet: e.target.value })
   }
 
   render() {
@@ -63,7 +75,7 @@ class SensorControlType extends React.Component {
               componentClass="select"
               placeholder="select"
               value={this.state.controlType}
-              onChange={this.handleChangeControlType.bind(this)}
+              onChange={this.handleChangeControlType}
             >
               <option value="MANUAL">Manual</option>
               <option value="SCHEDULED">Scheduled</option>
@@ -78,17 +90,17 @@ class SensorControlType extends React.Component {
               type="text"
               value={this.state.value}
               placeholder="Enter text"
-              onChange={this.handleValueToSet.bind(this)}
+              onChange={this.handleValueToSet}
             />
             <br />
-            <Button onClick={this.handleSetNodeValue.bind(this)} block>
+            <Button onClick={this.handleSetNodeValue} block>
               Set value
             </Button>
           </FormGroup>
         )}
       </div>
-    );
+    )
   }
 }
 
-module.exports = SensorControlType;
+module.exports = SensorControlType

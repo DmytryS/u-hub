@@ -1,25 +1,25 @@
-import React from 'react';
-import { fetch } from '../lib';
-import Navbar from './Header';
-import Node from './Node';
+import React from 'react'
+import { fetch } from '../lib'
+import Navbar from './Header'
+import Node from './Node'
 
 class NodesList extends React.Component {
   constructor(...args) {
-    super(...args);
+    super(...args)
 
     this.state = {
       nodesList: [],
-    };
+    }
   }
 
   async getAllNodes() {
     this.setState({
       nodesList: await fetch.get('/nodes').then(result => result.data),
-    });
+    })
   }
 
   async componentDidMount() {
-    await this.getAllNodes();
+    await this.getAllNodes()
   }
 
   render() {
@@ -30,8 +30,8 @@ class NodesList extends React.Component {
           <Node key={node._id} node={node} />
         ))}
       </div>
-    );
+    )
   }
 }
 
-module.exports = NodesList;
+module.exports = NodesList
