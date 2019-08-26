@@ -40,7 +40,10 @@ const resolver = async (req, res, next) => {
   try {
     output = await amqp.request(service, message)
   } catch (err) {
-    output = err
+    output = {
+      message: err.message,
+      stack: err.stack
+    }
   }
 
   res.json(output)
