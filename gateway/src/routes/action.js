@@ -3,11 +3,11 @@ import resolver from '../resolver.js'
 
 const router = express.Router()
 
-router.route('/actions')
+router.route('/action')
   .get(resolver)
   .post(resolver)
 
-router.route('/actions/:actionId')
+router.route('/action/:actionId')
   .put(resolver)
   .delete(resolver)
 

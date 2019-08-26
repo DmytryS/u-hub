@@ -3,10 +3,10 @@ import resolver from '../resolver.js'
 
 const router = express.Router()
 
-router.route('/devices/:deviceId/values')
+router.route('/device/:deviceId/values')
   .get(resolver)
 
-router.route('/devices/:deviceId/sensors/:sensorId/values')
+router.route('/device/:deviceId/sensors/:sensorId/values')
   .post(resolver)
   .get(resolver)
 

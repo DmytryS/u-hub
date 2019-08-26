@@ -3,8 +3,9 @@ import resolver from '../resolver.js'
 
 const router = express.Router()
 
-router.route('/devices')
+router.route('/device')
   .get(resolver)
+
 
 
 // router.route('/devices/:deviceId/sensors/:sensorId/type/:type/change-control-type')

@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: device
+  labels:
+    app: device
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: device
+  template:
+    metadata:
+      labels:
+        app: device
+    spec:
+      containers:
+      - name: device
+        image: loginkr/u-hub_device:latest
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: amqp
+        - configMapRef:
+            name: mongo
