@@ -4,4 +4,5 @@ metadata:
   name: gateway
 data:
   BASE_URL: "api/v1"
-  PORT: "80"
+  HTTP_HOST: "0.0.0.0"
+  HTTP_PORT: "80"

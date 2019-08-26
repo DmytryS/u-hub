@@ -7,7 +7,7 @@ import errors from 'restify-errors' // { HttpError, NotFoundError }
 import { logger } from './lib/index.js'
 import * as routes from './routes/index.js'
 
-const { BASE_URL, PORT } = process.env
+const { BASE_URL, HTTP_PORT, HTTP_HOST } = process.env
 const app = express()
 
 app.use(cors())
@@ -41,7 +41,7 @@ app.use(function (err, req, res, next) {
   }
 })
 
-http.createServer(app).listen(PORT, () => logger.info(`Gateway started on ${PORT}`))
+http.createServer(app).listen(HTTP_PORT, HTTP_HOST, () => logger.info(`Gateway listening http://${HTTP_HOST}:${HTTP_PORT}`))
 
 const gracefulShutdown = () => this.stop()
   .then(() => logger.info('Service stopped, terminating...'))
