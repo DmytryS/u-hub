@@ -5,7 +5,7 @@ import remove from './remove.js'
 import update from './update.js'
 
 const listener = (message) => {
-  logger.info('MESSAGE:', message)
+  logger.info(`MESSAGE: ${JSON.stringify(message)}`)
 
   switch (message.info.action) {
     case 'CREATE':

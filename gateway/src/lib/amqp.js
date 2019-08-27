@@ -119,6 +119,8 @@ export const listen = async (queue, callback) => {
           correlationId
         }
       )
+
+      logger.info(`[AMQP] Sent response to ${replyTo} with correlationId ${correlationId}`)
     }
 
     await channel.ack(message)

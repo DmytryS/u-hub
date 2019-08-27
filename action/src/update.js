@@ -18,10 +18,7 @@ export default async (message) => {
 
   await isSensorExists(message.data.target)
 
-  action.emitter = message.data.emitter
-  action.emitterType = message.data.emitterType
-  action.target = message.data.target
-  action.valueToChangeOn = message.data.valueToChangeOn
+  Object.assign(action, message.data)
 
   return action.save()
 }

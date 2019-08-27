@@ -23,10 +23,10 @@ spec:
             name: amqp
         - configMapRef:
             name: mongo
-        volumeMounts:
-        - name: models
-          mountPath: /usr/src/app/src/models
-      volumes:
-        - name: models
-          configMap:
-            name: models
+      #   volumeMounts:
+      #   - name: models
+      #     mountPath: /usr/src/app/src/models
+      # volumes:
+      #   - name: models
+      #     configMap:
+      #       name: models

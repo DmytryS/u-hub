@@ -3,4 +3,4 @@ import { isDeviceExists } from './helpers/index.js'
 
 export const readOne = message => isDeviceExists(message.data.id)
 
-export const readAll = () => Device.find({})
+export const readAll = (message) => Device.find({ ...message.data })

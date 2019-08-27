@@ -41,7 +41,9 @@ app.use(function (err, req, res, next) {
   }
 })
 
-http.createServer(app).listen(HTTP_PORT, HTTP_HOST, () => logger.info(`Gateway listening http://${HTTP_HOST}:${HTTP_PORT}`))
+const onReady = () => logger.info(`[HTTP] Gateway listening http://${HTTP_HOST}:${HTTP_PORT}`)
+
+http.createServer(app).listen(HTTP_PORT, HTTP_HOST, onReady)
 
 const gracefulShutdown = () => this.stop()
   .then(() => logger.info('Service stopped, terminating...'))
