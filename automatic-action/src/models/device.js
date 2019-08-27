@@ -17,7 +17,6 @@ const deviceSchema = new Schema({
   sensors: [sensorSchema],
   registered: {
     type: Boolean,
-    required: true,
   },
 })
 

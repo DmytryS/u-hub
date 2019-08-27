@@ -36,9 +36,17 @@ const resolver = async (req, res, next) => {
     }
   }
 
+  if (path.length === 2) {
+    message.data.id = path[1]
+  }
+
   let output = false
   try {
     output = await amqp.request(service, message)
+
+    output.id = output._id
+    delete output._id
+    delete output.__v
   } catch (err) {
     output = {
       message: err.message,

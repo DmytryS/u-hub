@@ -1,7 +1,7 @@
 import { isAutomaticActionExists } from './helpers/index.js'
 
-export default async (message) => {
-  const automatiAction = await isAutomaticActionExists(message.data.id)
+export default async (data) => {
+  const automatiAction = await isAutomaticActionExists(data.id)
 
   return automatiAction.remove()
 }

@@ -1,7 +1,7 @@
 import { isActionExists } from './helpers/index.js'
 
-export default async (message) => {
-  const action = await isActionExists(message.data.id)
+export default async (data) => {
+  const action = await isActionExists(data.id)
 
   return action.remove()
 }

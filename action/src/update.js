@@ -5,20 +5,20 @@ import {
   isSensorExists,
 } from './helpers/index.js'
 
-export default async (message) => {
-  const action = await isActionExists(message.data.id)
+export default async (data) => {
+  const action = await isActionExists(data.id)
 
-  const emitterType = message.data.emitterType === 'AUTOMATIC' ? 'AutomaticAction' : 'ScheduledAction'
+  const emitterType = data.emitterType === 'AUTOMATIC' ? 'AutomaticAction' : 'ScheduledAction'
 
   if (emitterType === 'AutomaticAction') {
-    await isAutomaticActionExists(message.data.emitter)
+    await isAutomaticActionExists(data.emitter)
   } else {
-    await isScheduledActionExists(message.data.emitter)
+    await isScheduledActionExists(data.emitter)
   }
 
-  await isSensorExists(message.data.target)
+  await isSensorExists(data.target)
 
-  Object.assign(action, message.data)
+  Object.assign(action, data)
 
   return action.save()
 }

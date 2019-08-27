@@ -1,10 +1,9 @@
 import { isScheduledActionExists } from './helpers/index.js'
 
-export default async (message) => {
-  const deviceToUpdate = await isScheduledActionExists(message.data.id)
+export default async (data) => {
+  const scheduledAction = await isScheduledActionExists(data.id)
 
-  deviceToUpdate.name = message.data.name
-  deviceToUpdate.registered = true
+  Object.assign(scheduledAction, data)
 
-  return deviceToUpdate.save()
+  return scheduledAction.save()
 }

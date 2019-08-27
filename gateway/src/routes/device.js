@@ -5,6 +5,12 @@ const router = express.Router()
 
 router.route('/device')
   .get(resolver)
+// .post(resolver)
+
+// router.route('/device/:deviceId')
+//   .delete(resolver)
+//   .put(resolver)
+//   .get(resolver)
 
 
 

@@ -3,14 +3,14 @@ import {
   isSensorExists,
 } from './helpers/index.js'
 
-export default async (message) => {
-  const automaticAction = await isAutomaticActionExists(message.data.id)
+export default async (data) => {
+  const automaticAction = await isAutomaticActionExists(data.id)
 
-  if (message.data.sensor) {
-    await isSensorExists(message.data.sensor)
+  if (data.sensor) {
+    await isSensorExists(data.sensor)
   }
 
-  Object.assign(automaticAction, message.data)
+  Object.assign(automaticAction, data)
 
   return automaticAction.save()
 }

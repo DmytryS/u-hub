@@ -1,6 +1,6 @@
 import Action from './models/action.js'
 import { isActionExists } from './helpers/index.js'
 
-export const readOne = message => isActionExists(message.data.id)
+export const readOne = data => isActionExists(data.id)
 
-export const readAll = message => Action.find({ ...message.data })
+export const readAll = data => Action.find({ ...data })

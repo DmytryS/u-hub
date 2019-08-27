@@ -1,7 +1,7 @@
 import { isScheduledActionExists } from './helpers/index.js'
 
-export default async function (message) {
-  const deviceToRemove = await isScheduledActionExists(message.data.id)
+export default async function (data) {
+  const deviceToRemove = await isScheduledActionExists(data.id)
 
   return deviceToRemove.remove()
 }

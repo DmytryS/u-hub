@@ -1,6 +1,6 @@
 import AutomaticAction from './models/action.js'
 import { isAutomaticActionExists } from './helpers/index.js'
 
-export const readOne = message => isAutomaticActionExists(message.data.id)
+export const readOne = data => isAutomaticActionExists(data.id)
 
-export const readAll = message => AutomaticAction.find({ ...message.data })
+export const readAll = data => AutomaticAction.find({ ...data })

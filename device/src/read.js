@@ -1,6 +1,6 @@
 import { Device } from './models/index.js'
 import { isDeviceExists } from './helpers/index.js'
 
-export const readOne = message => isDeviceExists(message.data.id)
+export const readOne = data => isDeviceExists(data.id)
 
-export const readAll = (message) => Device.find({ ...message.data })
+export const readAll = (data) => Device.find({ ...data })
