@@ -1,5 +1,5 @@
 {
-  "name": "homekit-server",
+  "name": "@u-hub/homekit-server",
   "version": "0.0.1",
   "description": "HomeKit Accessory Server microservice",
   "main": "src/index.js",
@@ -27,6 +27,8 @@
   "homepage": "https://github.com/DmytryS/u-hub#readme",
   "dependencies": {
     "amqplib": "^0.5.5",
+    "chalk": "^2.4.2",
+    "crypto": "^1.0.1",
     "dotenv": "^8.0.0",
     "hap-nodejs": "^0.4.52",
     "mongoose": "^5.6.9",
