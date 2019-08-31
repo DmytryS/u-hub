@@ -17,4 +17,3 @@ add lines:
 ```
 
 edit path to project in `nfs/provisioning/pvc.yml`
-``
