@@ -4,7 +4,8 @@ import express from 'express'
 import cors from 'cors'
 import apolloServerExpress from 'apollo-server-express'
 import { logger } from './lib/index.js'
-import * as resolver from './resolvers/index.js'
+// import * as resolver from './resolvers/index.js'
+import resolver from './resolver.js'
 import typeDefs from './schema.js'
 
 const { BASE_URL, HTTP_PORT, HTTP_HOST } = process.env
@@ -15,31 +16,43 @@ app.use(cors())
 
 // const schema = makeExecutableSchema({ resolvers, typeDefs });
 const resolvers = {
-  // device: resolver.device.query,
-  // action: resolver.action.query,
-  // automaticAction: resolver.automaticAction.query,
-  // scheduledAction: resolver.scheduledAction.query,
-  // value: resolver.value.query,
-  // sensors: resolver.value.mutation,
-
+  // Query: {
+  //   device: resolver.device.query,
+  //   devices: resolver.device.query,
+  //   action: resolver.action.query,
+  //   automaticAction: resolver.automaticAction.query,
+  //   scheduledAction: resolver.scheduledAction.query,
+  //   value: resolver.value.query,
+  //   values: resolver.value.query,
+  // },
+  // Mutation: {
+  //   device: resolver.device.mutation,
+  //   action: resolver.action.mutation,
+  //   automaticAction: resolver.automaticAction.mutation,
+  //   scheduledAction: resolver.scheduledAction.mutation,
+  //   value: resolver.value.mutation,
+  // },
+  // Device: {
+  //   sensors: resolver.sensor.query,
+  // },
   Query: {
-    device: resolver.device.query,
-    devices: resolver.device.query,
-    action: resolver.action.query,
-    automaticAction: resolver.automaticAction.query,
-    scheduledAction: resolver.scheduledAction.query,
-    value: resolver.value.query,
-    values: resolver.value.query,
+    device: resolver,
+    devices: resolver,
+    action: resolver,
+    automaticAction: resolver,
+    scheduledAction: resolver,
+    value: resolver,
+    // values: resolver,
   },
   Mutation: {
-    device: resolver.device.mutation,
-    action: resolver.action.mutation,
-    automaticAction: resolver.automaticAction.mutation,
-    scheduledAction: resolver.scheduledAction.mutation,
-    value: resolver.value.mutation,
+    device: resolver,
+    action: resolver,
+    automaticAction: resolver,
+    scheduledAction: resolver,
+    value: resolver,
   },
   Device: {
-    sensors: resolver.sensor.query,
+    sensors: resolver,
   },
 }
 
