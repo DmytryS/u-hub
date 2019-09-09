@@ -1,0 +1,32 @@
+enum Condition {
+  LESS
+  MORE
+  MORE_OR_EQUAL
+  LESS_OR_EQUAL
+  NOT_EQUAL
+  EQUAL
+}
+
+type AutomaticAction {
+  id: ID
+  sensor: ID
+  valueToCompare: Int
+  condition: Condition
+  enabled: Boolean
+}
+
+input AutomaticActionInput {
+  id: ID
+  emitter: ID
+  valueToCompare: Int
+  condition: Condition
+  enabled: Boolean
+}
+
+extend type Query {
+  automaticAction(input: AutomaticActionInput!, sort: String): AutomaticAction
+}
+
+extend type Mutation {
+  automaticAction(input: AutomaticActionInput!, sort: String): AutomaticAction
+}

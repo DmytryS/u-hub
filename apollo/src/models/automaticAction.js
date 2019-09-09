@@ -11,7 +11,7 @@ const conditionList = {
 const automaticActionSchema = new Schema({
   sensor: {
     type: ObjectId,
-    ref: 'Sensor',
+    ref: 'sensor',
     required: true,
   },
   valueToCompare: {
@@ -26,7 +26,12 @@ const automaticActionSchema = new Schema({
   enabled: {
     type: Boolean, required: true,
   },
+  action: {
+    type: ObjectId,
+    ref: 'action',
+    required: true,
+  }
 })
 
-delete mongoose.connection.models.AutomaticAction
-export default mongoose.model('AutomaticAction', automaticActionSchema)
+delete mongoose.connection.models.automaticAction
+export default mongoose.model('automaticAction', automaticActionSchema)

@@ -7,17 +7,12 @@ const valueSchema = new Schema(
   {
     sensor: {
       type: ObjectId,
-      ref: 'Sensor',
+      ref: 'sensor',
       required: true,
     },
     value: {
       type: Number,
       required: true,
-    },
-    type: {
-      type: String,
-      // enum: nodeTypes,
-      requiered: true,
     },
   },
   {
@@ -25,5 +20,5 @@ const valueSchema = new Schema(
   },
 )
 
-delete mongoose.connection.models.Value
-export default mongoose.model('Value', valueSchema)
+delete mongoose.connection.models.value
+export default mongoose.model('value', valueSchema)

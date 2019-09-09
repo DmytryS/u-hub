@@ -4,7 +4,7 @@ const { Schema } = mongoose
 const { ObjectId } = Schema
 
 const emitterType = {
-  values: ['AutomaticAction', 'ScheduledAction'],
+  values: ['dutomaticAction', 'scheduledAction'],
   message: 'node type must be either of \'AutomaticAction\' or \'ScheduledAction\'',
 }
 
@@ -21,7 +21,7 @@ const actionSchema = new Schema({
   },
   target: {
     type: ObjectId,
-    ref: 'Device.sensor',
+    ref: 'device.sensor',
     required: true,
   },
   valueToChangeOn: {
@@ -30,5 +30,5 @@ const actionSchema = new Schema({
   },
 })
 
-delete mongoose.connection.models.Action
-export default mongoose.model('Action', actionSchema)
+delete mongoose.connection.models.action
+export default mongoose.model('action', actionSchema)

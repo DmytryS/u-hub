@@ -1,0 +1,8 @@
+type Sensor {
+  id: ID
+  type: String
+}
+
+input SensorInput {
+  type: String
+}

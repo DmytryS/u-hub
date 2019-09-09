@@ -1,0 +1,21 @@
+type Value {
+  id: ID!
+  sensor: ID!
+  value: Int!
+  createdAt: Date!
+}
+
+input ValueInput {
+  id: ID
+  sensor: ID
+  value: Int
+}
+
+extend type Query {
+  value(input: ValueInput!, sort: String): Value
+  values(input: ValueInput!, sort: String): [Value]
+}
+
+extend type Mutation {
+  value(input: ValueInput!, sort: String): Value
+}

@@ -1,0 +1,20 @@
+type Device {
+  id: ID!
+  name: String!
+  sensors: [Sensor]
+}
+
+input DeviceInput {
+  id: ID
+  name: String
+  sensors: [SensorInput]
+}
+
+type Query {
+  device(input: DeviceInput, sort: String): Device
+  devices(input: DeviceInput, sort: String): [Device]
+}
+
+type Mutation {
+  device(input: DeviceInput!, sort: String): Device
+}

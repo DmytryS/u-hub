@@ -1,0 +1,6 @@
+input IDSInput {
+  # ids to add
+  add: [ID]
+  # ids to delete
+  del: [ID]
+}

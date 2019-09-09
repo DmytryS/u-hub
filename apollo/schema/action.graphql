@@ -1,0 +1,28 @@
+enum EmitterType {
+  AutomaticAction
+  ScheduledAction
+}
+
+type Action {
+  id: ID!
+  emitter: ID!
+  emitterType: EmitterType!
+  target: ID!
+  valueToChangeOn: String!
+}
+
+input ActionInput {
+  id: ID!
+  emitter: ID!
+  emitterType: EmitterType!
+  target: ID!
+  valueToChangeOn: String!
+}
+
+extend type Query {
+  action(input: ActionInput!, sort: String): Action
+}
+
+extend type Mutation {
+  action(input: ActionInput!, sort: String): Action
+}

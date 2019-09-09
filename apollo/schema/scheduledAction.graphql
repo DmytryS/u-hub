@@ -1,0 +1,22 @@
+type ScheduledAction {
+  id: ID!
+  name: String!
+  schedule: String!
+  enabled: Boolean!
+}
+
+input ScheduledActionInput {
+  id: ID
+  name: String
+  schedule: String
+  enabled: Boolean
+}
+
+extend type Query {
+  scheduledAction(input: ScheduledActionInput!, sort: String): ScheduledAction
+  scheduledActions(input: ScheduledActionInput!, sort: String): [ScheduledAction]
+}
+
+extend type Mutation {
+  scheduledAction(input: ScheduledActionInput!, sort: String): ScheduledAction
+}
