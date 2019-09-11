@@ -37,8 +37,8 @@ const resolvers = {
   // },
   Query: {
     device: resolver,
-    devices: resolver,
-    action: resolver,
+    // devices: resolver,
+    // action: resolver,
     automaticAction: resolver,
     scheduledAction: resolver,
     value: resolver,
@@ -46,13 +46,22 @@ const resolvers = {
   },
   Mutation: {
     device: resolver,
-    action: resolver,
+    // action: resolver,
     automaticAction: resolver,
     scheduledAction: resolver,
     value: resolver,
   },
   Device: {
     sensors: resolver,
+  },
+  AutomaticAction: {
+    actions: resolver,
+  },
+  ScheduledAction: {
+    actions: resolver,
+  },
+  Action: {
+    sensor: resolver,
   },
 }
 

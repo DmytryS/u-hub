@@ -10,15 +10,15 @@ const sensorSchema = new Schema({
   },
   device: {
     type: ObjectId,
-    ref: 'device',
+    ref: 'Device',
     required: true,
   },
   values: [{
     type: ObjectId,
-    ref: 'value'
+    ref: 'Value'
   }]
 })
 
-delete mongoose.connection.models.sensor
+delete mongoose.connection.models.Sensor
 
-export default mongoose.model('sensor', sensorSchema)
+export default mongoose.model('Sensor', sensorSchema)

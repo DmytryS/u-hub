@@ -16,12 +16,12 @@ const shceduledActionSchema = new Schema({
     type: Boolean,
     required: true,
   },
-  action: {
+  actions: [{
     type: ObjectId,
-    ref: 'action',
+    ref: 'Action',
     required: true,
-  }
+  }]
 })
 
-delete mongoose.connection.models.scheduledAction
-export default mongoose.model('scheduledAction', shceduledActionSchema)
+delete mongoose.connection.models.ScheduledAction
+export default mongoose.model('ScheduledAction', shceduledActionSchema)

@@ -3,6 +3,7 @@ type ScheduledAction {
   name: String!
   schedule: String!
   enabled: Boolean!
+  actions: [Action]
 }
 
 input ScheduledActionInput {
@@ -10,6 +11,7 @@ input ScheduledActionInput {
   name: String
   schedule: String
   enabled: Boolean
+  actions: [ActionInput]
 }
 
 extend type Query {
