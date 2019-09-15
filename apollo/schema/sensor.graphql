@@ -1,6 +1,7 @@
 type Sensor {
   id: ID
   type: String
+  device: Device
 }
 
 input SensorInput {

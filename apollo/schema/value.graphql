@@ -7,7 +7,7 @@ type Value {
 
 input ValueInput {
   id: ID
-  sensor: ID
+  sensor: SensorInput
   value: Int
 }
 

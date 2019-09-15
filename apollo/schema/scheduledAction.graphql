@@ -15,8 +15,8 @@ input ScheduledActionInput {
 }
 
 extend type Query {
-  scheduledAction(input: ScheduledActionInput!, sort: String): ScheduledAction
-  scheduledActions(input: ScheduledActionInput!, sort: String): [ScheduledAction]
+  scheduledAction(input: ScheduledActionInput, sort: String): ScheduledAction
+  scheduledActions(input: ScheduledActionInput, sort: String): [ScheduledAction]
 }
 
 extend type Mutation {

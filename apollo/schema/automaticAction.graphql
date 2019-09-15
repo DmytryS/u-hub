@@ -9,24 +9,27 @@ enum Condition {
 
 type AutomaticAction {
   id: ID
+  name: String!
   sensor: Sensor
   valueToCompare: Int
-  condition: Condition
+  condition: String
   enabled: Boolean
   actions: [Action]
 }
 
 input AutomaticActionInput {
   id: ID
+  name: String!
   sensor: ID
   valueToCompare: Int
-  condition: Condition
+  condition: String
   enabled: Boolean
   actions: [ActionInput]
 }
 
 extend type Query {
   automaticAction(input: AutomaticActionInput, sort: String): AutomaticAction
+  automaticActions(input: AutomaticActionInput, sort: String): [AutomaticAction]
 }
 
 extend type Mutation {

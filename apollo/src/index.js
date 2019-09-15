@@ -8,7 +8,7 @@ import { logger } from './lib/index.js'
 import resolver from './resolver.js'
 import typeDefs from './schema.js'
 
-const { BASE_URL, HTTP_PORT, HTTP_HOST } = process.env
+const { HTTP_PORT, HTTP_HOST } = process.env
 const { ApolloServer } = apolloServerExpress
 const app = express()
 
@@ -37,16 +37,17 @@ const resolvers = {
   // },
   Query: {
     device: resolver,
-    // devices: resolver,
+    devices: resolver,
     // action: resolver,
     automaticAction: resolver,
+    automaticActions: resolver,
     scheduledAction: resolver,
+    scheduledActions: resolver,
     value: resolver,
     // values: resolver,
   },
   Mutation: {
     device: resolver,
-    // action: resolver,
     automaticAction: resolver,
     scheduledAction: resolver,
     value: resolver,
@@ -56,6 +57,7 @@ const resolvers = {
   },
   AutomaticAction: {
     actions: resolver,
+    sensor: resolver,
   },
   ScheduledAction: {
     actions: resolver,
@@ -63,6 +65,9 @@ const resolvers = {
   Action: {
     sensor: resolver,
   },
+  Sensor: {
+    device: resolver,
+  }
 }
 
 const apolloSchema = new ApolloServer({
@@ -81,12 +86,6 @@ const apolloApi = new ApolloServer({
   }
 })
 apolloApi.applyMiddleware({ app, path: '/schema' })
-
-
-
-
-
-
 
 const onReady = () => logger.info(`[HTTP] Gateway listening http://${HTTP_HOST}:${HTTP_PORT}`)
 
