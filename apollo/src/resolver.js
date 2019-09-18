@@ -1,31 +1,34 @@
-// import { inspect } from 'util'
-import mongoose from 'mongoose'
+// import ObjectId from 'objectid'
+import { mongo } from './lib/index.js'
+import mongodb from 'mongodb'
 import { isArray } from './helpers/index.js'
 import { typeDefs } from './schema.js'
-
-const { Types } = mongoose
-const { ObjectId } = Types
-
-const makeObjectId = (id) => ObjectId.isValid(id) && typeof id !== 'string' ? id : ObjectId(id)
+const { ObjectID } = mongodb
+const makeObjectId = (id) => ObjectID.isValid(id) && typeof id !== 'string' ? id : ObjectID(id)
 
 const getFilterFromParent = (parent, field) => {
   let filter = parent[field]
 
-  if (Array.isArray(filter)) {
-    filter = {
-      _id: { $in: filter.map(makeObjectId) }
+  if(filter) {
+    if (Array.isArray(filter)) {
+      filter = {
+        _id: { $in: filter.map(makeObjectId) }
+      }
+    } else {
+      if (ObjectID.isValid(filter)) {
+        filter = { _id: filter }
+      } else {
+        if (filter.id) {
+          filter._id = makeObjectId(filter.id)
+    
+          delete filter.id
+        }
+      }    
     }
   } else {
-    if (ObjectId.isValid(filter)) {
-      filter = { _id: filter }
-    } else {
-      if (filter.id) {
-        filter._id = makeObjectId(filter.id)
-  
-        delete filter.id
-      }
-    }    
+    filter = null
   }
+
 
   return filter
 }
@@ -37,7 +40,7 @@ const getFilterFromArgs = (args) => {
   let filter = args.input
 
   if (filter.id) {
-    filter._id = ObjectId(filter.id)
+    filter._id = ObjectID(filter.id)
 
     delete filter.id
   }
@@ -103,7 +106,7 @@ const makeData = (data, returnType, parentType, fieldName) => {
   outputData.map(d => {
     for (const key in d) {
       if (fields[key] === 'ID') {
-        d[key] = ObjectId(d[key])
+        d[key] = ObjectID(d[key])
       }
     }
   })
@@ -123,6 +126,8 @@ const renameId = (entity) => {
 }
 
 const makeReferences = async (data, parent, collection, parentCollection, fieldName, returnType, parentType) => {
+  const client = mongo()
+
   if (parentCollection !== 'Query' && parentCollection !== 'Mutation') {
     const parentFieldName = getFieldName(parentType, returnType)
     let parentDataUpdate
@@ -141,14 +146,14 @@ const makeReferences = async (data, parent, collection, parentCollection, fieldN
       }
     }
 
-    await mongoose.connection.db.collection(parentCollection).updateOne(
+    await client.collection(parentCollection).updateOne(
       {
         _id: makeObjectId(parent.id)
       },
       parentDataUpdate
     )
 
-    await mongoose.connection.db.collection(collection).updateMany({
+    await client.collection(collection).updateMany({
       _id: {
         $in: data.map(k => makeObjectId(k.id))
       }
@@ -158,12 +163,14 @@ const makeReferences = async (data, parent, collection, parentCollection, fieldN
   }
 }
 
+const isRoot = (type) => type === 'Mutation' || type === 'Query'
+
 const makeInputType = type => type !== 'Mutation'
   ? isArray(type) ? `[${type.replace(/[[|\]|!]/g, '')}Input]` : `${type.replace(/[[|\]|!]/g, '')}Input`
   : type
 
 const resolver = async (parent, args, context, info) => {
-  const operation = info.operation.operation 
+  const client = mongo()
   let { returnType, fieldName, parentType } = info
   returnType = returnType.toString().replace(/!/g, '')
   parentType = parentType.toString()
@@ -173,6 +180,8 @@ const resolver = async (parent, args, context, info) => {
   
   context.args = !context.args && Object.keys(args).length ? args : context.args 
 
+  const operation = info.operation.operation === 'mutation' &&  context.args && (isRoot(parentType) || context.args.input[fieldName]) ? 'mutation' : 'query'
+
   switch(operation) {
     case 'query':
       console.log('GET')
@@ -180,53 +189,75 @@ const resolver = async (parent, args, context, info) => {
       const filter = parent ? getFilterFromParent(parent, fieldName) : 
         operation === 'query' ? getFilterFromArgs(args) : {}
 
-      outputMessage = await mongoose.connection.db.collection(collection).find(filter).toArray()
-      outputMessage = outputMessage.map(renameId)
+      if (filter !== null) {
+        outputMessage = await client.collection(collection).find(filter).toArray()
+        outputMessage = outputMessage.map(renameId)
+      } else {
+        outputMessage = [null]
+      }
+      
       
       if (!isArray(returnType)) {
         outputMessage = outputMessage[0]
       }
       break
     case 'mutation':
-      if (context.args.input && !context.args.input.id && Object.keys(context.args.input).length) {
-        console.log('CREATE')
-        const parentFieldType = getFieldType(makeInputType(parentType), fieldName)
+      console.log('UPSERT')
+      // eslint-disable-next-line
+      const parentFieldType = getFieldType(makeInputType(parentType), fieldName)
 
-        if (parentFieldType && parentFieldType.replace(/\[|\]|!/g, '') === 'ID') {
+      if (parentFieldType && parentFieldType.replace(/\[|\]|!/g, '') === 'ID') {
           
-          outputMessage = await mongoose.connection.db.collection(collection).find(getFilterFromParent(parent, fieldName)).toArray()
-          outputMessage = outputMessage.map(renameId)
-        } else {
-          const data = makeData(
-            JSON.parse(JSON.stringify(context.args.input)),
-            makeInputType(returnType),
-            makeInputType(parentType),
-            fieldName,
-            operation
-          )
-  
-          outputMessage = await mongoose.connection.db.collection(collection).insertMany(data)
-          outputMessage = outputMessage.ops
-          outputMessage = outputMessage.map(renameId)
-  
-          await makeReferences(
-            outputMessage,
-            parent,
-            collection,
-            parentCollection,
-            fieldName,
-            makeInputType(returnType),
-            makeInputType(parentType),
-          )
-        }
-
-        if (!isArray(returnType)) {
-          outputMessage = outputMessage[0]
-        }
+        outputMessage = await client.collection(collection).find(getFilterFromParent(parent, fieldName)).toArray()
+        outputMessage = outputMessage.map(renameId)
       } else {
-        if (context.args.input && context.args.input.id && Object.keys(context.args.input).length > 1) {
-          console.log('UPDATE')
-        }
+        let data = makeData(
+          JSON.parse(JSON.stringify(context.args.input)),
+          makeInputType(returnType),
+          makeInputType(parentType),
+          fieldName,
+          operation
+        )
+
+        data = data.map(d => {
+          const t = {
+            _id: d.id ? d.id : new ObjectID(),
+            ...d
+          }
+
+          delete t.id
+
+          return t
+        })
+
+        outputMessage = await Promise.all(data.map(d => client.collection(collection).findOneAndUpdate({
+          _id: d._id
+        },
+        {
+          $set: d
+        },
+        {
+          upsert: true,
+          // setDefaultsOnInsert: true,
+          returnNewDocument: true,
+          returnOriginal: false,
+        }).then(res => res.value)))
+
+        outputMessage = outputMessage.map(renameId)
+
+        await makeReferences(
+          outputMessage,
+          parent,
+          collection,
+          parentCollection,
+          fieldName,
+          makeInputType(returnType),
+          makeInputType(parentType),
+        )
+      }
+
+      if (!isArray(returnType)) {
+        outputMessage = outputMessage[0]
       }
       break
     default:

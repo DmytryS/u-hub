@@ -29,7 +29,8 @@
     "cors": "^2.8.5",
     "dotenv": "^8.1.0",
     "express": "^4.17.1",
-    "mongoose": "^5.6.12",
+    "mongodb": "^3.3.2",
+    "objectid": "^3.2.1",
     "winston": "^3.2.1"
   },
   "devDependencies": {
