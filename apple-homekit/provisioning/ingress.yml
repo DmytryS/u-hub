@@ -1,14 +1,16 @@
 apiVersion: extensions/v1beta1
 kind: Ingress
 metadata:
-  name: apollo
+  name: apple-homekit
   annotations:
     kubernetes.io/ingress.class: nginx
+    nginx.ingress.kubernetes.io/proxy-body-size: '0'
 spec:
   rules:
-  - http:
+  - host: {{DOMAIN}}
+    http:
       paths:
-      - path: /api/v1
+      - path: /
         backend:
-          serviceName: apollo
+          serviceName: client
           servicePort: 80

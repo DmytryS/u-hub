@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: apple-homekit
+  labels:
+    app: apple-homekit
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: apple-homekit
+  template:
+    metadata:
+      labels:
+        app: apple-homekit
+    spec:
+      containers:
+      - name: apple-homekit
+        image: loginkr/u-hub_apple-homekit:master
+        envFrom:
+        - configMapRef:
+            name: amqp
+        - configMapRef:
+            name: mongo
+        - configMapRef:
+            name: apple-homekit
+        ports:
+        - name: hap
+          containerPort: 51826
+        # env:
+        # - name: PORT
+        #   value: 3000

@@ -1,28 +1,27 @@
 {
-  "name": "scheduled-action",
+  "name": "action-checker-cronjob",
   "version": "1.0.0",
-  "description": "Scheduled action microservice",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DmytryS/u-hub.git"
-  },
-  "bugs": {
-    "url": "https://github.com/DmytryS/u-hub/issues"
-  },
-  "homepage": "https://github.com/DmytryS/u-hub#readme",
-  "keywords": [
-    "amqp"
-  ],
-  "author": "Dmytro Shvaika",
-  "license": "MIT",
+  "description": "Cronjob for checking actions",
   "main": "src/index.js",
-  "type": "module",
   "scripts": {
-    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon --experimental-modules src/index.js; else node --experimental-modules  src/index.js; fi",
+    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm src/index.js; else node -r esm src/index.js; fi",
     "test": "mocha ./tests -r esm",
     "lint": "eslint src/**",
     "lint:fix": "eslint src/** --fix"
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DmytryS/u-hub.git"
+  },
+  "keywords": [
+    "cron"
+  ],
+  "author": "Dmytro Shvaika",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DmytryS/u-hub/issues"
+  },
+  "homepage": "https://github.com/DmytryS/u-hub#readme",
   "dependencies": {
     "amqplib": "^0.5.5",
     "mongoose": "^5.6.9",

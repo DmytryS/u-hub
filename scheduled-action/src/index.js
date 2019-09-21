@@ -1,38 +1,31 @@
-import { logger, amqp } from './lib/index.js'
-import create from './create.js'
-import update from './update.js'
-import { readAll, readOne } from './read.js'
-import remove from './remove.js'
+import { amqp, logger, mongo } from './lib/index.js'
+import { ScheduledAction } from './models/index.js'
 
-// {
-//     info: {
-//         action: 'CREATE',
-//         collection: 'device'
-//     },
-//     data: { ... },
-//     metadata: {
-//       skip: '1',
-//       limit: '20'
-//     }
-// }
+const processScheduledActions = async () => {
+  try {
+    logger.info('Finding active scheduled actions')
+    const actions = await ScheduledAction.find({})
 
-const listener = async (message) => {
-  logger.info(`MESSAGE: ${JSON.stringify(message)}`)
+    for (const action of actions) {
+      const output = {
+        action: action._id.toString()
+      }
 
-  switch (message.info.action) {
-    case 'CREATE':
-      return create(message.data)
-    case 'UPDATE':
-      return update(message.data)
-    case 'READ':
-      return readOne(message.data)
-    case 'READ_ALL':
-      return readAll(message.data)
-    case 'DELETE':
-      return remove(message.data)
-    default:
-      throw new Error('Unknown action')
+      await amqp.send(
+        'SOMEWHERE_QUEUE',
+        JSON.stringify(output)
+      )
+    }
+
+    await amqp.close()
+    await mongo.connection.close()
+  } catch (error) {
+    logger.error(error)
+    logger.warn('Shutdown after error')
+
+    await amqp.close()
+    await mongo.connection.close()
   }
 }
 
-amqp.listen(process.env.AMQP_DEVICE_QUEUE, listener)
+processScheduledActions()

@@ -1,0 +1,29 @@
+{
+  "name": "google-home-server",
+  "version": "0.0.1",
+  "description": "Google home server",
+  "main": "src/index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon --experimental-modules src/index.js; else node --experimental-modules src/index.js; fi",
+    "test": "mocha --recursive ./tests -r esm",
+    "lint": "eslint src/**",
+    "lint:fix": "eslint src/** --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DmytryS/u-hub.git"
+  },
+  "keywords": [
+    "iot",
+    "google-home"
+  ],
+  "author": "Dmytro Shvaika",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DmytryS/u-hub/issues"
+  },
+  "homepage": "https://github.com/DmytryS/u-hub#readme"
+}

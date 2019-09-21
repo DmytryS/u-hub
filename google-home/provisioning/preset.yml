@@ -1,11 +1,11 @@
 apiVersion: settings.k8s.io/v1alpha1
 kind: PodPreset
 metadata:
-  name: apollo
+  name: google-home
 spec:
   selector:
     matchLabels:
-      app: apollo
+      app: google-home
   env:
   - name: NODE_ENV
     value: development
@@ -14,7 +14,7 @@ spec:
   volumeMounts:
   - name: u-hub
     mountPath: /usr/src/app
-    subPath: apollo
+    subPath: google-home
   volumes:
   - name: u-hub
     persistentVolumeClaim:

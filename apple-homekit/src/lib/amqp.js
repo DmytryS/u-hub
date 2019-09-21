@@ -1,0 +1,136 @@
+import amqp from 'amqplib'
+import logger from './logger.js.js'
+
+const RETRIES = 5
+const { RABBIT_MQ_URI, RABBIT_RECONNECT_INTERVAL } = process.env
+const CONNECTIONS = {
+  connection: false,
+  channel: false
+}
+let counter = 0
+
+const onError = (err) => {
+  if (err.message !== 'Connection closing') {
+    logger.info(`[AMQP] ERROR: ${err.message}`)
+  }
+}
+
+const connect = (infinityRetries) => new Promise((resolve, reject) => {
+  setInterval(
+    async function () {
+      counter++
+      logger.info(`[AMQP] Trying to connect ${RABBIT_MQ_URI}`)
+
+      try {
+        CONNECTIONS.connection = await amqp.connect(RABBIT_MQ_URI)
+
+        logger.info(`[AMQP] Connected ${RABBIT_MQ_URI}`)
+        logger.info('[AMQP] Creating channel')
+
+        // eslint-disable-next-line
+        CONNECTIONS.channel = await CONNECTIONS.connection.createChannel()
+        CONNECTIONS.connection.on('error', onError)
+        clearInterval(this)
+
+        logger.info('[AMQP] Created channel')
+
+        resolve()
+      } catch (err) {
+        // eslint-disable-next-line
+        CONNECTIONS.channel = false
+        // eslint-disable-next-line
+        CONNECTIONS.connection = false
+
+        logger.error(`[AMQP] ERROR: ${JSON.stringify(err)}`)
+
+        if (counter >= RETRIES && !infinityRetries) {
+          clearInterval(this)
+          reject(`[AMQP] Failed to connect to ${RABBIT_MQ_URI}`)
+        }
+      }
+    },
+    RABBIT_RECONNECT_INTERVAL
+  )
+})
+
+export const listen = async (queue, callback) => {
+  if (!CONNECTIONS.connection) {
+    await connect(true)
+  }
+
+  await CONNECTIONS.channel.assertQueue(
+    queue,
+    {
+      durable: false
+    }
+  )
+
+  logger.info(`[AMQP] Listening ${queue} queue`)
+
+  CONNECTIONS.channel.consume(queue, async (message) => {
+    let ouputMessage = {}
+
+    try {
+      ouputMessage = await callback(message.content.toString())
+    } catch (err) {
+      logger.error(`[AMQP] Listener ERROR: ${JSON.stringify(err)}`)
+
+      ouputMessage.error = err
+    }
+  })
+}
+
+// eslint-disable-next-line
+export const publish = async (queue, message) => {
+  if (!CONNECTIONS.connection) {
+    await connect()
+  }
+
+  logger.info(`[AMQP] Publishing data to ${queue}`)
+
+  await CONNECTIONS.channel.assertQueue(
+    queue,
+    {
+      durable: false
+    }
+  )
+
+  return CONNECTIONS.channel.sendToQueue(
+    queue,
+    Buffer.from(message),
+  )
+}
+
+// eslint-disable-next-line
+export const request = async (queue, message) => {
+  if (!CONNECTIONS.connection) {
+    await connect()
+  }
+
+  logger.info(`[AMQP] Requesting data from ${queue}`)
+
+  await CONNECTIONS.channel.assertExchange(queue, 'fanout')
+
+  return CONNECTIONS.channel.publish(
+    queue,
+    '',
+    Buffer.from(message),
+  )
+}
+
+export const close = async () => {
+  if (CONNECTIONS.channel) {
+    await CONNECTIONS.channel.close()
+  }
+
+  if (CONNECTIONS.connection) {
+    await CONNECTIONS.connection.close()
+  }
+
+  // eslint-disable-next-line
+  CONNECTIONS.channel = false
+  // eslint-disable-next-line
+  CONNECTIONS.connection = false
+
+  logger.info(`[AMQP] Disconnected from ${RABBIT_MQ_URI}`)
+}

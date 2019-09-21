@@ -1,0 +1,22 @@
+apiVersion: batch/v1beta1
+kind: CronJob
+metadata:
+  name: scheduled-action
+spec:
+  schedule: "* * * * *"
+  jobTemplate:
+    spec:
+      template:
+        metadata:
+          labels:
+            app: scheduled-action
+        spec:
+          containers:
+          - name: scheduled-action
+            image: loginkr/u-hub_scheduled-action:master
+            envFrom:
+            - configMapRef:
+                name: amqp
+            - configMapRef:
+                name: mongo
+          restartPolicy: OnFailure

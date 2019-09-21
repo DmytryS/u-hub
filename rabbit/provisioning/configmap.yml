@@ -3,11 +3,9 @@ apiVersion: v1
 metadata:
   name: amqp
 data:
-  RABBIT_MQ_URI: amqp://rabbit-0.rabbit
+  RABBIT_MQ_URI: amqp://.rabbit
   RABBIT_RECONNECT_INTERVAL: "10000"
-  AMQP_DEVICE_QUEUE: device
-  AMQP_ACTION_QUEUE: action
-  AMQP_GATEWAY_QUEUE: gateway
-  AMQP_ACTION_CHECKER_JOB_QUEUE: action_checker
-  AMQP_AUTOMATIC_ACTION: automatic_action
-  AMQP_SCHEDULED_ACTION: scheduled_action
+  AMQP_APOLLO_QUEUE: apollo
+  AMQP_APPLE_HOMEKIT_QUEUE: apple_homekit
+  AMQP_GOOGLE_HOME_QUEUE: google_home
+  AMQP_SCHEDULED_ACTION_QUEUE: scheduled_action

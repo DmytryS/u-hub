@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: google-home
+  labels:
+    app: google-home
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: google-home
+  template:
+    metadata:
+      labels:
+        app: google-home
+    spec:
+      containers:
+      - name: google-home
+        image: loginkr/u-hub_google-home:master
+        envFrom:
+        - configMapRef:
+            name: amqp
+        - configMapRef:
+            name: mongo
+        - configMapRef:
+            name: google-home
+        ports:
+        - name: gap
+          containerPort: 51826
+        # env:
+        # - name: PORT
+        #   value: 3000

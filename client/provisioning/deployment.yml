@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: client
-        image: loginkr/u-hub_client:latest
+        image: loginkr/u-hub_client:master
         imagePullPolicy: Always
         ports:
         - name: port

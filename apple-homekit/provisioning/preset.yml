@@ -1,11 +1,11 @@
 apiVersion: settings.k8s.io/v1alpha1
 kind: PodPreset
 metadata:
-  name: apollo
+  name: apple-homekit
 spec:
   selector:
     matchLabels:
-      app: apollo
+      app: apple-homekit
   env:
   - name: NODE_ENV
     value: development
@@ -14,7 +14,7 @@ spec:
   volumeMounts:
   - name: u-hub
     mountPath: /usr/src/app
-    subPath: apollo
+    subPath: apple-homekit
   volumes:
   - name: u-hub
     persistentVolumeClaim:
