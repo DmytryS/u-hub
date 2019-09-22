@@ -13,7 +13,7 @@ spec:
         spec:
           containers:
           - name: scheduled-action
-            image: loginkr/u-hub_scheduled-action:master
+            image: loginkr/u-hub_scheduled-action:latest
             envFrom:
             - configMapRef:
                 name: amqp

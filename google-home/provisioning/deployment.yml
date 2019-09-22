@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: google-home
-        image: loginkr/u-hub_google-home:master
+        image: loginkr/u-hub_google-home:latest
         envFrom:
         - configMapRef:
             name: amqp

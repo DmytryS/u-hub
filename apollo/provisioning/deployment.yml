@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: apollo
-        image: loginkr/u-hub_apollo:master
+        image: loginkr/u-hub_apollo:latest
         imagePullPolicy: Always
         ports:
         - name: http

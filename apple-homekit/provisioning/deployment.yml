@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: apple-homekit
-        image: loginkr/u-hub_apple-homekit:master
+        image: loginkr/u-hub_apple-homekit:latest
         envFrom:
         - configMapRef:
             name: amqp

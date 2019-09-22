@@ -5,17 +5,18 @@ services:
 #   only:
 #     - master
 before_script:
-  - export REVISION=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo ${TRAVIS_COMMIT::8} ; fi`
-  - export APOLLO_IMAGE_TAG=$DOCKER_REPO_APOLLO:$REVISION
-  - export APPLE_HOMEKIT_IMAGE_TAG=$DOCKER_REPO_APPLE_HOMEKIT:$REVISION
-  - export CLIENT_IMAGE_TAG=$DOCKER_REPO_CLIENT:$REVISION
-  - export SCHEDULED_ACTION_IMAGE_TAG=$DOCKER_REPO_SCHEDULED_ACTION:$REVISION
-  - export GOOGLE_HOME_IMAGE_TAG=$DOCKER_REPO_GOOGLE_HOME:$REVISION
   - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
 
 stages:
   - name: build
     script:
+      - export REVISION=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
+      - export APOLLO_IMAGE_TAG=$DOCKER_REPO_APOLLO:$REVISION
+      - export APPLE_HOMEKIT_IMAGE_TAG=$DOCKER_REPO_APPLE_HOMEKIT:$REVISION
+      - export CLIENT_IMAGE_TAG=$DOCKER_REPO_CLIENT:$REVISION
+      - export SCHEDULED_ACTION_IMAGE_TAG=$DOCKER_REPO_SCHEDULED_ACTION:$REVISION
+      - export GOOGLE_HOME_IMAGE_TAG=$DOCKER_REPO_GOOGLE_HOME:$REVISION
+
       - docker build -t $APOLLO_IMAGE_TAG ./apollo
       - docker run $APOLLO_IMAGE_TAG run lint
       - docker run $APOLLO_IMAGE_TAG run test
@@ -42,6 +43,12 @@ stages:
   - name: build_version
     if: tag IS present
     script:
+      - export APOLLO_IMAGE_TAG=$DOCKER_REPO_APOLLO:$TRAVIS_TAG
+      - export APPLE_HOMEKIT_IMAGE_TAG=$DOCKER_REPO_APPLE_HOMEKIT:$TRAVIS_TAG
+      - export CLIENT_IMAGE_TAG=$DOCKER_REPO_CLIENT:$REVISION
+      - export SCHEDULED_ACTION_IMAGE_TAG=$DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG
+      - export GOOGLE_HOME_IMAGE_TAG=$DOCKER_REPO_GOOGLE_HOME:$TRAVIS_TAG
+
       - docker build -t $APOLLO_IMAGE_TAG ./apollo
       - docker run $APOLLO_IMAGE_TAG run lint
       - docker run $APOLLO_IMAGE_TAG run test
