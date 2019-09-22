@@ -3,6 +3,7 @@
   "version": "0.0.1",
   "description": "Google home server",
   "main": "src/index.js",
+  "type": "module",
   "directories": {
     "test": "tests"
   },
@@ -25,5 +26,14 @@
   "bugs": {
     "url": "https://github.com/DmytryS/u-hub/issues"
   },
-  "homepage": "https://github.com/DmytryS/u-hub#readme"
+  "homepage": "https://github.com/DmytryS/u-hub#readme",
+  "devDependencies": {
+    "eslint": "^6.4.0",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.2"
+  },
+  "dependencies": {
+    "amqplib": "^0.5.5",
+    "winston": "^3.2.1"
+  }
 }
