@@ -4,8 +4,9 @@ services:
 language: node_js
 node_js:
   - 12
-stages:
-  - name: build
+jobs:
+  include:
+  - stage: build
     script:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - export REVISION=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
@@ -38,7 +39,7 @@ stages:
       - docker run $GOOGLE_HOME_IMAGE_TAG run lint
       - docker run $GOOGLE_HOME_IMAGE_TAG run test
       - docker push $GOOGLE_HOME_IMAGE_TAG
-  - name: build_version
+  - stage: build_version
     if: tag IS present
     script:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
