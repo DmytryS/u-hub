@@ -3,17 +3,14 @@ import path from 'path'
 import { fileURLToPath } from 'url'
 import graphql from 'graphql'
 import graphqlTools from 'graphql-tools'
-
-import { inspect } from 'util'
+// import { inspect } from 'util'
 
 const { makeExecutableSchema } = graphqlTools
 const { graphqlSync, introspectionQuery } = graphql
 
 
-/* eslint-disable */
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-/* eslint-enable */
+const __filename = fileURLToPath(import.meta.url) // eslint-disable-line
+const __dirname = path.dirname(__filename)
 
 const schemaPath = path.join(__dirname, '../', 'schema')
 
