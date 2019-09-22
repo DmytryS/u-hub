@@ -20,7 +20,7 @@ spec:
         imagePullPolicy: Always
         ports:
         - name: http
-          containerPort: 80
+          containerPort: 3000
         envFrom:
         - configMapRef:
             name: amqp

@@ -16,8 +16,6 @@ spec:
           image: mongo:latest
           command:
             - mongod
-            - "--replSet"
-            - rs0
             - "--bind_ip"
             - 0.0.0.0
             # - "--smallfiles"
@@ -27,11 +25,6 @@ spec:
           volumeMounts:
             - name: mongo-persistent-storage
               mountPath: /data/db
-        - name: mongo-sidecar
-          image: cvallance/mongo-k8s-sidecar
-          env:
-            - name: MONGO_SIDECAR_POD_LABELS
-              value: "app=mongo"
   volumeClaimTemplates:
   - metadata:
       name: mongo-persistent-storage
@@ -39,4 +32,4 @@ spec:
       accessModes: [ "ReadWriteOnce" ]
       resources:
         requests:
-          storage: 500M
+          storage: 100M
