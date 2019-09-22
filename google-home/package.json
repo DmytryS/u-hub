@@ -29,6 +29,7 @@
   "homepage": "https://github.com/DmytryS/u-hub#readme",
   "devDependencies": {
     "eslint": "^6.4.0",
+    "esm": "^3.2.25",
     "mocha": "^6.2.0",
     "nodemon": "^1.19.2"
   },

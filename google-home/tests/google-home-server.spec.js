@@ -1,4 +1,4 @@
-import '../src/index.js.js'
+import '../src/index.js'
 
 describe('Google home server', () => {
   it('Should start succesfully', () => { })

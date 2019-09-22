@@ -126,7 +126,7 @@ const renameId = (entity) => {
 }
 
 const makeReferences = async (data, parent, collection, parentCollection, fieldName, returnType, parentType) => {
-  const client = mongo()
+  const client = mongo.connection()
 
   if (parentCollection !== 'Query' && parentCollection !== 'Mutation') {
     const parentFieldName = getFieldName(parentType, returnType)
@@ -170,7 +170,7 @@ const makeInputType = type => type !== 'Mutation'
   : type
 
 const resolver = async (parent, args, context, info) => {
-  const client = mongo()
+  const client = mongo.connection()
   let { returnType, fieldName, parentType } = info
   returnType = returnType.toString().replace(/!/g, '')
   parentType = parentType.toString()

@@ -1,10 +1,10 @@
 import { amqp, logger, mongo } from './lib/index.js'
-import { ScheduledAction } from './models/index.js'
 
 const processScheduledActions = async () => {
   try {
     logger.info('Finding active scheduled actions')
-    const actions = await ScheduledAction.find({})
+    const client = mongo.connection()
+    const actions = await client.collection('ScheduledAction').find({})
 
     for (const action of actions) {
       const output = {
@@ -18,13 +18,13 @@ const processScheduledActions = async () => {
     }
 
     await amqp.close()
-    await mongo.connection.close()
+    await mongo.disconnect()
   } catch (error) {
     logger.error(error)
     logger.warn('Shutdown after error')
 
     await amqp.close()
-    await mongo.connection.close()
+    await mongo.disconnect()
   }
 }
 

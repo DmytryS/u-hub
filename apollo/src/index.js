@@ -2,14 +2,14 @@ import 'dotenv/config.js'
 import http from 'http'
 import express from 'express'
 import cors from 'cors'
-import apolloServerExpress from 'apollo-server-express'
+import ApolloServerExpress from 'apollo-server-express'
 import { logger } from './lib/index.js'
 // import * as resolver from './resolvers/index.js'
 import resolver from './resolver.js'
 import typeDefs from './schema.js'
 
 const { HTTP_PORT, HTTP_HOST } = process.env
-const { ApolloServer } = apolloServerExpress
+const { ApolloServer } = ApolloServerExpress
 const app = express()
 
 app.use(cors())

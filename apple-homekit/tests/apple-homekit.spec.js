@@ -1,4 +1,4 @@
-import '../src/index.js.js'
+// import '../src/index.js'
 
 describe('Apple home kit server', () => {
   it('Should start succesfully', () => { })

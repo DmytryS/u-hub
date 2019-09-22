@@ -1,32 +1,42 @@
-import mongoose from 'mongoose'
+import mongodb from 'mongodb'
 import logger from './logger.js'
 
-const { MONGODB_URI } = process.env
+const { MONGODB_URI, MONGO_DB = 'apollo-test' } = process.env
+const { MongoClient } = mongodb
 const options = {
-  useCreateIndex: true,
+  autoReconnect: true,
+  reconnectTries: 1e6,
   useNewUrlParser: true
 }
+let db
+let client
 
-mongoose.Promise = Promise
+const closeConnection = () => client.close()
 
-mongoose.set('useFindAndModify', false)
+const onConnecting = () => logger.info('[MONGODB] connecting')
+const onConnected = () => logger.info(`[MONGODB] connected, db: ${MONGO_DB}`)
+const onReconnected = () => logger.info('[MONGODB] reconnected')
+const onClose = () => logger.info('[MONGODB] connection closed')
+const onError = (e) => logger.error(`[MONGODB] error: ${e}`)
+const onTimeout = () => logger.error('[MONGODB] timeout')
 
-mongoose.connect(MONGODB_URI, options)
+MongoClient.connect(MONGODB_URI, options)
+  .then(connection => {
+    db = connection.db(MONGO_DB)
 
-mongoose.connection.on('connected', () => {
-  logger.info('[MONGO] Connected to MongoDB')
-})
+    client = connection
 
-mongoose.connection.on('error', error => {
-  logger.error(`[MONGO] Connection to MongoDB failed: ${error.message}`)
-})
+    connection.on('serverOpening', onConnecting)
+    connection.on('connected', onConnected)
+    connection.on('reconnect', onReconnected)
+    connection.on('close', onClose)
+    connection.on('error', onError)
+    connection.on('timeout', onTimeout)
+  })
+  .then(onConnected)
 
-mongoose.connection.on('disconnected', () => {
-  logger.info(`[MONGO] Disconnected from ${MONGODB_URI}`)
-})
+process.on('SIGTERM', closeConnection)
 
-mongoose.connection.on('close', () => {
-  logger.info('[MONGO] Connection closed')
-})
+export const disconnect = closeConnection
 
-export default mongoose
+export const connection = () => db

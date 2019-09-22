@@ -1,5 +1,5 @@
 import amqp from 'amqplib'
-import logger from './logger.js.js'
+import logger from './logger.js'
 
 const RETRIES = 5
 const { RABBIT_MQ_URI, RABBIT_RECONNECT_INTERVAL } = process.env

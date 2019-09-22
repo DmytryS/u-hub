@@ -39,4 +39,4 @@ process.on('SIGTERM', closeConnection)
 
 export const disconnect = closeConnection
 
-export default () => db
+export const connection = () => db

@@ -7,9 +7,9 @@
     "extends": [
         "eslint:recommended"
     ],
+    "parser": "babel-eslint",
     "parserOptions": {
-        "sourceType": "module",
-        "ecmaVersion": 10
+        "sourceType": "module"
     },
     "rules": {
         "indent": [
