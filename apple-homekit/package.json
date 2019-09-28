@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "type": "module",
   "scripts": {
-    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon --experimental-modules src/index.js; else node --experimental-modules src/index.js; fi",
+    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm src/index.js; else node -r esm src/index.js; fi",
     "test": "mocha --recursive ./tests -r esm",
     "lint": "eslint src/**",
     "lint:fix": "eslint src/** --fix"
@@ -32,6 +32,7 @@
     "dotenv": "^8.0.0",
     "hap-nodejs": "^0.4.52",
     "mongoose": "^5.6.9",
+    "mqtt": "^3.0.0",
     "nextport": "^1.0.0",
     "nodemon": "^1.19.1",
     "obj-ease": "^1.0.1",

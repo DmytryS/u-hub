@@ -4,6 +4,8 @@ metadata:
   name: apple-homekit
 data:
   PORT: "51826"
-  USERNAME: "CC:22:3D:E3:CE:F6"
-  CODE  : "031-45-154"
+  PIN_CODE: "031-45-154"
   BRIDGENAME: "TEST-BRIDGE"
+  MQTT_URL: mqtt://127.0.0.1
+  STORAGE_DIR: ../storage
+  MAPFILE: map.json
