@@ -1,5 +1,5 @@
-export default function (iface) {
-  const {mqttPub, mqttSub, mqttStatus, log, Service, Characteristic} = iface
+module.exports = function (iface) {
+  const {logger, Service, Characteristic, amqp} = iface
 
   return function createService_AirPurifier(acc, settings, subtype) {
     if (typeof settings.payload.activeTrue === 'undefined') {
