@@ -1,0 +1,25 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mqtt-listener
+  labels:
+    app: mqtt-listener
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mqtt-listener
+  template:
+    metadata:
+      labels:
+        app: mqtt-listener
+    spec:
+      containers:
+      - name: mqtt-listener
+        image: loginkr/u-hub_mqtt-listener:latest
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: amqp
+        - configMapRef:
+            name: mqtt

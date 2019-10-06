@@ -15,6 +15,7 @@ jobs:
       - export CLIENT_IMAGE_TAG=$DOCKER_REPO_CLIENT:$REVISION
       - export SCHEDULED_ACTION_IMAGE_TAG=$DOCKER_REPO_SCHEDULED_ACTION:$REVISION
       - export GOOGLE_HOME_IMAGE_TAG=$DOCKER_REPO_GOOGLE_HOME:$REVISION
+      - export MQTT_LISTENER_IMAGE_TAG=$DOCKER_REPO_MQTT_LISTENER:$REVISION
 
       - docker build -t $APOLLO_IMAGE_TAG ./apollo
       - docker run $APOLLO_IMAGE_TAG run lint
@@ -39,6 +40,11 @@ jobs:
       - docker run $GOOGLE_HOME_IMAGE_TAG run lint
       - docker run $GOOGLE_HOME_IMAGE_TAG run test
       - docker push $GOOGLE_HOME_IMAGE_TAG
+
+      - docker build -t $MQTT_LISTENER_IMAGE_TAG ./mqtt-listener
+      - docker run $MQTT_LISTENER_IMAGE_TAG run lint
+      - docker run $MQTT_LISTENER_IMAGE_TAG run test
+      - docker push $MQTT_LISTENER_IMAGE_TAG
   - stage: build_version
     if: tag IS present
     script:
@@ -48,6 +54,7 @@ jobs:
       - export CLIENT_IMAGE_TAG=$DOCKER_REPO_CLIENT:$REVISION
       - export SCHEDULED_ACTION_IMAGE_TAG=$DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG
       - export GOOGLE_HOME_IMAGE_TAG=$DOCKER_REPO_GOOGLE_HOME:$TRAVIS_TAG
+      - export MQTT_LISTENER_IMAGE_TAG=$DOCKER_REPO_MQTT_LISTENER:$TRAVIS_TAG
 
       - docker build -t $APOLLO_IMAGE_TAG ./apollo
       - docker run $APOLLO_IMAGE_TAG run lint
@@ -72,3 +79,8 @@ jobs:
       - docker run $GOOGLE_HOME_IMAGE_TAG run lint
       - docker run $GOOGLE_HOME_IMAGE_TAG run test
       - docker push $GOOGLE_HOME_IMAGE_TAG
+
+      - docker build -t $MQTT_LISTENER_IMAGE_TAG ./mqtt-listener
+      - docker run $MQTT_LISTENER_IMAGE_TAG run lint
+      - docker run $MQTT_LISTENER_IMAGE_TAG run test
+      - docker push $MQTT_LISTENER_IMAGE_TAG

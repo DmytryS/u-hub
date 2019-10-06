@@ -1,0 +1,19 @@
+{
+  "name": "devices-emulator",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start_device_1": "nodemon --experimental-modules device_1_relay.js",
+    "start_device_2": "nodemon --experimental-modules device_2_sensor.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "mqtt": "^3.0.0",
+    "nodemon": "^1.19.3",
+    "winston": "^3.2.1"
+  }
+}
