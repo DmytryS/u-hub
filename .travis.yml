@@ -19,12 +19,12 @@ jobs:
 
       - docker build -t $APOLLO_IMAGE_TAG ./apollo
       - docker run $APOLLO_IMAGE_TAG run lint
-      - docker run $APOLLO_IMAGE_TAG run test
+      #- docker run $APOLLO_IMAGE_TAG run test
       - docker push $APOLLO_IMAGE_TAG
 
       - docker build -t $APPLE_HOMEKIT_IMAGE_TAG ./apple-homekit
       - docker run $APPLE_HOMEKIT_IMAGE_TAG run lint
-      - docker run $APPLE_HOMEKIT_IMAGE_TAG run test
+      #- docker run $APPLE_HOMEKIT_IMAGE_TAG run test
       - docker push $APPLE_HOMEKIT_IMAGE_TAG
 
       - docker build -t $CLIENT_IMAGE_TAG ./client
@@ -33,17 +33,17 @@ jobs:
 
       - docker build -t $SCHEDULED_ACTION_IMAGE_TAG ./scheduled-action
       - docker run $SCHEDULED_ACTION_IMAGE_TAG run lint
-      - docker run $SCHEDULED_ACTION_IMAGE_TAG run test
+      #- docker run $SCHEDULED_ACTION_IMAGE_TAG run test
       - docker push $SCHEDULED_ACTION_IMAGE_TAG
 
       - docker build -t $GOOGLE_HOME_IMAGE_TAG ./google-home
       - docker run $GOOGLE_HOME_IMAGE_TAG run lint
-      - docker run $GOOGLE_HOME_IMAGE_TAG run test
+      #- docker run $GOOGLE_HOME_IMAGE_TAG run test
       - docker push $GOOGLE_HOME_IMAGE_TAG
 
       - docker build -t $MQTT_LISTENER_IMAGE_TAG ./mqtt-listener
       - docker run $MQTT_LISTENER_IMAGE_TAG run lint
-      - docker run $MQTT_LISTENER_IMAGE_TAG run test
+      #- docker run $MQTT_LISTENER_IMAGE_TAG run test
       - docker push $MQTT_LISTENER_IMAGE_TAG
   - stage: build_version
     if: tag IS present
