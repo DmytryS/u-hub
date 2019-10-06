@@ -12,6 +12,8 @@ const STATE = {
     active: '0'
 }
 
+// mqtt.subscribe(SET_TOPIC)
+
 const listener = (topic, message, packet) => {
     if ((payload !== '1' && payload !== '0') || topic !== SET_TOPIC) {
         logger.info(`Unknown payload ${payload}. Topic: ${topic}`)
@@ -22,7 +24,7 @@ const listener = (topic, message, packet) => {
     mqtt.publish(STATUS_TOPIC, STATE.active.toString())
 }
 
-mqtt.listen(listener)
+mqtt.listen(SET_TOPIC, listener)
 
 const randomInteger = (min, max) => {
     const rand = min - 0.5 + Math.random() * (max - min + 1);
@@ -32,6 +34,8 @@ const randomInteger = (min, max) => {
 const sendStatus = () => {
     const data = randomInteger(18,28).toString()
     mqtt.publish(STATUS_TOPIC, data)
+
+    logger.info(`Sent data "${data}" to "${STATUS_TOPIC}"`)
 }
 
 setInterval(sendStatus, 5000)

@@ -6,13 +6,6 @@ const SENSOR_TYPE = 'sensor' // action
 const SENSOR_NAME = 'DHT_22'
 
 const STATUS_TOPIC = `${BRIDGE_NAME}/${DEVICE_NAME}/${SENSOR_TYPE}/${SENSOR_NAME}/status`
-const SET_TOPIC = `${BRIDGE_NAME}/${DEVICE_NAME}/${SENSOR_TYPE}/${SENSOR_NAME}/set`
-
-// const listener = () => {
-
-// }
-
-// mqtt.listen()
 
 const randomInteger = (min, max) => {
     const rand = min - 0.5 + Math.random() * (max - min + 1);
@@ -22,6 +15,8 @@ const randomInteger = (min, max) => {
 const sendStatus = () => {
     const data = randomInteger(18,28).toString()
     mqtt.publish(STATUS_TOPIC, data)
+
+    logger.info(`Sent data "${data}" to "${STATUS_TOPIC}"`)
 }
 
 setInterval(sendStatus, 5000)

@@ -17,7 +17,13 @@ const typeGuess = (payload) => {
   } else if (payload === 'false') {
     state = false
   } else if (isNaN(payload)) {
-    state = payload
+    if (payload.indexOf('{') !== -1) {
+      try {
+        state = JSON.parse(payload)
+      } catch (err) {
+        state = payload
+      }
+    }
   } else {
     state = parseFloat(payload)
   }
@@ -26,13 +32,6 @@ const typeGuess = (payload) => {
 
 const listener = async (topic, payload) => {
   payload = typeGuess(payload)
-  if (payload.indexOf('{') !== -1) {
-    try {
-      payload = JSON.parse(payload)
-    } catch (err) {
-      logger.error('failed to parse json')
-    }
-  }
   
   logger.debug(`[MQTT-LISTENER] ${topic} ${payload}`)
   

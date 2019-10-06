@@ -3,4 +3,4 @@ apiVersion: v1
 metadata:
   name: mqtt
 data:
-  MQTT_URI: mqtt://mosquitto.mosquitto
+  MQTT_URI: mqtt://mosquitto

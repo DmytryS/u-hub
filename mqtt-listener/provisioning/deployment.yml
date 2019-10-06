@@ -18,6 +18,9 @@ spec:
       - name: mqtt-listener
         image: loginkr/u-hub_mqtt-listener:latest
         imagePullPolicy: Always
+        env:
+        - name: MQTT_TOPIC
+          value: "#"
         envFrom:
         - configMapRef:
             name: amqp
