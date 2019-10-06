@@ -3,7 +3,7 @@ apiVersion: v1
 metadata:
   name: amqp
 data:
-  RABBIT_MQ_URI: amqp://rabbit.rabbit
+  RABBIT_MQ_URI: amqp://rabbit
   RABBIT_RECONNECT_INTERVAL: "10000"
   AMQP_APOLLO_QUEUE: apollo
   AMQP_APPLE_HOMEKIT_QUEUE: apple_homekit
