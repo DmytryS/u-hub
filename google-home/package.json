@@ -9,7 +9,7 @@
   },
   "scripts": {
     "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon --experimental-modules src/index.js; else node --experimental-modules src/index.js; fi",
-    "test": "mocha --recursive ./tests -r esm",
+    "test": "mocha --recursive ./tests",
     "lint": "eslint src/**",
     "lint:fix": "eslint src/** --fix"
   },
