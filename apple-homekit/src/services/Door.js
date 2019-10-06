@@ -1,4 +1,5 @@
 module.exports = function (iface) {
+  // eslint-disable-next-line
   const {mqttPub, mqttSub, mqttStatus, logger, Service, Characteristic} = iface
 
   return function createService_Door(acc, settings, subtype) {

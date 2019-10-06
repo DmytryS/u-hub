@@ -1,4 +1,5 @@
 module.exports = function (iface) {
+  // eslint-disable-next-line
   const {logger, Service, Characteristic, amqp} = iface
 
   return function createService_AirPurifier(acc, settings, subtype) {

@@ -1,5 +1,6 @@
 module.exports = function (obj, iface) {
   const {acc, settings, subtype} = obj
+  // eslint-disable-next-line
   const {mqttStatus, mqttPub, mqttSub, Characteristic, logger} = iface
 
   if (settings.topic.setHoldPosition) {

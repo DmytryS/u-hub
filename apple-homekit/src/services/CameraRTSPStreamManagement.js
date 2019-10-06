@@ -1,3 +1,4 @@
+// eslint-disable-next-line
 module.exports = function (iface) {
 //   const {HAP, mqttPub, mqttSub, mqttStatus, logger, Service, Characteristic} = iface
 //   const {FFMPEG} = require('homebridge-camera-ffmpeg/ffmpeg')

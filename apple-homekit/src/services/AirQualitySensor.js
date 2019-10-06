@@ -1,4 +1,5 @@
 module.exports = function (iface) {
+  // eslint-disable-next-line
   const {mqttPub, mqttSub, mqttStatus, log, Service, Characteristic} = iface
 
   return function createService_AirQualitySensor(acc, settings, subtype) {

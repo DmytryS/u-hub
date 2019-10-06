@@ -1,3 +1,4 @@
+/* eslint-disable */
 const convert = require('color-convert')
 
 module.exports = function (iface) {
