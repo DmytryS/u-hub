@@ -3,12 +3,16 @@ import http from 'http'
 import express from 'express'
 import cors from 'cors'
 import ApolloServerExpress from 'apollo-server-express'
-import { logger } from './lib/index.js'
-// import * as resolver from './resolvers/index.js'
+import { logger, amqp } from './lib/index.js'
 import resolver from './resolver.js'
 import typeDefs from './schema.js'
+import listener from './listener.js'
 
-const { HTTP_PORT, HTTP_HOST } = process.env
+const {
+  HTTP_PORT,
+  HTTP_HOST,
+  AMQP_APOLLO_QUEUE
+} = process.env
 const { ApolloServer } = ApolloServerExpress
 const app = express()
 
@@ -70,14 +74,9 @@ const resolvers = {
   }
 }
 
-const apolloSchema = new ApolloServer({
+const apollo = new ApolloServer({
   typeDefs,
   resolvers,
-})
-apolloSchema.applyMiddleware({ app, path: '/playground' })
-
-const apolloApi = new ApolloServer({
-  typeDefs,
   playground: {
     settings: {
       'editor.reuseHeaders': true,
@@ -85,8 +84,10 @@ const apolloApi = new ApolloServer({
     }
   }
 })
-apolloApi.applyMiddleware({ app, path: '/schema' })
+apollo.applyMiddleware({ app, path: '/' })
 
 const onReady = () => logger.info(`[HTTP] Gateway listening http://${HTTP_HOST}:${HTTP_PORT}`)
 
 http.createServer(app).listen(HTTP_PORT || 3000, HTTP_HOST || '0.0.0.0', onReady)
+
+amqp.listen(AMQP_APOLLO_QUEUE, listener)
