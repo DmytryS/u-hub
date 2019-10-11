@@ -1,7 +1,8 @@
 import { logger, amqp } from './lib/index.js' 
+import { inspect } from 'util'
 
 const {
-  // AMQP_APPLE_HOMEKIT_QUEUE,
+  AMQP_APPLE_HOMEKIT_QUEUE,
   AMQP_APOLLO_QUEUE,
 } = process.env
 
@@ -32,56 +33,36 @@ const listener = async (topic, payload) => {
   
   logger.debug(`[MQTT-LISTENER] ${topic} ${payload}`)
 
-  const deviceName = topic.split('/')[1]
-  const sensorType = topic.split('/')[3]
+  const deviceName = topic.split('/')[0]
+  const sensorType = topic.split('/')[2]
   // const sensorValue = topic.split('/')[4]
 
-  console.log({
-    device: {
-      name: deviceName,
-      sensors: {
-        type: sensorType,
-        value: payload
-      }
-    }
-  })
-
-  
-
-  await amqp.publish(
-    AMQP_APOLLO_QUEUE,
-    {
-      info: {
-        operation: 'add-value'
-      },
-      input: {
-        device: {
-          name: deviceName,
-          sensors: {
-            type: sensorType,
-            value: payload
-          }
+  const message = {
+    info: {
+      operation: 'add-value'
+    },
+    input: {
+      device: {
+        name: deviceName,
+        sensor: {
+          type: sensorType,
+          value: payload
         }
       }
     }
+  }
+
+  console.log(inspect(message, {depth: 7, colors: true}))
+
+  await amqp.publish(
+    AMQP_APOLLO_QUEUE,
+    message
   )
-  
-  //   const bridgeName = topic.split('/')[1]
 
-  
-  // await amqp.publish(
-  //   AMQP_APOLLO_QUEUE,
-  //   {
-        
-  //   }
-  // )
-
-  // await amqp.publish(
-  //   AMQP_APPLE_HOMEKIT_QUEUE,
-  //   {
-      
-  //   }
-  // )
+  await amqp.publish(
+    AMQP_APPLE_HOMEKIT_QUEUE,
+    message
+  )
 }
 
 export default listener

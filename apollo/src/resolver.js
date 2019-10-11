@@ -1,9 +1,13 @@
 // import ObjectId from 'objectid'
-import { mongo } from './lib/index.js'
+import { mongo, amqp } from './lib/index.js'
 import mongodb from 'mongodb'
+// import { inspect } from 'util'
 import { isArray } from './helpers/index.js'
 import { typeDefs } from './schema.js'
 const { ObjectID } = mongodb
+
+const { AMQP_MQTT_LISTENER_QUEUE } = process.env
+
 const makeObjectId = (id) => ObjectID.isValid(id) && typeof id !== 'string' ? id : ObjectID(id)
 
 const getFilterFromParent = (parent, field) => {
@@ -16,7 +20,7 @@ const getFilterFromParent = (parent, field) => {
       }
     } else {
       if (ObjectID.isValid(filter)) {
-        filter = { _id: filter }
+        filter = { _id: makeObjectId(filter) }
       } else {
         if (filter.id) {
           filter._id = makeObjectId(filter.id)
@@ -169,6 +173,47 @@ const makeInputType = type => type !== 'Mutation'
   ? isArray(type) ? `[${type.replace(/[[|\]|!]/g, '')}Input]` : `${type.replace(/[[|\]|!]/g, '')}Input`
   : type
 
+const sendNewValueToDevice = async (sensorId, value) => {
+  const client = mongo.connection()
+
+  const sensor = await client.collection('Sensor').findOne({
+    _id: makeObjectId(sensorId)
+  })
+  const device = await client.collection('Device').findOne({
+    sensors: {
+      $elemMatch: {
+        $eq: sensor._id
+      }
+    }
+  })
+
+  const message = {
+    info: {
+      operation: 'set-value'
+    },
+    input: {
+      device: {
+        _id: device._id,
+        name: device.name,
+        sensor: {
+          type: sensor.type,
+          value,
+        }
+      }
+    }
+  }
+
+  await amqp.publish(
+    AMQP_MQTT_LISTENER_QUEUE,
+    message
+  )
+
+  return {
+    sensor: sensor._id.toString(),
+    value,
+  }
+}
+
 const resolver = async (parent, args, context, info) => {
   const client = mongo.connection()
   let { returnType, fieldName, parentType } = info
@@ -202,12 +247,16 @@ const resolver = async (parent, args, context, info) => {
       }
       break
     case 'mutation':
+      if (isRoot(parentType) && collection === 'Value') {
+        const val = await sendNewValueToDevice(context.args.input.sensor, context.args.input.value)
+        return val
+      }
+
       console.log('UPSERT')
       // eslint-disable-next-line
       const parentFieldType = getFieldType(makeInputType(parentType), fieldName)
 
       if (parentFieldType && parentFieldType.replace(/\[|\]|!/g, '') === 'ID') {
-          
         outputMessage = await client.collection(collection).find(getFilterFromParent(parent, fieldName)).toArray()
         outputMessage = outputMessage.map(renameId)
       } else {

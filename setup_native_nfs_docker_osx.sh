@@ -51,7 +51,7 @@ G=`id -g`
 sudo chown -R "$U":"$G" .
 
 echo "== Setting up nfs..."
-LINE="$SOURCE_DIR -alldirs -mapall=$U:$G localhost"
+LINE="/System/Volumes/Data$SOURCE_DIR -alldirs -mapall=$U:$G localhost"
 FILE=/etc/exports
 sudo cp /dev/null $FILE
 grep -qF -- "$LINE" "$FILE" || sudo echo "$LINE" | sudo tee -a $FILE > /dev/null

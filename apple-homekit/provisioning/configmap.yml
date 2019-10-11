@@ -6,6 +6,6 @@ data:
   PORT: "51826"
   PIN_CODE: "031-45-154"
   BRIDGENAME: "TEST-BRIDGE"
-  MQTT_URL: mqtt://127.0.0.1
+  MQTT_URI: mqtt://mosquitto
   STORAGE_DIR: ../storage
   MAPFILE: map.json

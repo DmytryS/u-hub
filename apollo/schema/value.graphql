@@ -1,13 +1,13 @@
 type Value {
   id: ID!
-  sensor: ID!
+  sensor: Sensor!
   value: Int!
   createdAt: Date!
 }
 
 input ValueInput {
   id: ID
-  sensor: SensorInput
+  sensor: ID
   value: Int
 }
 

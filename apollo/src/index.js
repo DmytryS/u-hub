@@ -71,6 +71,9 @@ const resolvers = {
   },
   Sensor: {
     device: resolver,
+  },
+  Value: {
+    sensor: resolver,
   }
 }
 

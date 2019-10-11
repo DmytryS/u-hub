@@ -1,4 +1,5 @@
-import { logger, amqp } from './lib/index.js' 
+import { inspect } from 'util'
+import { logger, amqp, mqtt } from './lib/index.js' 
 
 const {
   AMQP_APOLLO_QUEUE,
@@ -6,7 +7,9 @@ const {
 } = process.env
 
 const listener = async (message) => {
-  logger.info(`MESSAGE: ${message}`)
+  logger.debug(`[AMQP-LISTENER] MESSAGE: ${inspect(message, {depth: 7, colors: true})}`)
+
+  await mqtt.publish()
   
   await amqp.publish(
     AMQP_APOLLO_QUEUE,

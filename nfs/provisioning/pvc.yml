@@ -12,7 +12,7 @@ spec:
   storageClassName: standard
   nfs:
     server: host.docker.internal
-    path: /Users/dima/Projects/u-hub # CHANGE THIS!!!
+    path: /System/Volumes/Data/Users/dima/Projects/u-hub # CHANGE THIS!!!
 ---
 kind: PersistentVolumeClaim
 apiVersion: v1
