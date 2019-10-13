@@ -189,7 +189,8 @@ const sendNewValueToDevice = async (sensorId, value) => {
 
   const message = {
     info: {
-      operation: 'set-value'
+      operation: 'set-value',
+      // source: 'apollo',
     },
     input: {
       device: {

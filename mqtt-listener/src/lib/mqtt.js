@@ -56,7 +56,7 @@ export const listen = (topic, cb) => {
     (cbTopic, payload) => {
       try{
         if(cbTopic === topic || topic === '#') {
-          cb(cbTopic, payload)
+          cb(cbTopic, payload.toString())
         }
       }catch(err) {
         logger.error(`[MQTT] ${err}`)
@@ -66,5 +66,5 @@ export const listen = (topic, cb) => {
 }
 
 export const publish = (topic, message) => {
-  client.publish(topic, message)
+  client.publish(topic, message.toString())
 }

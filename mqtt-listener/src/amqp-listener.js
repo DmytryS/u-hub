@@ -1,28 +1,15 @@
 import { inspect } from 'util'
-import { logger, amqp, mqtt } from './lib/index.js' 
-
-const {
-  AMQP_APOLLO_QUEUE,
-  AMQP_APPLE_HOMEKIT_QUEUE,
-} = process.env
+import { logger, mqtt } from './lib/index.js' 
 
 const listener = async (message) => {
   logger.debug(`[AMQP-LISTENER] MESSAGE: ${inspect(message, {depth: 7, colors: true})}`)
 
-  await mqtt.publish()
-  
-  await amqp.publish(
-    AMQP_APOLLO_QUEUE,
-    {
-        
-    }
-  )
+  const topic = `${message.input.device.name}/${message.input.device.sensor.type}/set`
+  const payload = message.input.device.sensor.value
 
-  await amqp.publish(
-    AMQP_APPLE_HOMEKIT_QUEUE,
-    {
-      
-    }
+  await mqtt.publish(
+    topic,
+    payload
   )
 }
 

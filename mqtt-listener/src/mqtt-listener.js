@@ -7,7 +7,6 @@ const {
 } = process.env
 
 const typeGuess = (payload) => {
-  payload = payload.toString()
   let state
   
   if (payload === 'true') {
@@ -35,7 +34,6 @@ const listener = async (topic, payload) => {
 
   const deviceName = topic.split('/')[0]
   const sensorType = topic.split('/')[2]
-  // const sensorValue = topic.split('/')[4]
 
   const message = {
     info: {

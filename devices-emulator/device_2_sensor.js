@@ -1,11 +1,8 @@
 import { logger, mqtt } from './lib/index.js'
-
-const BRIDGE_NAME = 'BRIDGE_1'
 const DEVICE_NAME = 'DEVICE_2'
-const SENSOR_TYPE = 'sensor' // action
-const SENSOR_NAME = 'DHT_22'
+const SENSOR_TYPE = 'DHT_22'
 
-const STATUS_TOPIC = `${BRIDGE_NAME}/${DEVICE_NAME}/${SENSOR_TYPE}/${SENSOR_NAME}/status`
+const STATUS_TOPIC = `${DEVICE_NAME}/${SENSOR_TYPE}/status`
 
 const randomInteger = (min, max) => {
     const rand = min - 0.5 + Math.random() * (max - min + 1);
