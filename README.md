@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/DmytryS/u-hub.svg?branch=development)](https://travis-ci.com/DmytryS/u-hub)
+[![Build Status](https://travis-ci.com/DmytryS/u-hub.svg?branch=master)](https://travis-ci.com/DmytryS/u-hub)
 
 https://stackoverflow.com/questions/52430091/can-i-use-an-insecure-endpoint-for-kubernetes-api-in-docker-for-mac
 
