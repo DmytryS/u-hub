@@ -1,9 +1,10 @@
 import { logger, amqp } from './lib/index.js' 
-import { inspect } from 'util'
+// import { inspect } from 'util'
 
 const {
   AMQP_APPLE_HOMEKIT_QUEUE,
   AMQP_APOLLO_QUEUE,
+  AMQP_AUTOMATIC_ACTION_QUEUE,
 } = process.env
 
 const typeGuess = (payload) => {
@@ -50,17 +51,22 @@ const listener = async (topic, payload) => {
     }
   }
 
-  console.log(inspect(message, {depth: 7, colors: true}))
+  // console.log(inspect(message, {depth: 7, colors: true}))
 
-  await amqp.publish(
-    AMQP_APOLLO_QUEUE,
-    message
-  )
-
-  await amqp.publish(
-    AMQP_APPLE_HOMEKIT_QUEUE,
-    message
-  )
+  await Promise.all([
+    amqp.publish(
+      AMQP_APOLLO_QUEUE,
+      message
+    ),
+    amqp.publish(
+      AMQP_APPLE_HOMEKIT_QUEUE,
+      message
+    ),
+    amqp.publish(
+      AMQP_AUTOMATIC_ACTION_QUEUE,
+      message
+    )
+  ])
 }
 
 export default listener

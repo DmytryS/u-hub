@@ -60,18 +60,42 @@ export default async (message) => {
 
   switch(message.info.operation) {
     case 'add-value':
-      // eslint-disable-next-line
       await client.collection('Value').insertOne(
         {
           sensor: device._id,
           value: message.input.device.sensor.value
         })
         
-      
       break
-    // case 'update-device-state':
+    case 'get-automatic-actions':
+      // eslint-disable-next-line
+      const automaticActions = await client.collection('AutomaticAction').find({
+        sensor: sensor._id
+      }).toArray()
+
+      // eslint-disable-next-line
+      message.output = automaticActions
+      break
+    // case 'get-scheduled-actions':
+    //   // eslint-disable-next-line
+    //   const scheduledActions = await client.collection('ScheduledAction').find({
+    //     sensor: sensor._id
+    //   }).toArray()
+    //   // eslint-disable-next-line
+    //   message.output = scheduledActions
     //   break
+    case 'get-actions':
+      // eslint-disable-next-line
+      const actions = await client.collection('Action').find({
+        _id: { $in: message.input.action }
+      }).toArray()
+      
+      // eslint-disable-next-line
+      message.output = actions
+      break
     default:
       logger.error(`Unknown operation ${message.info.operation}`)
   }
+
+  return message
 }

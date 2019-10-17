@@ -1,0 +1,38 @@
+{
+  "name": "automatic-action-checker-cronjob",
+  "version": "1.0.0",
+  "description": "Microservice for checking automatic actions",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm src/index.js; else node -r esm src/index.js; fi",
+    "test": "mocha ./tests -r esm",
+    "lint": "eslint src/**",
+    "lint:fix": "eslint src/** --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DmytryS/u-hub.git"
+  },
+  "keywords": [
+    "cron"
+  ],
+  "author": "Dmytro Shvaika",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DmytryS/u-hub/issues"
+  },
+  "homepage": "https://github.com/DmytryS/u-hub#readme",
+  "dependencies": {
+    "amqplib": "^0.5.5",
+    "dotenv": "^8.2.0",
+    "mongodb": "^3.3.2",
+    "restify-errors": "^8.0.1",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.1.0",
+    "esm": "^3.2.25",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.1"
+  }
+}

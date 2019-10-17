@@ -9,4 +9,5 @@ data:
   AMQP_APPLE_HOMEKIT_QUEUE: apple_homekit
   AMQP_GOOGLE_HOME_QUEUE: google_home
   AMQP_SCHEDULED_ACTION_QUEUE: scheduled_action
+  AMQP_AUTOMATIC_ACTION_QUEUE: automatic_action
   AMQP_MQTT_LISTENER_QUEUE: mqtt-listener

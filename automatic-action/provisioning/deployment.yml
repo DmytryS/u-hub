@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: automatic-action
+  labels:
+    app: automatic-action
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: automatic-action
+  template:
+    metadata:
+      labels:
+        app: automatic-action
+    spec:
+      containers:
+      - name: automatic-action
+        image: loginkr/u-hub_automatic-action:latest
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: amqp

@@ -14,6 +14,7 @@ jobs:
       - export APPLE_HOMEKIT_IMAGE_TAG=$DOCKER_REPO_APPLE_HOMEKIT:$REVISION
       - export CLIENT_IMAGE_TAG=$DOCKER_REPO_CLIENT:$REVISION
       - export SCHEDULED_ACTION_IMAGE_TAG=$DOCKER_REPO_SCHEDULED_ACTION:$REVISION
+      - export AUTOMATIC_ACTION_IMAGE_TAG=$DOCKER_REPO_AUTOMATIC_ACTION:$REVISION
       - export GOOGLE_HOME_IMAGE_TAG=$DOCKER_REPO_GOOGLE_HOME:$REVISION
       - export MQTT_LISTENER_IMAGE_TAG=$DOCKER_REPO_MQTT_LISTENER:$REVISION
 
@@ -45,6 +46,11 @@ jobs:
       - docker run $MQTT_LISTENER_IMAGE_TAG run lint
       #- docker run $MQTT_LISTENER_IMAGE_TAG run test
       - docker push $MQTT_LISTENER_IMAGE_TAG
+
+      - docker build -t $AUTOMATIC_ACTION_IMAGE_TAG ./automatic-action
+      - docker run $AUTOMATIC_ACTION_IMAGE_TAG run lint
+      #- docker run $MQTT_LISTENER_IMAGE_TAG run test
+      - docker push $AUTOMATIC_ACTION_IMAGE_TAG
   - stage: build_version
     if: tag IS present
     script:
@@ -53,6 +59,7 @@ jobs:
       - export APPLE_HOMEKIT_IMAGE_TAG=$DOCKER_REPO_APPLE_HOMEKIT:$TRAVIS_TAG
       - export CLIENT_IMAGE_TAG=$DOCKER_REPO_CLIENT:$REVISION
       - export SCHEDULED_ACTION_IMAGE_TAG=$DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG
+      - export AUTOMATIC_ACTION_IMAGE_TAG=$DOCKER_REPO_AUTOMATIC_ACTION:$TRAVIS_TAG
       - export GOOGLE_HOME_IMAGE_TAG=$DOCKER_REPO_GOOGLE_HOME:$TRAVIS_TAG
       - export MQTT_LISTENER_IMAGE_TAG=$DOCKER_REPO_MQTT_LISTENER:$TRAVIS_TAG
 
@@ -84,3 +91,8 @@ jobs:
       - docker run $MQTT_LISTENER_IMAGE_TAG run lint
       - docker run $MQTT_LISTENER_IMAGE_TAG run test
       - docker push $MQTT_LISTENER_IMAGE_TAG
+
+      - docker build -t $AUTOMATIC_ACTION_IMAGE_TAG ./automatic-action
+      - docker run $AUTOMATIC_ACTION_IMAGE_TAG run lint
+      - docker run $AUTOMATIC_ACTION_IMAGE_TAG run test
+      - docker push $AUTOMATIC_ACTION_IMAGE_TAG
