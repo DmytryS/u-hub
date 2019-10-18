@@ -24,6 +24,7 @@
   "homepage": "https://github.com/DmytryS/u-hub#readme",
   "dependencies": {
     "amqplib": "^0.5.5",
+    "crypto": "^1.0.1",
     "dotenv": "^8.2.0",
     "mongodb": "^3.3.2",
     "restify-errors": "^8.0.1",
