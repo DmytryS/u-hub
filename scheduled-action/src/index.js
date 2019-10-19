@@ -1,31 +1,101 @@
-import { amqp, logger, mongo } from './lib/index.js'
+import 'dotenv/config.js'
+import { amqp, logger, scheduler } from './lib/index.js'
 
-const processScheduledActions = async () => {
-  try {
-    logger.info('Finding active scheduled actions')
-    const client = mongo.connection()
-    const actions = await client.collection('ScheduledAction').find({})
+const {
+  AMQP_APOLLO_QUEUE,
+  AMQP_MQTT_LISTENER_QUEUE,
+} = process.env
 
-    for (const action of actions) {
-      const output = {
-        action: action._id.toString()
+const applyAction = (scheduledActionId) => async () => {
+  try{
+    let { output: scheduledAction } = await amqp.request(
+      AMQP_APOLLO_QUEUE,
+      {
+        info: {
+          operation: 'get-scheduled-actions'
+        },
+        input: {
+          scheduledAction: scheduledActionId
+        }
+        
       }
+    )
 
-      await amqp.send(
-        'SOMEWHERE_QUEUE',
-        JSON.stringify(output)
+    scheduledAction = scheduledAction[0]
+
+    if (scheduledAction && scheduledAction.actions) {
+      const { output: actions } = await amqp.request(
+        AMQP_APOLLO_QUEUE,
+        {
+          info: {
+            operation: 'get-actions'
+          },
+          input: {
+            action: scheduledAction.actions
+          }
+        }
       )
+
+      const { output: sensors } = await amqp.request(
+        AMQP_APOLLO_QUEUE,
+        {
+          info: {
+            operation: 'get-sensor'
+          },
+          input: {
+            sensor: actions.map(a => a.sensor)
+          }
+        }
+      )
+      
+      const { output: devices } = await amqp.request(
+        AMQP_APOLLO_QUEUE,
+        {
+          info: {
+            operation: 'get-device'
+          },
+          input: {
+            device: sensors.map(s => s.device)
+          }
+        }
+      )
+  
+      await Promise.all(sensors.map(s => amqp.publish(
+        AMQP_MQTT_LISTENER_QUEUE,
+        {
+          info: {
+            operation: 'set-value'
+          },
+          input: {
+            device: {
+              name: devices.find(d => d._id === s.device).name,
+              sensor: {
+                type: s.type,
+                value: actions.find(a => a.sensor === s._id).valueToChangeOn
+              }
+            }
+          }
+        }
+      )))
     }
-
-    await amqp.close()
-    await mongo.disconnect()
-  } catch (error) {
-    logger.error(error)
-    logger.warn('Shutdown after error')
-
-    await amqp.close()
-    await mongo.disconnect()
+  }catch(err) {
+    logger.error(`[SCHEDULE-JOB] ${err}`)
   }
 }
 
-processScheduledActions()
+const initJobs = async () => {
+  const { output: scheduledActions } = await amqp.request(
+    AMQP_APOLLO_QUEUE,
+    {
+      info: {
+        operation: 'get-scheduled-actions'
+      }
+    }
+  )
+
+  for (const scheduledAction of scheduledActions) {
+    scheduler.scheduleJob(scheduledAction, applyAction(scheduledAction._id))
+  }
+}
+
+initJobs()

@@ -1,0 +1,23 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: scheduled-action
+  labels:
+    app: scheduled-action
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: scheduled-action
+  template:
+    metadata:
+      labels:
+        app: scheduled-action
+    spec:
+      containers:
+      - name: scheduled-action
+        image: loginkr/u-hub_scheduled-action:latest
+        imagePullPolicy: Always
+        envFrom:
+        - configMapRef:
+            name: amqp

@@ -1,0 +1,21 @@
+apiVersion: settings.k8s.io/v1alpha1
+kind: PodPreset
+metadata:
+  name: scheduled-action
+spec:
+  selector:
+    matchLabels:
+      app: scheduled-action
+  env:
+  - name: NODE_ENV
+    value: development
+  - name: CHOKIDAR_USEPOLLING
+    value: 'true'
+  volumeMounts:
+  - name: u-hub
+    mountPath: /usr/src/app
+    subPath: scheduled-action
+  volumes:
+  - name: u-hub
+    persistentVolumeClaim:
+      claimName: u-hub

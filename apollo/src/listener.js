@@ -99,14 +99,20 @@ export default async (message) => {
       // eslint-disable-next-line
       message.output = automaticActions
       break
-    // case 'get-scheduled-actions':
-    //   // eslint-disable-next-line
-    //   const scheduledActions = await client.collection('ScheduledAction').find({
-    //     sensor: sensor._id
-    //   }).toArray()
-    //   // eslint-disable-next-line
-    //   message.output = scheduledActions
-    //   break
+    case 'get-scheduled-actions':
+      // eslint-disable-next-line
+      const filter = message.input && message.input.scheduledAction
+        ? {
+          _id: Array.isArray(message.input.scheduledAction)
+            ? { $in: message.input.scheduledAction.map(a => ObjectId(a))}
+            : ObjectId(message.input.scheduledAction)
+        }
+        : {}
+      // eslint-disable-next-line
+      const scheduledActions = await client.collection('ScheduledAction').find(filter).toArray()
+      // eslint-disable-next-line
+      message.output = scheduledActions
+      break
     case 'get-actions':
       // eslint-disable-next-line
       const actions = await client.collection('Action').find({
