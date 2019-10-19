@@ -48,7 +48,7 @@ const resolvers = {
     scheduledAction: resolver,
     scheduledActions: resolver,
     value: resolver,
-    // values: resolver,
+    values: resolver,
   },
   Mutation: {
     device: resolver,

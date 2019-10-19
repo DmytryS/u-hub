@@ -79,8 +79,9 @@ export default async (message) => {
   
       await client.collection('Value').insertOne(
         {
-          sensor: device._id,
-          value: message.input.device.sensor.value
+          sensor: sensor._id,
+          value: message.input.device.sensor.value,
+          createdAt: new Date()
         }
       )
       break

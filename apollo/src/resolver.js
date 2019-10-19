@@ -44,10 +44,16 @@ const getFilterFromArgs = (args) => {
   let filter = args.input
 
   if (filter.id) {
-    filter._id = ObjectID(filter.id)
+    filter._id = filter.id // ObjectID
 
     delete filter.id
   }
+
+  Object.keys(filter).forEach(key => {
+    if (typeof filter[key] === 'string' && ObjectID.isValid(filter[key])) {
+      filter[key] = ObjectID(filter[key])
+    }
+  })
 
   return filter
 }
@@ -76,11 +82,22 @@ const getFieldName = (type, fieldType) => {
   return false
 }
 
-const getFieldType = (type, fieldName) => {
+const getTypeFields = (type) => {
   const typeDefType = /Input/.test(type) ? 'input' : 'output'
   if (type !== 'Query' && type !== 'Mutation') {
-    const parentFields = typeDefs[typeDefType].find(t => t.name === type).fields
-    const fieldType = parentFields[fieldName] ? parentFields[fieldName] : false
+    const fields = typeDefs[typeDefType].find(t => t.name === type).fields
+
+    return fields
+  }
+
+  return false
+}
+
+const getFieldType = (type, fieldName) => {
+  // const typeDefType = /Input/.test(type) ? 'input' : 'output'
+  if (type !== 'Query' && type !== 'Mutation') {
+    const parentFields = getTypeFields(type)// typeDefs[typeDefType].find(t => t.name === type).fields
+    const fieldType = parentFields && parentFields[fieldName] ? parentFields[fieldName] : false
 
     return fieldType
   }
@@ -89,15 +106,14 @@ const getFieldType = (type, fieldName) => {
 }
 
 const makeData = (data, returnType, parentType, fieldName) => {
-  const typeDefType = /Input/.test(returnType) ? 'input' : 'output'
-  
-  
+  // const typeDefType = /Input/.test(returnType) ? 'input' : 'output'
+
   if (parentType !== 'Mutation') {
     data = data[fieldName]
   }
 
   const collection = returnType.replace(/[[|\]|!]/g, '')
-  const fields = typeDefs[typeDefType].find(t => t.name === collection).fields
+  const fields = getTypeFields(collection)// typeDefs[typeDefType].find(t => t.name === collection).fields
   
   let outputData
 
@@ -113,8 +129,12 @@ const makeData = (data, returnType, parentType, fieldName) => {
         d[key] = ObjectID(d[key])
       }
     }
-  })
 
+    if (fields.createdAt && fields.createdAt === 'Date') {
+      d.createdAt = Date.now()
+      // d.updatedAt = Date.now()
+    }
+  })
 
   return outputData
 }
@@ -232,8 +252,7 @@ const resolver = async (parent, args, context, info) => {
     case 'query':
       console.log('GET')
       // eslint-disable-next-line
-      const filter = parent ? getFilterFromParent(parent, fieldName) : 
-        operation === 'query' ? getFilterFromArgs(args) : {}
+      const filter = parent ? getFilterFromParent(parent, fieldName) : getFilterFromArgs(args)
 
       if (filter !== null) {
         outputMessage = await client.collection(collection).find(filter).toArray()
@@ -241,7 +260,6 @@ const resolver = async (parent, args, context, info) => {
       } else {
         outputMessage = [null]
       }
-      
       
       if (!isArray(returnType)) {
         outputMessage = outputMessage[0]
