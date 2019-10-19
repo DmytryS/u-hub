@@ -34,7 +34,7 @@ const listener = async (topic, payload) => {
   logger.debug(`[MQTT-LISTENER] ${topic} ${payload}`)
 
   const deviceName = topic.split('/')[0]
-  const sensorType = topic.split('/')[2]
+  const sensorType = topic.split('/')[1]
 
   const message = {
     info: {

@@ -36,22 +36,22 @@ const listener = async (message) => {
 
       switch(automaticAction.condition){
         case 'LESS':
-          actions = automaticAction.valueToCompare < currentValue ? automaticAction.actions: [false]
+          actions = currentValue < automaticAction.valueToCompare ? automaticAction.actions: [false]
           break
         case 'MORE':
-          actions = automaticAction.valueToCompare > currentValue ? automaticAction.actions: [false]
+          actions = currentValue > automaticAction.valueToCompare ? automaticAction.actions: [false]
           break
         case 'MORE_OR_EQUAL':
-          actions = automaticAction.valueToCompare >= currentValue ? automaticAction.actions: [false]
+          actions = currentValue >= automaticAction.valueToCompare ? automaticAction.actions: [false]
           break
         case 'LESS_OR_EQUAL':
-          actions = automaticAction.valueToCompare <= currentValue ? automaticAction.actions: [false]
+          actions = currentValue <= automaticAction.valueToCompare ? automaticAction.actions: [false]
           break
         case 'NOT_EQUAL':
-          actions = automaticAction.valueToCompare !== currentValue ? automaticAction.actions: [false]
+          actions = currentValue !== automaticAction.valueToCompare ? automaticAction.actions: [false]
           break
         case 'EQUAL':
-          actions = automaticAction.valueToCompare === currentValue ? automaticAction.actions: [false]
+          actions = currentValue === automaticAction.valueToCompare ? automaticAction.actions: [false]
           break
       }
 
@@ -59,66 +59,63 @@ const listener = async (message) => {
     })
     .filter(automaticAction => !!automaticAction)
 
-  // console.log('AUTOMATIC_ACTIONS:', inspect(automaticActions,{depth:7, colors: true}))
+  // console.log('AUTOMATIC_ACTIONS:', inspect(actionIds,{depth:7, colors: true}))
 
-  const { output: actions } = await amqp.request(
-    AMQP_APOLLO_QUEUE,
-    {
-      info: {
-        operation: 'get-actions'
-      },
-      input: {
-        action: actionIds
+  if (actionIds.length) {
+    const { output: actions } = await amqp.request(
+      AMQP_APOLLO_QUEUE,
+      {
+        info: {
+          operation: 'get-actions'
+        },
+        input: {
+          action: actionIds
+        }
       }
-    }
-  )
+    )
 
-  // console.log('ACTIONS:', inspect(actions,{depth:7, colors: true}))
-
-  const { output: sensors } = await amqp.request(
-    AMQP_APOLLO_QUEUE,
-    {
-      info: {
-        operation: 'get-sensor'
-      },
-      input: {
-        sensor: actions.map(a => a.sensor)
+    const { output: sensors } = await amqp.request(
+      AMQP_APOLLO_QUEUE,
+      {
+        info: {
+          operation: 'get-sensor'
+        },
+        input: {
+          sensor: actions.map(a => a.sensor)
+        }
       }
-    }
-  )
-  
-  const { output: devices } = await amqp.request(
-    AMQP_APOLLO_QUEUE,
-    {
-      info: {
-        operation: 'get-device'
-      },
-      input: {
-        device: sensors.map(s => s.device)
+    )
+    
+    const { output: devices } = await amqp.request(
+      AMQP_APOLLO_QUEUE,
+      {
+        info: {
+          operation: 'get-device'
+        },
+        input: {
+          device: sensors.map(s => s.device)
+        }
       }
-    }
-  )
-  
-  // console.log('DEVICES:', inspect(devices,{depth:7, colors: true}))
+    )
 
-  await Promise.all(sensors.map(s => amqp.request(
-    AMQP_MQTT_LISTENER_QUEUE,
-    {
-      info: {
-        operation: 'set-value'
-      },
-      input: {
-        device: {
-          name: devices.find(d => d._id === s.device).name,
-          sensor: {
-            type: s.type,
-            value: actions.find(a => a.sensor === s._id).valueToChangeOn
+    await Promise.all(sensors.map(s => amqp.publish(
+      AMQP_MQTT_LISTENER_QUEUE,
+      {
+        info: {
+          operation: 'set-value'
+        },
+        input: {
+          device: {
+            name: devices.find(d => d._id === s.device).name,
+            sensor: {
+              type: s.type,
+              value: actions.find(a => a.sensor === s._id).valueToChangeOn
+            }
           }
         }
       }
-    }
-  )))
-    
+    )))
+  } 
 }
 
 amqp.listen(AMQP_AUTOMATIC_ACTION_QUEUE, listener)
