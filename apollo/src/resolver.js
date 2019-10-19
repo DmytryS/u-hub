@@ -6,7 +6,10 @@ import { isArray } from './helpers/index.js'
 import { typeDefs } from './schema.js'
 const { ObjectID } = mongodb
 
-const { AMQP_MQTT_LISTENER_QUEUE } = process.env
+const {
+  AMQP_MQTT_LISTENER_QUEUE,
+  AMQP_SCHEDULED_ACTION_QUEUE,
+} = process.env
 
 const makeObjectId = (id) => ObjectID.isValid(id) && typeof id !== 'string' ? id : ObjectID(id)
 
@@ -235,6 +238,17 @@ const sendNewValueToDevice = async (sensorId, value) => {
   }
 }
 
+const reinitializeScheduledJobs = async () => {
+  await amqp.publish(
+    AMQP_SCHEDULED_ACTION_QUEUE,
+    {
+      info: {
+        operation: 'reinitialize-jobs'
+      }
+    }
+  )
+}
+
 const resolver = async (parent, args, context, info) => {
   const client = mongo.connection()
   let { returnType, fieldName, parentType } = info
@@ -322,6 +336,10 @@ const resolver = async (parent, args, context, info) => {
           makeInputType(returnType),
           makeInputType(parentType),
         )
+      }
+
+      if (isRoot(parentType) && collection === 'ScheduledAction') {
+        await reinitializeScheduledJobs()
       }
 
       if (!isArray(returnType)) {

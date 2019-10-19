@@ -4,6 +4,7 @@ import { amqp, logger, scheduler } from './lib/index.js'
 const {
   AMQP_APOLLO_QUEUE,
   AMQP_MQTT_LISTENER_QUEUE,
+  AMQP_SCHEDULED_ACTION_QUEUE,
 } = process.env
 
 const applyAction = (scheduledActionId) => async () => {
@@ -84,6 +85,7 @@ const applyAction = (scheduledActionId) => async () => {
 }
 
 const initJobs = async () => {
+  logger.info('Reinitializing jobs')
   const { output: scheduledActions } = await amqp.request(
     AMQP_APOLLO_QUEUE,
     {
@@ -99,3 +101,12 @@ const initJobs = async () => {
 }
 
 initJobs()
+
+const reinitializeJobs = (message) => {
+  if (message.info.operation === 'reinitialize-jobs') {
+    scheduler.stopJobs()
+    initJobs()
+  }
+}
+
+amqp.listen(AMQP_SCHEDULED_ACTION_QUEUE, reinitializeJobs)
