@@ -33,37 +33,36 @@ const listener = async (topic, payload) => {
   
   logger.debug(`[MQTT-LISTENER] ${topic} ${payload}`)
 
-  const sensorType = topic.split('/')[1]
-
   const message = {
     info: {
       operation: 'add-value'
     },
     input: {
       sensor: {
-        type: sensorType,
+        name: topic,
         mqttStatusTopic: topic,
         value: payload
       }
     }
   }
 
-  // console.log(inspect(message, {depth: 7, colors: true}))
+  const { output: sensor } = await amqp.request(
+    AMQP_APOLLO_QUEUE,
+    message
+  )
 
-  await Promise.all([
-    amqp.publish(
-      AMQP_APOLLO_QUEUE,
-      message
-    ),
-    amqp.publish(
-      AMQP_APPLE_HOMEKIT_QUEUE,
-      message
-    ),
-    amqp.publish(
-      AMQP_AUTOMATIC_ACTION_QUEUE,
-      message
-    )
-  ])
+  if (sensor.mqttSetTopic && sensor.type) {
+    await Promise.all([
+      amqp.publish(
+        AMQP_APPLE_HOMEKIT_QUEUE,
+        message
+      ),
+      amqp.publish(
+        AMQP_AUTOMATIC_ACTION_QUEUE,
+        message
+      )
+    ])
+  }
 }
 
 export default listener

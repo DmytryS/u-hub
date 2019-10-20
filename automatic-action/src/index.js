@@ -72,7 +72,7 @@ const listener = async (message) => {
       }
     )
 
-    const { output: sensors } = await amqp.request(
+    let { output: sensors } = await amqp.request(
       AMQP_APOLLO_QUEUE,
       {
         info: {
@@ -83,6 +83,8 @@ const listener = async (message) => {
         }
       }
     )
+
+    sensors = sensors.filter(s => !!s.type)
 
     await Promise.all(sensors.map(s => amqp.publish(
       AMQP_MQTT_LISTENER_QUEUE,

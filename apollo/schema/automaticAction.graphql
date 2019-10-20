@@ -12,7 +12,7 @@ type AutomaticAction {
   name: String!
   sensor: Sensor
   valueToCompare: Int
-  condition: String
+  condition: Condition
   enabled: Boolean
   actions: [Action]
 }
@@ -22,7 +22,7 @@ input AutomaticActionInput {
   name: String!
   sensor: ID
   valueToCompare: Int
-  condition: String
+  condition: Condition
   enabled: Boolean
   actions: [ActionInput]
   deleted: Boolean

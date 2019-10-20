@@ -31,20 +31,18 @@ const processFields = (fields) => {
 
   fields.forEach(field => {
     let type
-
+    
     if (field.type.kind === 'LIST' && field.type.ofType && !field.type.ofType !== null) {
       type = `[${field.type.ofType.name}]`
     }
     if (field.type.kind === 'NON_NULL' && field.type.ofType && !field.type.ofType !== null) {
       type = field.type.ofType.name
     }
+    if (field.type.kind === 'ENUM') {
+      type = 'String'
+    }
 
     type = type || field.type.name
-    
-    // if (field.name === 'valueToChangeOn'){
-    //   console.log(field.name, type, inspect(field.type, {depth:6, colors:true}))
-    // }
-    
 
     output[field.name] = type
   })

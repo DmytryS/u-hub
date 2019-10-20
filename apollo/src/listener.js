@@ -1,27 +1,60 @@
 import { inspect } from 'util'
 import mongodb from 'mongodb'
-import { logger, mongo } from './lib/index.js'
+import { logger, mongo, amqp } from './lib/index.js'
 
 const { ObjectId } = mongodb
+const { AMQP_APPLE_HOMEKIT_QUEUE } = process.env
 
-const getSensor = (client, message) => client.collection('Sensor').findOneAndUpdate(
+const reinitializeAppleHomeKit = () => amqp.publish(
+  AMQP_APPLE_HOMEKIT_QUEUE,
   {
-    type: message.input.sensor.type,
-    mqttStatusTopic: message.input.sensor.mqttStatusTopic,
-    deleted: { $ne : true }
-  },
-  {
-    $set: {
-      type: message.input.sensor.type,
-      mqttStatusTopic: message.input.sensor.mqttStatusTopic
+    info: {
+      operation: 'reinitialize-sensors'
     }
-  },
-  {
-    upsert: true,
-    returnNewDocument: true,
-    returnOriginal: false,
   }
-).then(res => res.value)
+)
+
+const getSensor = async (client, message) => {
+  const sensor = await client.collection('Sensor')
+    .findOneAndUpdate(
+      {
+        mqttStatusTopic: message.input.sensor.mqttStatusTopic,
+        deleted: { $ne : true }
+      },
+      {
+        $set: {
+          mqttStatusTopic: message.input.sensor.mqttStatusTopic
+        }
+      },
+      {
+        upsert: true,
+        returnNewDocument: true,
+        returnOriginal: false,
+      }
+    )
+    .then(async res => {
+      if (res.lastErrorObject.updatedExisting === false) {
+        await reinitializeAppleHomeKit()
+      }
+
+      return res.value
+    })
+
+  if (!sensor.name) {
+    await client.collection('Sensor').updateOne(
+      {
+        _id: sensor._id
+      },
+      {
+        $set: {
+          name: message.input.sensor.name,
+        }
+      }
+    )
+  }
+
+  return sensor
+}
 
 export default async (message) => {
   if ( Object.keys(message).length === 0 || message.info.operation === 'set-value') {
@@ -39,13 +72,23 @@ export default async (message) => {
 
   switch(message.info.operation) {
     case 'add-value':
-      await client.collection('Value').insertOne(
+      // eslint-disable-next-line
+      const insertedValue = await client.collection('Value').insertOne(
         {
-          sensor: sensor._id,
+          sensor: {
+            _id: sensor._id,
+            mqttStatusTopic: sensor.mqttStatusTopic,
+            mqttSetTopic: sensor.mqttSetTopic,
+            name: sensor.name,
+            type: sensor.type
+          },
           value: message.input.sensor.value,
           createdAt: new Date()
         }
       )
+
+      // eslint-disable-next-line
+      message.output = insertedValue
       break
     case 'get-automatic-actions':
       // eslint-disable-next-line
@@ -92,7 +135,7 @@ export default async (message) => {
             : ObjectId(message.input.sensor),
           deleted: { $ne: true }
         }
-        : {deleted: { $ne: true }}
+        : { deleted: { $ne: true } }
       // eslint-disable-next-line
       const _sensor = await client.collection('Sensor').find(sensorFilter).toArray()
 

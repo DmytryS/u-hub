@@ -309,9 +309,6 @@ const resolver = async (parent, args, context, info) => {
         filter = getFilterFromArgs(args)
       }
 
-      console.log('FILTER', filter)
-      
-
       if (filter !== null) {
         filter.deleted = { $ne: true }
         outputMessage = await client.collection(collection).find(filter).toArray()

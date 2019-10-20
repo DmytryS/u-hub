@@ -1,11 +1,48 @@
 enum SensorType {
-  RELAY
-  TEMP_SENSOR
+  AirPurifier
+  AirQualitySensor
+  BatteryService
+  CameraRTSPStreamManagement
+  CarbonDioxideSensor
+  CarbonMonoxideSensor
+  ContactSensor
+  Door
+  Doorbell
+  Fan
+  Fanv2
+  Faucet
+  FilterMaintenance
+  GarageDoorOpener
+  HeaterCooler
+  HumidifierDehumidifier
+  HumiditySensor
+  IrrigationSystem
+  LeakSensor
+  LightSensor
+  Lightbulb
+  LockManagement
+  LockMechanism
+  Microphone
+  MotionSensor
+  OccupancySensor
+  Outlet
+  SecuritySystem
+  Slat
+  SmokeSensor
+  Speaker
+  StatelessProgrammableSwitch
+  Switch
+  TemperatureSensor
+  Thermostat
+  Valve
+  Window
+  WindowCovering
 }
 
 type Sensor {
   id: ID
-  type: String
+  name: String
+  type: SensorType
   description: String
   mqttStatusTopic: String
   mqttSetTopic: String
@@ -15,7 +52,8 @@ type Sensor {
 
 input SensorInput {
   id: ID
-  type: String
+  name: String
+  type: SensorType
   description: String
   mqttStatusTopic: String
   mqttSetTopic: String

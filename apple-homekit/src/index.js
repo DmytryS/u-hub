@@ -5,6 +5,7 @@ import qrcode from 'qrcode-terminal'
 import { loadServices } from './helpers/index.js'
 import { logger, amqp } from './lib/index.js'
 import HAP from 'hap-nodejs'
+// import { inspect } from 'util'
 
 const {
   BRIDGE_NAME,
@@ -65,25 +66,21 @@ const mac = (data) => {
   }).toUpperCase()
 }
 
-const initSensors = async (bridge) => {
-  const devices = await amqp.request(AMQP_APOLLO_QUEUE, {
+const initSensors = (bridge) => async () => {
+  // console.log('SERVICES', services)
+
+  let { output: sensors } = await amqp.request(AMQP_APOLLO_QUEUE, {
     info: {
-      collection: 'Device'
-    },
-    projection: {
-      devices: {
-        name: true,
-        sensors: {
-          type: true
-        }
-      }
+      operation: 'get-sensor'
     }
   })
 
-  devices.map(device => device.sensors.map(sensor => {
+  sensors = sensors.filter(s => !!s.name && !!s.type)
+
+  sensors.map(sensor => {
     const accConfig = {
-      id: sensor.id,
-      name: `${sensor.type} ${sensor.id.slice(-4)}`,
+      id: sensor._id,
+      name: `${sensor.type} ${sensor._id.slice(-4)}`,
       category: sensor.type
     }
     const acc = createAccessory(accConfig)
@@ -93,7 +90,7 @@ const initSensors = async (bridge) => {
     logger.debug(`addBridgedAccessory ${accConfig.name}`)
 
     bridge.addBridgedAccessory(acc)
-  }))
+  })
 }
 
 const bridge = new Bridge(BRIDGE_NAME, uuid.generate(BRIDGE_NAME))
@@ -103,28 +100,28 @@ bridge.on('identify', (paired, callback) => {
   callback()
 })
 
-const listener = bridge => message => {
-  logger.info(`MESSAGE: ${message}`)
-  const sensors = Array.isArray(message.input) ? message.input : [ message.input ]
+// const listener = bridge => message => {
+//   logger.info(`MESSAGE: ${inspect(message, {depth: 7})}`)
+//   const sensors = Array.isArray(message.input) ? message.input : [ message.input ]
 
-  sensors.forEach(sensor => {
-    const accConfig = {
-      id: sensor.id,
-      name: `${sensor.type} ${sensor.id.slice(-4)}`,
-      category: sensor.type
-    }
+//   sensors.forEach(sensor => {
+//     const accConfig = {
+//       id: sensor._id,
+//       name: `${sensor.type} ${sensor._id.slice(-4)}`,
+//       category: sensor.type
+//     }
 
-    const acc = createAccessory(accConfig)
-    services[accConfig.category](acc, accConfig)
-    logger.debug(`addBridgedAccessory ${accConfig.name}`)
-    bridge.addBridgedAccessory(acc)
-  })
-}
+//     const acc = createAccessory(accConfig)
+//     services[accConfig.category](acc, accConfig)
+//     logger.debug(`addBridgedAccessory ${accConfig.name}`)
+//     bridge.addBridgedAccessory(acc)
+//   })
+// }
 
 const createBridge = async () => {
-  // amqp.listen(AMQP_APPLE_HOMEKIT_QUEUE, listener(bridge))
+  amqp.listen(AMQP_APPLE_HOMEKIT_QUEUE, initSensors(bridge))
 
-  await initSensors(bridge)
+  await initSensors(bridge)()
  
   bridge.publish({
     username: mac(BRIDGE_NAME),
