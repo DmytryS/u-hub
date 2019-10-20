@@ -1,6 +1,8 @@
 import mqtt from 'mqtt'
 import logger from './logger.js'
 
+const excludeSetTopics = {}
+
 const { MQTT_URI } = process.env
 
 const options = {
@@ -55,7 +57,7 @@ export const listen = (topic, cb) => {
     'message',
     (cbTopic, payload) => {
       try{
-        if(cbTopic === topic || topic === '#') {
+        if((cbTopic === topic || topic === '#') && !excludeSetTopics[cbTopic]) {
           cb(cbTopic, payload.toString())
         }
       }catch(err) {
@@ -65,6 +67,17 @@ export const listen = (topic, cb) => {
   )
 }
 
-export const publish = (topic, message) => {
-  client.publish(topic, message.toString())
-}
+export const publish = (topic, message) => new Promise((resolve, reject) => {
+  excludeSetTopics[topic] = true
+
+  client.publish(
+    topic,
+    message.toString(),
+    (err) => {
+      if (err) {
+        return reject(err)
+      }
+
+      resolve()
+    })
+})

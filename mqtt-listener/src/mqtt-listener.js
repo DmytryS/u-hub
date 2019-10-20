@@ -33,7 +33,6 @@ const listener = async (topic, payload) => {
   
   logger.debug(`[MQTT-LISTENER] ${topic} ${payload}`)
 
-  const deviceName = topic.split('/')[0]
   const sensorType = topic.split('/')[1]
 
   const message = {
@@ -41,12 +40,10 @@ const listener = async (topic, payload) => {
       operation: 'add-value'
     },
     input: {
-      device: {
-        name: deviceName,
-        sensor: {
-          type: sensorType,
-          value: payload
-        }
+      sensor: {
+        type: sensorType,
+        mqttStatusTopic: topic,
+        value: payload
       }
     }
   }

@@ -8,6 +8,7 @@ input ActionInput {
   id: ID
   sensor: ID!
   valueToChangeOn: Int!
+  deleted: Boolean
 }
 
 # extend type Query {

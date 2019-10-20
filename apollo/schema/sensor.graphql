@@ -1,9 +1,32 @@
+enum SensorType {
+  RELAY
+  TEMP_SENSOR
+}
+
 type Sensor {
   id: ID
   type: String
-  device: Device
+  description: String
+  mqttStatusTopic: String
+  mqttSetTopic: String
+  # automaticActions: [AutomaticAction]
+  # device: Device
 }
 
 input SensorInput {
+  id: ID
   type: String
+  description: String
+  mqttStatusTopic: String
+  mqttSetTopic: String
+  deleted: Boolean
+}
+
+type Query {
+  sensor(input: SensorInput, sort: String): Sensor
+  sensors(input: SensorInput, sort: String): [Sensor]
+}
+
+type Mutation {
+  sensor(input: SensorInput!, sort: String): Sensor
 }

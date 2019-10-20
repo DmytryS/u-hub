@@ -122,7 +122,7 @@ const listener = bridge => message => {
 }
 
 const createBridge = async () => {
-  amqp.listen(AMQP_APPLE_HOMEKIT_QUEUE, listener(bridge))
+  // amqp.listen(AMQP_APPLE_HOMEKIT_QUEUE, listener(bridge))
 
   await initSensors(bridge)
  

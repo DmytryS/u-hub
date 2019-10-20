@@ -25,6 +25,7 @@ input AutomaticActionInput {
   condition: String
   enabled: Boolean
   actions: [ActionInput]
+  deleted: Boolean
 }
 
 extend type Query {

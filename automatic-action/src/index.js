@@ -11,7 +11,7 @@ const {
 const listener = async (message) => {
   logger.info(`MESSAGE: ${inspect(message, {depth: 7, colors: true})}`)
 
-  const currentValue = message.input.device.sensor.value
+  const currentValue = message.input.sensor.value
 
   const { output: automaticActions } = await amqp.request(
     AMQP_APOLLO_QUEUE,
@@ -20,11 +20,9 @@ const listener = async (message) => {
         operation: 'get-automatic-actions'
       },
       input: {
-        device: {
-          name: message.input.device.name,
-          sensor: {
-            type: message.input.device.sensor.type
-          }
+        sensor: {
+          type: message.input.sensor.type,
+          mqttStatusTopic: message.input.sensor.mqttStatusTopic
         }
       }
     }
@@ -85,18 +83,6 @@ const listener = async (message) => {
         }
       }
     )
-    
-    const { output: devices } = await amqp.request(
-      AMQP_APOLLO_QUEUE,
-      {
-        info: {
-          operation: 'get-device'
-        },
-        input: {
-          device: sensors.map(s => s.device)
-        }
-      }
-    )
 
     await Promise.all(sensors.map(s => amqp.publish(
       AMQP_MQTT_LISTENER_QUEUE,
@@ -105,12 +91,11 @@ const listener = async (message) => {
           operation: 'set-value'
         },
         input: {
-          device: {
-            name: devices.find(d => d._id === s.device).name,
-            sensor: {
-              type: s.type,
-              value: actions.find(a => a.sensor === s._id).valueToChangeOn
-            }
+          sensor: {
+            _id: s._id,
+            type: s.type,
+            mqttSetTopic: s.mqttSetTopic,
+            value: actions.find(a => a.sensor === s._id).valueToChangeOn
           }
         }
       }

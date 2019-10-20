@@ -12,6 +12,7 @@ input ScheduledActionInput {
   schedule: String
   enabled: Boolean
   actions: [ActionInput]
+  deleted: Boolean
 }
 
 extend type Query {

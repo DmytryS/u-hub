@@ -10,11 +10,11 @@ input DeviceInput {
   sensors: [SensorInput]
 }
 
-type Query {
-  device(input: DeviceInput, sort: String): Device
-  devices(input: DeviceInput, sort: String): [Device]
-}
+# type Query {
+#   device(input: DeviceInput, sort: String): Device
+#   devices(input: DeviceInput, sort: String): [Device]
+# }
 
-type Mutation {
-  device(input: DeviceInput!, sort: String): Device
-}
+# type Mutation {
+#   device(input: DeviceInput!, sort: String): Device
+# }

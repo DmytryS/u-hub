@@ -4,27 +4,16 @@ import { logger, mongo } from './lib/index.js'
 
 const { ObjectId } = mongodb
 
-const getDevice =  (client, message) => client.collection('Device').findOneAndUpdate(
-  { name: message.input.device.name },
+const getSensor = (client, message) => client.collection('Sensor').findOneAndUpdate(
   {
-    $set: { name: message.input.device.name }
-  },
-  {
-    upsert: true,
-    returnNewDocument: true,
-    returnOriginal: false,
-  }
-).then(res => res.value)
-
-const getSensor = (client, message, device) => client.collection('Sensor').findOneAndUpdate(
-  {
-    type: message.input.device.sensor.type,
-    device: device._id
+    type: message.input.sensor.type,
+    mqttStatusTopic: message.input.sensor.mqttStatusTopic,
+    deleted: false
   },
   {
     $set: {
-      type: message.input.device.sensor.type,
-      device: device._id
+      type: message.input.sensor.type,
+      mqttStatusTopic: message.input.sensor.mqttStatusTopic
     }
   },
   {
@@ -41,55 +30,24 @@ export default async (message) => {
 
   logger.info(`[AMQP] MESSAGE: ${inspect(message, { depth:4, colors: true})}`)
 
-
   const client = mongo.connection()
-  let device
   let sensor
 
   if (['add-value', 'get-automatic-actions'].includes(message.info.operation)) {
-    device = await getDevice(client, message)
-    sensor = await getSensor(client, message, device)
-  
-    if (!device.sensors || device.sensors.length === 0 || !device.sensors.find(s => s.toString() === sensor._id.toString())) {
-      await client.collection('Device').updateOne(
-        {
-          _id: device._id
-        },
-        {
-          $push: {
-            sensors: {
-              $each: [sensor._id]
-            }
-          }
-        }
-      )
-    }
+    sensor = await getSensor(client, message)
   }
-
-
-  // logger.info(`DEVICE: ${inspect(device, { depth:2, colors: true})}`)
-  // logger.info(`SENSOR: ${inspect(sensor, { depth:2, colors: true})}`)
 
   switch(message.info.operation) {
     case 'add-value':
-      // // eslint-disable-next-line
-      // const device = await getDevice(client, message)
-      // // eslint-disable-next-line
-      // const sensor = await getSensor(client, message, device)
-  
       await client.collection('Value').insertOne(
         {
           sensor: sensor._id,
-          value: message.input.device.sensor.value,
+          value: message.input.sensor.value,
           createdAt: new Date()
         }
       )
       break
     case 'get-automatic-actions':
-      // // eslint-disable-next-line
-      // const _device = await getDevice(client, message)
-      // // eslint-disable-next-line
-      // const _sensor = await getSensor(client, message, _device)
       // eslint-disable-next-line
       const automaticActions = await client.collection('AutomaticAction').find({
         sensor: sensor._id,
@@ -122,20 +80,17 @@ export default async (message) => {
       // eslint-disable-next-line
       message.output = actions
       break
-    case 'get-device':
-      // eslint-disable-next-line
-      const _device = await client.collection('Device').find({
-        _id: Array.isArray(message.input.device) ? { $in: message.input.device.map(d => ObjectId(d)) } : message.input.device
-      }).toArray()
-          
-      // eslint-disable-next-line
-      message.output = _device
-      break
     case 'get-sensor':
       // eslint-disable-next-line
-      const _sensor = await client.collection('Sensor').find({
-        _id: Array.isArray(message.input.sensor) ? { $in: message.input.sensor.map(s => ObjectId(s)) } : message.input.sensor
-      }).toArray()
+      const sensorFilter = message.input && message.input.sensor
+        ? {
+          _id: Array.isArray(message.input.sensor)
+            ? { $in: message.input.sensor.map(s => ObjectId(s))}
+            : ObjectId(message.input.sensor)
+        }
+        : {}
+      // eslint-disable-next-line
+      const _sensor = await client.collection('Sensor').find(sensorFilter).toArray()
 
       // eslint-disable-next-line
       message.output = _sensor

@@ -202,27 +202,24 @@ const sendNewValueToDevice = async (sensorId, value) => {
   const sensor = await client.collection('Sensor').findOne({
     _id: makeObjectId(sensorId)
   })
-  const device = await client.collection('Device').findOne({
-    sensors: {
-      $elemMatch: {
-        $eq: sensor._id
-      }
+
+  if (!sensor.mqttSetTopic) {
+    return {
+      sensor: sensor._id.toString(),
+      value: -1,
     }
-  })
+  }
 
   const message = {
     info: {
       operation: 'set-value',
-      // source: 'apollo',
     },
     input: {
-      device: {
-        _id: device._id,
-        name: device.name,
-        sensor: {
-          type: sensor.type,
-          value,
-        }
+      sensor: {
+        _id: sensor._id,
+        mqttSetTopic: sensor.mqttSetTopic,
+        type: sensor.type,
+        value,
       }
     }
   }
