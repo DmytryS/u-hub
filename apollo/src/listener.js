@@ -51,7 +51,8 @@ export default async (message) => {
       // eslint-disable-next-line
       const automaticActions = await client.collection('AutomaticAction').find({
         sensor: sensor._id,
-        enabled: true
+        enabled: true,
+        deleted: { $ne: true }
       }).toArray()
 
       // eslint-disable-next-line
@@ -63,9 +64,10 @@ export default async (message) => {
         ? {
           _id: Array.isArray(message.input.scheduledAction)
             ? { $in: message.input.scheduledAction.map(a => ObjectId(a))}
-            : ObjectId(message.input.scheduledAction)
+            : ObjectId(message.input.scheduledAction),
+          deleted: { $ne: true }
         }
-        : {}
+        : {deleted: { $ne: true }}
       // eslint-disable-next-line
       const scheduledActions = await client.collection('ScheduledAction').find(filter).toArray()
       // eslint-disable-next-line
@@ -74,7 +76,8 @@ export default async (message) => {
     case 'get-actions':
       // eslint-disable-next-line
       const actions = await client.collection('Action').find({
-        _id: { $in: message.input.action.map(a => ObjectId(a)) }
+        _id: { $in: message.input.action.map(a => ObjectId(a)) },
+        deleted: { $ne: true }
       }).toArray()
       
       // eslint-disable-next-line
@@ -86,9 +89,10 @@ export default async (message) => {
         ? {
           _id: Array.isArray(message.input.sensor)
             ? { $in: message.input.sensor.map(s => ObjectId(s))}
-            : ObjectId(message.input.sensor)
+            : ObjectId(message.input.sensor),
+          deleted: { $ne: true }
         }
-        : {}
+        : {deleted: { $ne: true }}
       // eslint-disable-next-line
       const _sensor = await client.collection('Sensor').find(sensorFilter).toArray()
 

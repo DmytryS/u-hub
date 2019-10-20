@@ -36,7 +36,6 @@ const getFilterFromParent = (parent, field) => {
     filter = null
   }
 
-
   return filter
 }
 
@@ -266,6 +265,8 @@ const resolver = async (parent, args, context, info) => {
       const filter = parent ? getFilterFromParent(parent, fieldName) : getFilterFromArgs(args)
 
       if (filter !== null) {
+        filter.deleted = { $ne: true }
+        console.log('FILTER:',filter)
         outputMessage = await client.collection(collection).find(filter).toArray()
         outputMessage = outputMessage.map(renameId)
       } else {
