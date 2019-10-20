@@ -1,14 +1,14 @@
 module.exports = function (iface) {
   // eslint-disable-next-line
-  const {mqttPub, mqttSub, mqttStatus, log, Service, Characteristic} = iface
+  const {accConfig, logger, Service, Characteristic,EventBridge} = iface
 
-  return function createService_TemperatureSensor(acc, settings, subtype) {
-    acc.addService(Service.TemperatureSensor, settings.name, subtype)
+  return function createService_TemperatureSensor(acc) {
+    acc.addService(Service.TemperatureSensor, accConfig.name, accConfig.id)
 
-    require('../characteristics/CurrentTemperature')({acc, settings, subtype}, iface)
-    require('../characteristics/StatusLowBattery')({acc, settings, subtype}, iface)
-    require('../characteristics/StatusActive')({acc, settings, subtype}, iface)
-    require('../characteristics/StatusFault')({acc, settings, subtype}, iface)
-    require('../characteristics/StatusTampered')({acc, settings, subtype}, iface)
+    require('../characteristics/CurrentTemperature')({acc}, iface)
+    // require('../characteristics/StatusLowBattery')({acc}, iface)
+    // require('../characteristics/StatusActive')({acc}, iface)
+    // require('../characteristics/StatusFault')({acc}, iface)
+    // require('../characteristics/StatusTampered')({acc}, iface)
   }
 }

@@ -75,20 +75,23 @@ export default async (message) => {
       // eslint-disable-next-line
       const insertedValue = await client.collection('Value').insertOne(
         {
-          sensor: {
-            _id: sensor._id,
-            mqttStatusTopic: sensor.mqttStatusTopic,
-            mqttSetTopic: sensor.mqttSetTopic,
-            name: sensor.name,
-            type: sensor.type
-          },
+          sensor: sensor._id,
           value: message.input.sensor.value,
           createdAt: new Date()
         }
-      )
+      ).then(res => res.ops[0])
 
       // eslint-disable-next-line
-      message.output = insertedValue
+      message.output = {
+        ...insertedValue,
+        sensor: {
+          _id: sensor._id,
+          mqttStatusTopic: sensor.mqttStatusTopic,
+          mqttSetTopic: sensor.mqttSetTopic,
+          name: sensor.name,
+          type: sensor.type
+        },
+      }
       break
     case 'get-automatic-actions':
       // eslint-disable-next-line
@@ -141,6 +144,19 @@ export default async (message) => {
 
       // eslint-disable-next-line
       message.output = _sensor
+      break
+    case 'get-last-sensor-value':
+      // eslint-disable-next-line
+      const value = await client.collection('Value').find({
+        // _id: { $in: message.input.action.map(a => ObjectId(a)) },
+        sensor: ObjectId(message.input.sensor),
+        deleted: { $ne: true }
+      }).sort({
+        createdAt : -1
+      }).toArray().then(res => res[0])
+
+      // eslint-disable-next-line
+      message.output = value
       break
     default:
       logger.error(`Unknown operation ${message.info.operation}`)

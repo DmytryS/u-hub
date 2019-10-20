@@ -1,11 +1,17 @@
 import 'dotenv/config.js'
+import EventEmitter from 'events'
 import crypto from 'crypto'
 import chalk from 'chalk'
 import qrcode from 'qrcode-terminal'
 import { loadServices } from './helpers/index.js'
 import { logger, amqp } from './lib/index.js'
 import HAP from 'hap-nodejs'
-// import { inspect } from 'util'
+import { inspect } from 'util'
+
+const EventBridge = new EventEmitter()
+
+const sensorStatuses = {}
+const getSensorStatus = (sensorId) => sensorStatuses[sensorId]
 
 const {
   BRIDGE_NAME,
@@ -66,9 +72,7 @@ const mac = (data) => {
   }).toUpperCase()
 }
 
-const initSensors = (bridge) => async () => {
-  // console.log('SERVICES', services)
-
+const initSensors = async (bridge) => {
   let { output: sensors } = await amqp.request(AMQP_APOLLO_QUEUE, {
     info: {
       operation: 'get-sensor'
@@ -80,16 +84,30 @@ const initSensors = (bridge) => async () => {
   sensors.map(sensor => {
     const accConfig = {
       id: sensor._id,
-      name: `${sensor.type} ${sensor._id.slice(-4)}`,
+      mqttStatusTopic: sensor.mqttStatusTopic,
+      mqttSetTopic: sensor.mqttSetTopic,
+      name: sensor.name,
       category: sensor.type
     }
     const acc = createAccessory(accConfig)
 
-    services[accConfig.category](acc, accConfig)
+    // logger.debug('adding service', accConfig.service, 'to accessory', accConfig.name)
+    // addService[s.service](acc, s, String(i))
+
+    services[accConfig.category]({
+      accConfig,
+      logger,
+      amqp,
+      getSensorStatus,
+      Service,
+      Characteristic,
+      HAP,
+      EventBridge
+    })(acc)
 
     logger.debug(`addBridgedAccessory ${accConfig.name}`)
 
-    bridge.addBridgedAccessory(acc)
+    bridge.addBridgedAccessory(acc, )
   })
 }
 
@@ -100,10 +118,28 @@ bridge.on('identify', (paired, callback) => {
   callback()
 })
 
-const createBridge = async () => {
-  amqp.listen(AMQP_APPLE_HOMEKIT_QUEUE, initSensors(bridge))
+const listener = (message) => {
+  logger.info(`MESSAGE: ${inspect(message, {depth: 7, colors: true})}`)
+  switch (message.info.operation) {
+    case 'reinitialize-sensors':
+      initSensors(bridge)
+      break
+    case 'add-value':
+    
+      EventBridge.emit(
+        message.input.sensor._id,
+        message.input.sensor.value
+      )
 
-  await initSensors(bridge)()
+      sensorStatuses[message.input.sensor._id] = message.input.sensor.value
+      break
+  }
+}
+
+const createBridge = async () => {
+  amqp.listen(AMQP_APPLE_HOMEKIT_QUEUE, listener)
+
+  await initSensors(bridge)
  
   bridge.publish({
     username: mac(BRIDGE_NAME),

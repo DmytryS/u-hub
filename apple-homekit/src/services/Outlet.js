@@ -1,26 +1,34 @@
+// const { AMQP_APOLLO_QUEUE } = process.env
+
 module.exports = function (iface) {
   // eslint-disable-next-line
-  const {mqttPub, mqttSub, mqttStatus, log, Service, Characteristic} = iface
+  const {
+    logger,
+    Service,
+    Characteristic,
+    accConfig,
+    EventBridge,
+    getSensorStatus
+  } = iface
 
-  return function createService_Outlet(acc, settings, subtype) {
-    acc.addService(Service.Outlet, settings.name, subtype)
-
-    acc.getService(subtype)
+  return function createService_Outlet(acc) {
+    acc.addService(Service.Outlet, accConfig.name, accConfig.id)
+    acc.getService(accConfig.id)
       .getCharacteristic(Characteristic.OutletInUse)
       .on('get', callback => {
-        log.debug('< hap get', settings.name, 'OutletInUse')
-        const inUse = mqttStatus(settings.topic.statusOutletInUse, settings.json.statusOutletInUse) === settings.payload.onOutletInUse
-        log.debug('> hap re_get', settings.name, 'OutletInUse', inUse)
+        logger.info('< hap get', accConfig.name, 'OutletInUse')
+        const inUse = getSensorStatus(accConfig.id) === 1
+        logger.info('> hap re_get', accConfig.name, 'OutletInUse', inUse)
         callback(null, inUse)
       })
 
-    mqttSub(settings.topic.statusOutletInUse, settings.json.statusOutletInUse, val => {
-      const inUse = val === settings.payload.onOutletInUse
-      log.debug('> hap update', settings.name, 'OutletInUse', inUse)
-      acc.getService(subtype)
+    EventBridge.on(accConfig.id, val => {
+      const inUse = val === 1
+      logger.info('> hap update', accConfig.name, 'OutletInUse', inUse)
+      acc.getService(accConfig.id)
         .updateCharacteristic(Characteristic.OutletInUse, inUse)
     })
-
-    require('../characteristics/On')({acc, settings, subtype}, iface)
+  
+    require('../characteristics/On')({acc}, iface)
   }
 }

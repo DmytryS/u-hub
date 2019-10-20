@@ -1,30 +1,55 @@
-module.exports = function (obj, iface) {
-  const {acc, settings, subtype} = obj
-  const {mqttStatus, mqttPub, mqttSub, Characteristic, logger} = iface
+const { AMQP_MQTT_LISTENER_QUEUE } = process.env
 
-  acc.getService(subtype)
+module.exports = function (obj, iface) {
+  const {acc} = obj
+  const {
+    Characteristic,
+    logger,
+    amqp,
+    getSensorStatus,
+    accConfig,
+    EventBridge
+  } = iface
+
+  acc.getService(accConfig.id)
     .getCharacteristic(Characteristic.On)
     .on('set', (value, callback) => {
-      logger.debug(`< hap set ${settings.name} 'On ${value}`)
-      const on = value ? settings.payload.onTrue : settings.payload.onFalse
-      mqttPub(settings.topic.setOn, on)
+      logger.info(`< hap set ${accConfig.name} 'On ${value}`)
+      const on = value ? 1 : 0
+      
+      amqp.publish(
+        AMQP_MQTT_LISTENER_QUEUE,
+        {
+          info: {
+            operation: 'set-value',
+          },
+          input: {
+            sensor: {
+              _id: accConfig.id,
+              mqttSetTopic: accConfig.mqttSetTopic,
+              type: accConfig.category,
+              value: on,
+            }
+          }
+        })
       callback()
     })
 
   /* istanbul ignore else */
-  if (settings.topic.statusOn) {
-    mqttSub(settings.topic.statusOn, settings.json.statusOn, val => {
-      const on = val === settings.payload.onTrue
-      logger.debug(`> hap update ${settings.name} On ${on}`)
-      acc.getService(subtype)
+  if (accConfig.mqttSetTopic) {
+    EventBridge.on(accConfig.id, val => {
+      const on = val === 1
+      logger.info(`> hap update ${accConfig.name} On ${on}`)
+      acc.getService(accConfig.id)
         .updateCharacteristic(Characteristic.On, on)
     })
-    acc.getService(subtype)
+
+    acc.getService(accConfig.id)
       .getCharacteristic(Characteristic.On)
       .on('get', callback => {
-        logger.debug(`< hap get ${settings.name} On`)
-        const on = mqttStatus(settings.topic.statusOn, settings.json.statusOn) === settings.payload.onTrue
-        logger.debug(`> hap re_get ${settings.name} On ${on}`)
+        logger.info(`< hap get ${accConfig.name} On`)
+        const on = getSensorStatus(accConfig.id) === 1
+        logger.info(`> hap re_get ${accConfig.name} On ${on}`)
         callback(null, on)
       })
   }

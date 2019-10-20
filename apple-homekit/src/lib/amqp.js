@@ -121,7 +121,7 @@ export const listen = async (queue, callback) => {
 }
 
 // eslint-disable-next-line
-export const request = async (queue, message) => {
+export const request = async (queue, message, cb) => {
   let timeout
 
   if (!CONNECTIONS.connection) {
@@ -148,6 +148,9 @@ export const request = async (queue, message) => {
       correlationId,
       (message) => {
         clearTimeout(timeout)
+        if (cb) {
+          cb(JSON.parse(message.content.toString()))
+        }
         resolve(JSON.parse(message.content.toString()))
       }
     )
