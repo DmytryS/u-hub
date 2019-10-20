@@ -8,7 +8,7 @@ const getSensor = (client, message) => client.collection('Sensor').findOneAndUpd
   {
     type: message.input.sensor.type,
     mqttStatusTopic: message.input.sensor.mqttStatusTopic,
-    deleted: false
+    deleted: { $ne : true }
   },
   {
     $set: {

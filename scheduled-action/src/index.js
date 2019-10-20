@@ -48,18 +48,6 @@ const applyAction = (scheduledActionId) => async () => {
           }
         }
       )
-      
-      const { output: devices } = await amqp.request(
-        AMQP_APOLLO_QUEUE,
-        {
-          info: {
-            operation: 'get-device'
-          },
-          input: {
-            device: sensors.map(s => s.device)
-          }
-        }
-      )
   
       await Promise.all(sensors.map(s => amqp.publish(
         AMQP_MQTT_LISTENER_QUEUE,
@@ -68,12 +56,11 @@ const applyAction = (scheduledActionId) => async () => {
             operation: 'set-value'
           },
           input: {
-            device: {
-              name: devices.find(d => d._id === s.device).name,
-              sensor: {
-                type: s.type,
-                value: actions.find(a => a.sensor === s._id).valueToChangeOn
-              }
+            sensor: {
+              _id: s._id,
+              type: s.type,
+              mqttSetTopic: s.mqttSetTopic,
+              value: actions.find(a => a.sensor === s._id).valueToChangeOn
             }
           }
         }

@@ -30,7 +30,7 @@ const getFilterFromParent = (parent, field) => {
     
           delete filter.id
         }
-      }    
+      }
     }
   } else {
     filter = null
@@ -39,11 +39,52 @@ const getFilterFromParent = (parent, field) => {
   return filter
 }
 
-const getFilterFromArgs = (args) => {
-  if (!args.input) {
-    return {}
+const isDate = (date) => {
+  const regExp = new RegExp('^(-?(?:[1-9][0-9]*)?[0-9]{4})-(1[0-2]|0[1-9])-(3[01]|0[1-9]|[12][0-9])T(2[0-3]|[01][0-9]):([0-5][0-9]):([0-5][0-9])(.[0-9]+)?(Z)?$')
+  return regExp.test(date)
+}
+
+const transformFilter = (filter) => {
+  const operators = ['eq', 'gt', 'gte', 'lt', 'lte', 'ne']
+
+  switch(typeof filter) {
+    case 'string':
+      if (isDate(filter)) {
+        filter = new Date(filter)
+      }
+      break
+    case 'object':
+      Object.keys(filter).forEach(key => {
+        let newKey = key
+        if (operators.includes(key)) {
+          newKey = `$${key}`
+
+          filter[newKey] = filter[key]
+      
+          delete filter[key]
+        }
+      
+        filter[newKey] = transformFilter(filter[newKey])
+      })
+      break
   }
-  let filter = args.input
+
+  return filter
+}
+
+const getFilterFromArgs = (args) => {
+  let filter = {}
+  if (args.filter) {
+    filter = transformFilter(args.filter)
+  } else {
+    if (args.input) {
+      filter = args.input
+    }
+  }
+
+  if (Object.keys(filter).length === 0){
+    return filter
+  }
 
   if (filter.id) {
     filter._id = filter.id // ObjectID
@@ -260,13 +301,19 @@ const resolver = async (parent, args, context, info) => {
 
   switch(operation) {
     case 'query':
-      console.log('GET')
       // eslint-disable-next-line
-      const filter = parent ? getFilterFromParent(parent, fieldName) : getFilterFromArgs(args)
+      let filter = null
+      if (parent) {
+        filter = getFilterFromParent(parent, fieldName)
+      } else {
+        filter = getFilterFromArgs(args)
+      }
+
+      console.log('FILTER', filter)
+      
 
       if (filter !== null) {
         filter.deleted = { $ne: true }
-        console.log('FILTER:',filter)
         outputMessage = await client.collection(collection).find(filter).toArray()
         outputMessage = outputMessage.map(renameId)
       } else {
@@ -283,7 +330,6 @@ const resolver = async (parent, args, context, info) => {
         return val
       }
 
-      console.log('UPSERT')
       // eslint-disable-next-line
       const parentFieldType = getFieldType(makeInputType(parentType), fieldName)
 
