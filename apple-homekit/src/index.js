@@ -100,24 +100,6 @@ bridge.on('identify', (paired, callback) => {
   callback()
 })
 
-// const listener = bridge => message => {
-//   logger.info(`MESSAGE: ${inspect(message, {depth: 7})}`)
-//   const sensors = Array.isArray(message.input) ? message.input : [ message.input ]
-
-//   sensors.forEach(sensor => {
-//     const accConfig = {
-//       id: sensor._id,
-//       name: `${sensor.type} ${sensor._id.slice(-4)}`,
-//       category: sensor.type
-//     }
-
-//     const acc = createAccessory(accConfig)
-//     services[accConfig.category](acc, accConfig)
-//     logger.debug(`addBridgedAccessory ${accConfig.name}`)
-//     bridge.addBridgedAccessory(acc)
-//   })
-// }
-
 const createBridge = async () => {
   amqp.listen(AMQP_APPLE_HOMEKIT_QUEUE, initSensors(bridge))
 
