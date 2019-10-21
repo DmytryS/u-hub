@@ -21,6 +21,9 @@ spec:
         ports:
         - name: port
           containerPort: 3000
+        env:
+        - name: API_URL
+          value: /api/v1
         envFrom:
         - configMapRef:
             name: amqp

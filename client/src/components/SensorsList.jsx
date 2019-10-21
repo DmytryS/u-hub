@@ -1,79 +1,28 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import axios from 'axios'
-import { Panel } from 'react-bootstrap'
+// import axios from 'axios'
+// import { Panel } from 'react-bootstrap'
+import { useQuery } from '@apollo/react-hooks'
+import Navbar from './Header'
 import Sensor from './Sensor'
+import { QUERY_SENSORS } from '../lib/fetch'
 
-const REFRESH_RATE = 10000
+// const REFRESH_RATE = 10000
 
-class SensorsList extends React.Component {
-  constructor(...args) {
-    super(...args)
+const SensorsList = () => {
+  const { loading, data } = useQuery(QUERY_SENSORS)
 
-    this.state = {
-      sensors: [],
-    }
+  if (loading) {
+    return (<p>loading lifts</p>)
   }
 
-  static get propTypes() {
-    return {
-      sensor: PropTypes.shape({
-        id: PropTypes.string.isRequired,
-        name: PropTypes.string.isRequired,
-        nodeId: PropTypes.string.isRequired,
-        sensorId: PropTypes.string.isRequired,
-        sensorType: PropTypes.string.isRequired,
-        controlType: PropTypes.string.isRequired,
-      }).isRequired,
-    }
-  }
-
-  componentWillMount() {
-    // await this.getSensorsValues();
-    setInterval(() => {
-      this.getSensorsValues()
-    }, REFRESH_RATE)
-  }
-
-  async getSensorsValues() {
-    const { nodeId, id: sensorId, name: sensorName } = this.props.sensor
-    this.setState({
-      sensors: await axios
-        .get(`/nodes/${nodeId}/sensors/${sensorId}/values`)
-        .then(result => result.data.values.map(sensorValue => ({
-          value: sensorValue.value,
-          timestamp: sensorValue.timestamp,
-          nodeId,
-          sensorId,
-          sensorName,
-          sensorType: sensorValue.type,
-        }))),
-    })
-  }
-
-  render() {
-    const { name: sensorName } = this.props.sensor
-
-    return (
-      <div>
-        <Panel>
-          <Panel.Heading>
-            <Panel.Title toggle>{sensorName}</Panel.Title>
-          </Panel.Heading>
-          <Panel.Collapse>
-            <Panel.Body>
-              {this.state.sensors.map(sensor => (
-                <Sensor
-                  key={`${sensor.sensorId}-${sensor.sensorType}`}
-                  sensor={sensor}
-                />
-              ))}
-            </Panel.Body>
-          </Panel.Collapse>
-        </Panel>
-      </div>
-    )
-  }
+  return (
+    <div>
+      <Navbar />
+      {data.sensors.map(sensor => (
+        <Sensor key={sensor.id} sensor={sensor} />
+      ))}
+    </div>
+  )
 }
 
-module.exports = SensorsList
+export default SensorsList

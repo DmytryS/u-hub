@@ -9,7 +9,7 @@ enum Condition {
 
 type AutomaticAction {
   id: ID
-  name: String!
+  name: String
   sensor: Sensor
   valueToCompare: Int
   condition: Condition
@@ -19,7 +19,7 @@ type AutomaticAction {
 
 input AutomaticActionInput {
   id: ID
-  name: String!
+  name: String
   sensor: ID
   valueToCompare: Int
   condition: Condition

@@ -1,47 +1,121 @@
 import React from 'react'
-import PropTypes from 'prop-types'
+import {
+  Panel, Row, Col,
+
+  Button, FormGroup, Glyphicon, FormControl, Checkbox, Grid, ControlLabel,
+} from 'react-bootstrap'
+
 import moment from 'moment'
-import { Link } from 'react-router-dom'
-import { Grid, Row, Col } from 'react-bootstrap'
+import { useQuery } from '@apollo/react-hooks'
+import { QUERY_VALUES } from '../lib/fetch'
 
-class Sensor extends React.Component {
-  constructor(...args) {
-    super(...args)
+const Sensor = ({ sensor }) => {
+// const { loading, data } = useQuery(
+//   QUERY_VALUES,
+//   {
+//     variables: {
+//       value: {
+//         sensor: sensor.id,
+//         createdAt: {
+//           gt: moment().subtract(5, 'minutes').toISOString(),
+//           lt: moment().toISOString(),
+//         },
+//       },
+//     },
+//   },
+// )
 
-    this.state = {}
-  }
+  // if (loading) {
+  //   console.log('#######', data)
+  //   return (<p>loading lifts</p>)
+  // }
+  const t = 1
 
-  static get propTypes() {
-    return {
-      sensor: PropTypes.shape({
-        nodeId: PropTypes.string.isRequired,
-        sensorId: PropTypes.string.isRequired,
-        sensorType: PropTypes.string.isRequired,
-        timestamp: PropTypes.string.isRequired,
-        value: PropTypes.string.isRequired,
-      }).isRequired,
-    }
-  }
-
-  render() {
-    return (
-      <Grid>
-        <Row>
-          <Col xs={6} md={4}>{this.props.sensor.sensorType}</Col>
-          <Col xs={6} md={4}>
-            {moment().diff(moment(parseInt(this.props.sensor.timestamp, 10)), 'minutes') < 5 ? this.props.sensor.value : 'no data'}
-          </Col>
-          <Col xs={6} md={4}>
-            <Link to={`/node/${this.props.sensor.nodeId}/sensors/${this.props.sensor.sensorId}`
-              + `/type/${this.props.sensor.sensorType}`}
-            >
-              Settings
-            </Link>
-          </Col>
-        </Row>
-      </Grid>
-    )
-  }
+  return (
+    <Panel>
+      <Panel.Heading>
+        <Panel.Title toggle>
+          {sensor.name}
+        </Panel.Title>
+      </Panel.Heading>
+      <Panel.Collapse>
+        <Panel.Body>
+          <Row id={sensor.id}>
+            <Col xs={6} md={4}>
+              <FormGroup
+                validationState
+              >
+                <ControlLabel>Name</ControlLabel>
+                {' '}
+                <FormControl
+                  type="text"
+                  placeholder="Enter value to compare"
+                  value={sensor.name}
+                  onChange={e => 1}
+                />
+              </FormGroup>
+            </Col>
+            <Col xs={6} md={4}>
+              <FormGroup
+                validationState
+              >
+                <ControlLabel>Description</ControlLabel>
+                {' '}
+                <FormControl
+                  type="text"
+                  placeholder="Enter value to compare"
+                  value={sensor.description}
+                  onChange={e => 1}
+                />
+              </FormGroup>
+            </Col>
+            <Col xs={6} md={4}>
+              <FormGroup
+                validationState
+              >
+                <ControlLabel>Type</ControlLabel>
+                {' '}
+                <FormControl
+                  type="text"
+                  placeholder="Enter value to compare"
+                  value={sensor.type}
+                  onChange={e => 1}
+                />
+              </FormGroup>
+            </Col>
+            <Col xs={6} md={4}>
+              <FormGroup
+                validationState
+              >
+                <ControlLabel>Mqtt set topic</ControlLabel>
+                {' '}
+                <FormControl
+                  type="text"
+                  placeholder="Enter value to compare"
+                  value={sensor.mqttSetTopic}
+                  onChange={e => 1}
+                />
+              </FormGroup>
+            </Col>
+            <Col xs={6} md={4}>
+              <FormGroup
+                validationState
+              >
+                <ControlLabel>Mqtt status topic</ControlLabel>
+                {' '}
+                <FormControl
+                  type="text"
+                  placeholder="Enter value to compare"
+                  value={sensor.mqttStatusTopic}
+                  onChange={e => 1}
+                />
+              </FormGroup>
+            </Col>
+          </Row>
+        </Panel.Body>
+      </Panel.Collapse>
+    </Panel>
+  )
 }
 
-module.exports = Sensor
+export default Sensor
