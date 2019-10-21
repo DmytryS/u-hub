@@ -19,3 +19,9 @@ spec:
     - name: https
       port: 443
       targetPort: https
+    - name: hap
+      port: 51826
+      targetPort: 51826
+    - name: mqtt
+      port: 1883
+      targetPort: 1883

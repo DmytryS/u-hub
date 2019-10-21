@@ -25,8 +25,5 @@ spec:
         - configMapRef:
             name: apple-homekit
         ports:
-        - name: hap
-          containerPort: 51826
-        # env:
-        # - name: PORT
-        #   value: 3000
+        - containerPort: 51826
+

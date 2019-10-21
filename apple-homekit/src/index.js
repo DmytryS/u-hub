@@ -151,7 +151,7 @@ const createBridge = async () => {
   logger.debug(`hap publishing bridge ${BRIDGE_NAME} port=${PORT} pincode=${PIN_CODE} setupURI=${bridge.setupURI()}`)
 
   bridge._server.on('listening', () => {
-    logger.info('hap Bridge listening on port', PORT)
+    logger.info(`hap Bridge listening on port ${PORT}`)
 
     logger.info('\nScan this code with your HomeKit app on your iOS device to pair with the bridge')
     qrcode.generate(bridge.setupURI())
