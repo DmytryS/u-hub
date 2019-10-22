@@ -68,6 +68,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
   const [mutateAutomaticAction] = useMutation(MUTATE_AUTOMATIC_ACTION)
   const [mutateScheduledAction] = useMutation(MUTATE_SCHEDULED_ACTION)
   const [sensor, setSensor] = useState(data.sensors.length ? data.sensors[0].id : '')
+
   const [valueToChangeOn, setValueToChangeOn] = useState('')
 
   return (
@@ -81,7 +82,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
               placeholder="Select sensor for action"
               value={sensor}
               onChange={
-                e => setSensor(e.target.value)
+                (e) => { setSensor(e.target.value) }
               }
             >
               {
@@ -102,7 +103,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
               placeholder="Enter value to compare"
               value={valueToChangeOn}
               onChange={
-                e => setValueToChangeOn(parseInt(e.target.value, 10))
+                (e) => { setValueToChangeOn(parseInt(e.target.value, 10)) }
               }
             />
           </FormGroup>
