@@ -45,7 +45,7 @@ const isDate = (date) => {
 }
 
 const transformFilter = (filter) => {
-  const operators = ['eq', 'gt', 'gte', 'lt', 'lte', 'ne']
+  const operators = ['in', 'eq', 'gt', 'gte', 'lt', 'lte', 'ne']
 
   switch(typeof filter) {
     case 'string':
@@ -308,6 +308,9 @@ const resolver = async (parent, args, context, info) => {
       } else {
         filter = getFilterFromArgs(args)
       }
+
+      console.log('#####', filter)
+      
 
       if (filter !== null) {
         filter.deleted = { $ne: true }

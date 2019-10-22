@@ -14,7 +14,7 @@ import {
 import axios from 'axios'
 import cronParser from 'cron-parser'
 import Header from './Header'
-import ActioNodesList from './ActionNodesList'
+// import ActioNodesList from './ActionNodesList'
 
 class SchedulesList extends React.Component {
   constructor(...args) {
@@ -274,10 +274,10 @@ class SchedulesList extends React.Component {
             >
               <Panel.Collapse>
                 <Panel.Body>
-                  <ActioNodesList
+                  {/* <ActioNodesList
                     emitter="SCHEDULE"
                     schedulerId={schedule._id}
-                  />
+                  /> */}
                 </Panel.Body>
               </Panel.Collapse>
             </Panel>

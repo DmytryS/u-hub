@@ -60,9 +60,18 @@ input SensorInput {
   deleted: Boolean
 }
 
+input SensorFilterInput {
+  name: StringFilterInput
+  type: StringFilterInput
+  description: StringFilterInput
+  mqttStatusTopic: StringFilterInput
+  mqttSetTopic: StringFilterInput
+  deleted: Boolean
+}
+
 type Query {
   sensor(input: SensorInput, sort: String): Sensor
-  sensors(input: SensorInput, sort: String): [Sensor]
+  sensors(filter: SensorFilterInput, sort: String): [Sensor]
 }
 
 type Mutation {

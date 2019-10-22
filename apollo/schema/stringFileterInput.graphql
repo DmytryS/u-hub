@@ -1,0 +1,9 @@
+input StringFilterInput {
+  eq: String
+  gt: String
+  gte: String
+  lt: String
+  lte: String
+  ne: String
+  in: [String]
+}

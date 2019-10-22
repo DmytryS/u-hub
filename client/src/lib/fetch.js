@@ -6,6 +6,7 @@ import {
   InMemoryCache,
   // IntrospectionFragmentMatcher,
 } from 'apollo-cache-inmemory'
+import { useQuery, useMutation } from '@apollo/react-hooks'
 
 const { API_URL } = process.env
 
@@ -33,8 +34,8 @@ export const client = new ApolloClient({
 })
 
 export const QUERY_SENSORS = gql`
-  query QuerySensors {
-    sensors {
+  query QuerySensors($sensor: SensorFilterInput) {
+    sensors(filter: $sensor) {
       id
       name
       description
@@ -69,6 +70,7 @@ export const QUERY_AUTOMATIC_ACTIONS = gql`
         description
         type
         mqttStatusTopic
+        mqttSetTopic
       }
       valueToCompare
       condition
@@ -78,8 +80,10 @@ export const QUERY_AUTOMATIC_ACTIONS = gql`
         valueToChangeOn
         sensor {
           id
+          name
           type
           description
+          mqttStatusTopic
           mqttSetTopic
         }
       }

@@ -5,4 +5,4 @@ metadata:
 data:
   PORT: "51826"
   PIN_CODE: "031-45-154"
-  BRIDGENAME: "@MQTT-Bridge"
+  BRIDGE_NAME: "@MQTT-Bridge"

@@ -1,0 +1,9 @@
+input NumberFilterInput {
+  eq: Int
+  gt: Int
+  gte: Int
+  lt: Int
+  lte: Int
+  ne: Int
+  in: [Int]
+}

@@ -19,27 +19,9 @@ input ValueFilterInput {
   value: NumberFilterInput
 }
 
-input StringFilterInput {
-  eq: String
-  gt: String
-  gte: String
-  lt: String
-  lte: String
-  ne: String
-}
-
-input NumberFilterInput {
-  eq: Int
-  gt: Int
-  gte: Int
-  lt: Int
-  lte: Int
-  ne: Int
-}
-
 extend type Query {
   value(input: ValueInput!, sort: String): Value
-  values(sort: String, filter: ValueFilterInput): [Value] # input: ValueInput!, 
+  values(filter: ValueFilterInput, sort: String): [Value] # input: ValueInput!, 
 }
 
 extend type Mutation {
