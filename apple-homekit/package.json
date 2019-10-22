@@ -3,7 +3,6 @@
   "version": "0.0.1",
   "description": "HomeKit Accessory Server microservice",
   "main": "src/index.js",
-  "type": "module",
   "scripts": {
     "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm src/index.js; else node -r esm src/index.js; fi",
     "test": "mocha --recursive ./tests",
@@ -31,11 +30,8 @@
     "crypto": "^1.0.1",
     "dotenv": "^8.0.0",
     "hap-nodejs": "^0.4.52",
-    "mongoose": "^5.6.9",
     "mqtt": "^3.0.0",
-    "nextport": "^1.0.0",
     "nodemon": "^1.19.1",
-    "obj-ease": "^1.0.1",
     "qrcode-terminal": "^0.12.0",
     "restify-errors": "^8.0.1",
     "winston": "^3.2.1"
