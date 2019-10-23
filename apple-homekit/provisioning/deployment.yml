@@ -14,6 +14,7 @@ spec:
       labels:
         app: apple-homekit
     spec:
+      hostNetwork: true
       containers:
       - name: apple-homekit
         image: loginkr/u-hub_apple-homekit:latest
@@ -25,5 +26,6 @@ spec:
         - configMapRef:
             name: apple-homekit
         ports:
+        - containerPort: 5353
         - containerPort: 51826
-
+        - containerPort: 51827

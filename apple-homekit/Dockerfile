@@ -9,7 +9,7 @@ COPY . .
 RUN apk add --no-cache bash vim curl iputils
 
 # USER node
-EXPOSE 51826
+EXPOSE 5353 51826 51827
 
 CMD ["start"]
 ENTRYPOINT ["npm"]
