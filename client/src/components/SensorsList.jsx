@@ -1,15 +1,28 @@
 import React from 'react'
-// import axios from 'axios'
-// import { Panel } from 'react-bootstrap'
 import { useQuery } from '@apollo/react-hooks'
 import Navbar from './Header'
 import Sensor from './Sensor'
 import { QUERY_SENSORS } from '../lib/fetch'
 
-// const REFRESH_RATE = 10000
-
 const SensorsList = () => {
   const { loading, data } = useQuery(QUERY_SENSORS)
+
+
+  // const { loading: loadingValues, data: { values } } = useQuery(
+  //   QUERY_VALUES,
+  //   {
+  //     variables: {
+  //       value: {
+  //         sensor: sensor.id,
+  //         createdAt: {
+  //           gt: moment().subtract(5, 'minutes').toISOString(),
+  //           lt: moment().toISOString(),
+  //         },
+  //       },
+  //     },
+  //   },
+  // )
+
 
   if (loading) {
     return (<p>loading lifts</p>)

@@ -11,14 +11,14 @@ import {
   ControlLabel,
 } from 'react-bootstrap'
 
-// import moment from 'moment'
+import moment from 'moment'
 import {
-  // useQuery,
+  useQuery,
   useMutation,
 } from '@apollo/react-hooks'
 import AutomaticActionsList from './AutomaticActionsList'
 import {
-  // QUERY_VALUES,
+  QUERY_VALUES,
   MUTATE_SENSOR,
 } from '../lib/fetch'
 
@@ -64,28 +64,14 @@ const sensorTypes = [
 ]
 
 const Sensor = ({ sensor }) => {
-  // const { loading, data } = useQuery(
-  //   QUERY_VALUES,
-  //   {
-  //     variables: {
-  //       value: {
-  //         sensor: sensor.id,
-  //         createdAt: {
-  //           gt: moment().subtract(5, 'minutes').toISOString(),
-  //           lt: moment().toISOString(),
-  //         },
-  //       },
-  //     },
-  //   },
-  // )
-
   // if (loading) {
-  //   console.log('#######', data)
+  // console.log('LOADING', loading)
+
   //   return (<p>loading ...</p>)
   // }
   const [mutateSensor] = useMutation(MUTATE_SENSOR)
 
-  // const t = sensor
+  // console.log('#######', data)
 
   return (
     <Panel>

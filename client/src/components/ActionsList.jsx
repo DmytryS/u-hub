@@ -61,15 +61,16 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
     },
   )
 
+  const [mutateAutomaticAction] = useMutation(MUTATE_AUTOMATIC_ACTION)
+  const [mutateScheduledAction] = useMutation(MUTATE_SCHEDULED_ACTION)
+
+  const [sensor, setSensor] = useState(data && data.sensors.length ? data.sensors[0].id : '')
+  const [valueToChangeOn, setValueToChangeOn] = useState('')
+
   if (loading) {
     return <p>Loading actions</p>
   }
 
-  const [mutateAutomaticAction] = useMutation(MUTATE_AUTOMATIC_ACTION)
-  const [mutateScheduledAction] = useMutation(MUTATE_SCHEDULED_ACTION)
-  const [sensor, setSensor] = useState(data.sensors.length ? data.sensors[0].id : '')
-
-  const [valueToChangeOn, setValueToChangeOn] = useState('')
 
   return (
     <div>
@@ -152,19 +153,19 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
         </Col>
       </Row>
       {
-        automaticAction
-          ? automaticAction.actions.map(a => (
-            <Action
-              automaticAction={automaticAction}
-              action={a}
-            />
-          ))
-          : scheduledAction.actions.map(a => (
-            <Action
-              scheduledAction={scheduledAction}
-              action={a}
-            />
-          ))
+        // automaticAction
+        //   ? automaticAction.actions.map(a => (
+        //     <Action
+        //       automaticAction={automaticAction}
+        //       action={a}
+        //     />
+        //   ))
+        //   : scheduledAction.actions.map(a => (
+        //     <Action
+        //       scheduledAction={scheduledAction}
+        //       action={a}
+        //     />
+        //   ))
       }
     </div>
   )
