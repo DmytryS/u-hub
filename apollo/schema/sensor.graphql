@@ -69,6 +69,10 @@ input SensorFilterInput {
   deleted: Boolean
 }
 
+type Subscription {
+  sensor: Sensor
+}
+
 type Query {
   sensor(input: SensorInput, sort: String): Sensor
   sensors(filter: SensorFilterInput, sort: String): [Sensor]

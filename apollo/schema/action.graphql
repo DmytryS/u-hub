@@ -11,6 +11,16 @@ input ActionInput {
   deleted: Boolean
 }
 
+input ActionFilterInput {
+  id: StringFilterInput
+  sensor: SensorFilterInput
+  valueToChangeOn: StringFilterInput
+}
+
+extend type Subscription {
+  action(filter: ActionInput, sort: String): Action
+}
+
 # extend type Query {
 #   action(input: ActionInput!, sort: String): Action
 # }

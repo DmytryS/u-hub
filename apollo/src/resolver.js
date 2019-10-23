@@ -1,9 +1,12 @@
 // import ObjectId from 'objectid'
+// import apolloServer from 'apollo-server'
 import { mongo, amqp } from './lib/index.js'
 import mongodb from 'mongodb'
 // import { inspect } from 'util'
 import { isArray } from './helpers/index.js'
 import { typeDefs } from './schema.js'
+
+
 const { ObjectID } = mongodb
 
 const {
@@ -314,7 +317,7 @@ const resolver = async (parent, args, context, info) => {
         outputMessage = await client.collection(collection).find(filter).toArray()
         outputMessage = outputMessage.map(renameId)
       } else {
-        outputMessage = [null]
+        outputMessage = []
       }
       
       if (!isArray(returnType)) {
@@ -386,6 +389,8 @@ const resolver = async (parent, args, context, info) => {
       if (!isArray(returnType)) {
         outputMessage = outputMessage[0]
       }
+
+      context.pubsub.publish(fieldName, { [fieldName]: JSON.parse(JSON.stringify(outputMessage)) })
       break
     default:
       outputMessage = Error('Unknown operation')

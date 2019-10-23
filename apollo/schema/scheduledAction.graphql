@@ -15,6 +15,10 @@ input ScheduledActionInput {
   deleted: Boolean
 }
 
+extend type Subscription {
+  scheduledAction: ScheduledAction
+}
+
 extend type Query {
   scheduledAction(input: ScheduledActionInput, sort: String): ScheduledAction
   scheduledActions(input: ScheduledActionInput, sort: String): [ScheduledAction]

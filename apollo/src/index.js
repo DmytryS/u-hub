@@ -3,8 +3,9 @@ import http from 'http'
 import express from 'express'
 import cors from 'cors'
 import ApolloServerExpress from 'apollo-server-express'
-import { logger, amqp } from './lib/index.js'
+import { logger, amqp, pubsub } from './lib/index.js'
 import resolver from './resolver.js'
+import subscriber from './subscriber.js'
 import typeDefs from './schema.js'
 import listener from './listener.js'
 
@@ -18,27 +19,14 @@ const app = express()
 
 app.use(cors())
 
-// const schema = makeExecutableSchema({ resolvers, typeDefs });
 const resolvers = {
-  // Query: {
-  //   device: resolver.device.query,
-  //   devices: resolver.device.query,
-  //   action: resolver.action.query,
-  //   automaticAction: resolver.automaticAction.query,
-  //   scheduledAction: resolver.scheduledAction.query,
-  //   value: resolver.value.query,
-  //   values: resolver.value.query,
-  // },
-  // Mutation: {
-  //   device: resolver.device.mutation,
-  //   action: resolver.action.mutation,
-  //   automaticAction: resolver.automaticAction.mutation,
-  //   scheduledAction: resolver.scheduledAction.mutation,
-  //   value: resolver.value.mutation,
-  // },
-  // Device: {
-  //   sensors: resolver.sensor.query,
-  // },
+  Subscription: {
+    sensor: subscriber('sensor'),
+    automaticAction: subscriber('automaticAction'),
+    scheduledAction: subscriber('scheduledAction'),
+    action: subscriber('action'),
+    value: subscriber('value'),
+  },
   Query: {
     // device: resolver,
     // devices: resolver,
@@ -84,16 +72,27 @@ const apollo = new ApolloServer({
   typeDefs,
   resolvers,
   playground: {
+    endpoint: '/api/v1',
     settings: {
       'editor.reuseHeaders': true,
       'schema.polling.enable': true,
     }
-  }
+  },
+  context: ({ req, res }) => ({ req, res, pubsub }),
 })
+
+
 apollo.applyMiddleware({ app, path: '/' })
 
-const onReady = () => logger.info(`[HTTP] Gateway listening http://${HTTP_HOST}:${HTTP_PORT}`)
+const onReady = () => {
+  logger.info(`🚀 Server ready at http://${HTTP_HOST}:${HTTP_PORT}${apollo.graphqlPath}`)
+  logger.info(`🚀 Subscriptions ready at ws://${HTTP_HOST}:${HTTP_PORT}${apollo.subscriptionsPath}`)
+}
 
-http.createServer(app).listen(HTTP_PORT || 3000, HTTP_HOST || '0.0.0.0', onReady)
+const httpServer = http.createServer(app)
+
+apollo.installSubscriptionHandlers(httpServer)
+
+httpServer.listen(HTTP_PORT || 3000, HTTP_HOST || '0.0.0.0', onReady)
 
 amqp.listen(AMQP_APOLLO_QUEUE, listener)

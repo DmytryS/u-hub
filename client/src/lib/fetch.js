@@ -2,11 +2,14 @@ import { ApolloClient } from 'apollo-client'
 import fetch from 'unfetch'
 import gql from 'graphql-tag'
 import { HttpLink } from 'apollo-link-http'
+import { ApolloLink, split } from 'apollo-link'
+import { WebSocketLink } from 'apollo-link-ws'
+import { getMainDefinition } from 'apollo-utilities'
 import {
   InMemoryCache,
   // IntrospectionFragmentMatcher,
 } from 'apollo-cache-inmemory'
-import { useQuery, useMutation } from '@apollo/react-hooks'
+// import { useQuery, useMutation } from '@apollo/react-hooks'
 
 const { API_URL } = process.env
 
@@ -20,11 +23,31 @@ const defaultOptions = {
     errorPolicy: 'all',
   },
 }
-const cache = new InMemoryCache()
-const link = new HttpLink({
-  uri: API_URL,
+
+const httpLink = new HttpLink({
+  uri: `http://${API_URL}/api/v1`,
   fetch,
 })
+const wsLink = new WebSocketLink({
+  uri: `wss://${API_URL}/graphql`,
+  options: {
+    reconnect: true,
+  },
+})
+
+const terminatingLink = split(
+  ({ query }) => {
+    const { kind, operation } = getMainDefinition(query)
+    return (
+      kind === 'OperationDefinition' && operation === 'subscription'
+    )
+  },
+  wsLink,
+  httpLink,
+)
+
+const link = ApolloLink.from([terminatingLink])
+const cache = new InMemoryCache()
 
 export const client = new ApolloClient({
   link,
@@ -49,6 +72,19 @@ export const QUERY_SENSORS = gql`
 export const MUTATE_SENSOR = gql`
   mutation MutateSensor($sensor: SensorInput!) {
     sensor(input: $sensor) {
+      id
+      name
+      description
+      type
+      mqttSetTopic
+      mqttStatusTopic
+    }
+  }
+`
+
+export const SUBSCRIBE_SENSORS = gql`
+  subscription {
+    sensor {
       id
       name
       description
@@ -120,6 +156,35 @@ export const MUTATE_AUTOMATIC_ACTION = gql`
   }
 `
 
+export const SUBSCRIBE_AUTOMATIC_ACTIONS = gql`
+  subscription SubscribeAutomaticActions($automaticAction: AutomaticActionInput) {
+    automaticAction(filter: $automaticAction) {
+      id
+      name
+      sensor {
+        id
+        name
+        description
+        type
+        mqttStatusTopic
+      }
+      valueToCompare
+      condition
+      enabled
+      actions {
+        id
+        valueToChangeOn
+        sensor {
+          id
+          type
+          description
+          mqttSetTopic
+        }
+      }
+    }
+  }
+`
+
 export const QUERY_SCHEDULED_ACTIONS = gql`
   query QueryScheduledActions {
     scheduledActions {
@@ -158,6 +223,25 @@ export const MUTATE_SCHEDULED_ACTION = gql`
   }
 `
 
+export const SUBSCRIBE_SCHEDULED_ACTIONS = gql`
+  subscription SubscribeScheduledActions {
+    scheduledAction {
+      id
+      name
+      schedule
+      enabled
+      actions {
+        id
+        sensor {
+          id
+          name
+        }
+        valueToChangeOn
+      }
+    }
+  }
+`
+
 export const QUERY_VALUES = gql`
   query GetValues($value: ValueFilterInput) {
     values(filter: $value) {
@@ -173,6 +257,18 @@ export const QUERY_VALUES = gql`
 
 export const MUTATE_VALUE = gql`
   query MutateValue($value: ValueInput) {
+    value(input: $value) {
+      sensor {
+        id
+        type
+      }
+      value
+    }
+  }
+`
+
+export const SUBSCRIBE_VALUES = gql`
+  subscription MutateValue($value: ValueInput) {
     value(input: $value) {
       sensor {
         id

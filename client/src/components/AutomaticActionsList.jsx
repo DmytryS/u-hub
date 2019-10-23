@@ -3,25 +3,23 @@ import React, { useState } from 'react'
 import {
   useQuery,
   useMutation,
+  useSubscription,
 } from '@apollo/react-hooks'
 import {
-// Table,
-//   Panel,
   Button,
   FormGroup,
   ControlLabel,
   Glyphicon,
   FormControl,
   Checkbox,
-  //   Grid,
   Row,
   Col,
-//   ControlLabel,
 } from 'react-bootstrap'
 import AutomaticAction from './AutomaticAction'
 import {
   QUERY_AUTOMATIC_ACTIONS,
   MUTATE_AUTOMATIC_ACTION,
+  SUBSCRIBE_AUTOMATIC_ACTIONS,
 } from '../lib/fetch'
 
 const conditions = [
@@ -45,12 +43,18 @@ const AutomaticActionsList = ({ sensor }) => {
     enabled,
   }
 
-  // let newAutomaticAction = {
-  //   name: '',
-  //   condition: '',
-  //   valueToCompare: '',
-  //   enabled: false,
-  // }
+  const {
+    data: subscriptionData,
+  } = useSubscription(
+    SUBSCRIBE_AUTOMATIC_ACTIONS,
+    {
+      variables: {
+        automaticAction: {
+          sensor: sensor.id,
+        },
+      },
+    },
+  )
 
   const [mutateAutomaticAction] = useMutation(MUTATE_AUTOMATIC_ACTION)
   const { loading, data } = useQuery(
@@ -63,7 +67,6 @@ const AutomaticActionsList = ({ sensor }) => {
       },
     },
   )
-
 
   if (loading) {
     return (<p>loading automatic actions</p>)
@@ -165,6 +168,7 @@ const AutomaticActionsList = ({ sensor }) => {
           <AutomaticAction key={automaticAction.id} automaticAction={automaticAction} />
         ))
       }
+      <h4>{subscriptionData ? subscriptionData.automaticAction.id : 'NULL'}</h4>
     </div>
   )
 }

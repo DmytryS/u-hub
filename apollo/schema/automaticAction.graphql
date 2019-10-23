@@ -28,6 +28,10 @@ input AutomaticActionInput {
   deleted: Boolean
 }
 
+extend type Subscription {
+  automaticAction(filter: AutomaticActionInput): AutomaticAction
+}
+
 extend type Query {
   automaticAction(input: AutomaticActionInput, sort: String): AutomaticAction
   automaticActions(input: AutomaticActionInput, sort: String): [AutomaticAction]

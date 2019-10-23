@@ -1,6 +1,6 @@
 import { inspect } from 'util'
 import mongodb from 'mongodb'
-import { logger, mongo, amqp } from './lib/index.js'
+import { logger, mongo, amqp, pubsub } from './lib/index.js'
 
 const { ObjectId } = mongodb
 const { AMQP_APPLE_HOMEKIT_QUEUE } = process.env
@@ -84,14 +84,17 @@ export default async (message) => {
       // eslint-disable-next-line
       message.output = {
         ...insertedValue,
+        id: insertedValue._id,
         sensor: {
-          _id: sensor._id,
+          id: sensor._id,
           mqttStatusTopic: sensor.mqttStatusTopic,
           mqttSetTopic: sensor.mqttSetTopic,
           name: sensor.name,
           type: sensor.type
         },
       }
+
+      pubsub.publish('value', { value: message.output })
       break
     case 'get-automatic-actions':
       // eslint-disable-next-line

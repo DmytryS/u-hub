@@ -74,6 +74,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
 
   return (
     <div>
+      <h3>Actions</h3>
       <Row>
         <Col xs={6} md={4}>
           <FormGroup>

@@ -4,7 +4,9 @@ metadata:
   name: tcp-services
   namespace: ingress-nginx
 data:
+  5353: "default/apple-homekit:5353"
   51826: "default/apple-homekit:51826"
+  51827: "default/apple-homekit:51827"
   1883: "default/mosquitto:1883"
 # ---
 # apiVersion: v1
