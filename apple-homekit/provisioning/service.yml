@@ -9,5 +9,12 @@ spec:
   selector:
     app: apple-homekit
   ports:
-  - port: 51826
+  - name: hap1
+    port: 5353
+    targetPort: 5353
+  - name: hap2
+    port: 51826
     targetPort: 51826
+  - name: hap3
+    port: 51827
+    targetPort: 51827

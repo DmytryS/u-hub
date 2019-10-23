@@ -14,7 +14,7 @@ spec:
       labels:
         app: apple-homekit
     spec:
-      hostNetwork: true
+      # hostNetwork: true
       containers:
       - name: apple-homekit
         image: loginkr/u-hub_apple-homekit:latest
