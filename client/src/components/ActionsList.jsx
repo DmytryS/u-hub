@@ -12,12 +12,14 @@ import {
 import {
   useMutation,
   useQuery,
+  useSubscription,
 } from '@apollo/react-hooks'
 import Action from './Action'
 import {
   QUERY_SENSORS,
   MUTATE_AUTOMATIC_ACTION,
   MUTATE_SCHEDULED_ACTION,
+  SUBSCRIBE_ACTIONS,
 } from '../lib/fetch'
 
 const sensorActionTypes = [
@@ -47,6 +49,30 @@ const sensorActionTypes = [
   'WindowCovering',
 ]
 
+const updateData = (automaticActions, newAutomaticAction) => {
+  const existingAutomaticActionIndex = automaticActions
+    .findIndex(k => k.id === newAutomaticAction.id)
+
+  if (existingAutomaticActionIndex === -1 && !newAutomaticAction.deleted) {
+    automaticActions.push(newAutomaticAction)
+
+    return automaticActions
+  }
+  if (existingAutomaticActionIndex !== -1 && newAutomaticAction.deleted) {
+    automaticActions.splice(existingAutomaticActionIndex, 1)
+
+    return automaticActions
+  }
+  if (existingAutomaticActionIndex !== -1 && !newAutomaticAction.deleted) {
+    // eslint-disable-next-line
+    automaticActions[existingAutomaticActionIndex] = newAutomaticAction
+
+    return automaticActions
+  }
+
+  return automaticActions
+}
+
 const ActionsList = ({ automaticAction, scheduledAction }) => {
   const { loading, data } = useQuery(
     QUERY_SENSORS,
@@ -56,6 +82,20 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
           type: {
             in: sensorActionTypes,
           },
+        },
+      },
+    },
+  )
+
+  const {
+    data: subscriptionData,
+  } = useSubscription(
+    SUBSCRIBE_ACTIONS,
+    {
+      variables: {
+        action: {
+          automaticAction: automaticAction.id,
+          scheduledAction: scheduledAction.id,
         },
       },
     },

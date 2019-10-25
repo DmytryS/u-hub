@@ -4,6 +4,7 @@ type ScheduledAction {
   schedule: String!
   enabled: Boolean!
   actions: [Action]
+  deleted: Boolean
 }
 
 input ScheduledActionInput {

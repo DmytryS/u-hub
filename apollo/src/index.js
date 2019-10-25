@@ -59,6 +59,8 @@ const resolvers = {
   },
   Action: {
     sensor: resolver,
+    automaticAction: resolver,
+    scheduledAction: resolver,
   },
   Sensor: {
     // device: resolver,

@@ -15,6 +15,7 @@ type AutomaticAction {
   condition: Condition
   enabled: Boolean
   actions: [Action]
+  deleted: Boolean
 }
 
 input AutomaticActionInput {

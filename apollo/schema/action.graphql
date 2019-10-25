@@ -1,12 +1,17 @@
 type Action {
   id: ID!
   sensor: Sensor!
+  automaticAction: AutomaticAction
+  scheduledAction: ScheduledAction
   valueToChangeOn: Int!
+  deleted: Boolean
 }
 
 input ActionInput {
   id: ID
   sensor: ID!
+  automaticAction: ID
+  scheduledAction: ID
   valueToChangeOn: Int!
   deleted: Boolean
 }
@@ -14,11 +19,13 @@ input ActionInput {
 input ActionFilterInput {
   id: StringFilterInput
   sensor: SensorFilterInput
+  automaticAction: ID
+  scheduledAction: ID
   valueToChangeOn: StringFilterInput
 }
 
 extend type Subscription {
-  action(filter: ActionInput, sort: String): Action
+  action(filter: ActionFilterInput, sort: String): Action
 }
 
 # extend type Query {

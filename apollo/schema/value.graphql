@@ -3,6 +3,7 @@ type Value {
   sensor: Sensor!
   value: Int!
   createdAt: Date!
+  deleted: Boolean
 }
 
 input ValueInput {

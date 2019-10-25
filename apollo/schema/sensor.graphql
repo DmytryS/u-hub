@@ -48,6 +48,7 @@ type Sensor {
   mqttSetTopic: String
   # automaticActions: [AutomaticAction]
   # device: Device
+  deleted: Boolean
 }
 
 input SensorInput {

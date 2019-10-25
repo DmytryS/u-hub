@@ -91,6 +91,7 @@ export const SUBSCRIBE_SENSORS = gql`
       type
       mqttSetTopic
       mqttStatusTopic
+      deleted
     }
   }
 `
@@ -181,6 +182,7 @@ export const SUBSCRIBE_AUTOMATIC_ACTIONS = gql`
           mqttSetTopic
         }
       }
+      deleted
     }
   }
 `
@@ -238,6 +240,27 @@ export const SUBSCRIBE_SCHEDULED_ACTIONS = gql`
         }
         valueToChangeOn
       }
+      deleted
+    }
+  }
+`
+
+export const SUBSCRIBE_ACTIONS = gql`
+  subscription SubscribeActions($action: ActionFilterInput) {
+    action(filter: $action) {
+      id
+      sensor {
+        id
+        name
+        description
+        type
+        mqttSetTopic
+        mqttStatusTopic
+      }
+      automaticAction
+      scheduledAction
+      valueToChangeOn
+      deleted
     }
   }
 `
@@ -268,13 +291,14 @@ export const MUTATE_VALUE = gql`
 `
 
 export const SUBSCRIBE_VALUES = gql`
-  subscription MutateValue($value: ValueInput) {
-    value(input: $value) {
+  subscription SubscribeValue($value: ValueInput) {
+    value(filter: $value) {
       sensor {
         id
         type
       }
       value
+      deleted
     }
   }
 `
