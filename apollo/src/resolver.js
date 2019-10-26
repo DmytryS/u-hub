@@ -382,10 +382,28 @@ const resolver = async (parent, args, context, info) => {
         )
       }
 
-      if (isRoot(parentType) && collection === 'ScheduledAction') {
-        await reinitializeScheduledJobs()
+      if (isRoot(parentType)) {
+        switch(collection) {
+          case 'ScheduledAction':
+            await reinitializeScheduledJobs()
+            break
+          case 'AutomaticAction':
+            if (outputMessage[0].sensor){
+              await makeReferences(
+                outputMessage,
+                {
+                  id: outputMessage[0].sensor
+                },
+                collection,
+                'Sensor',
+                fieldName,
+                '[AutomaticAction]',
+                'Sensor',
+              )
+            }
+        }
       }
-
+      
       if (!isArray(returnType)) {
         outputMessage = outputMessage[0]
       }
