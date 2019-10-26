@@ -64,6 +64,7 @@ const resolvers = {
   },
   Sensor: {
     // device: resolver,
+    automaticActions: resolver,
   },
   Value: {
     sensor: resolver,

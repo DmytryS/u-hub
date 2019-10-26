@@ -46,8 +46,7 @@ type Sensor {
   description: String
   mqttStatusTopic: String
   mqttSetTopic: String
-  # automaticActions: [AutomaticAction]
-  # device: Device
+  automaticActions: [AutomaticAction]
   deleted: Boolean
 }
 
