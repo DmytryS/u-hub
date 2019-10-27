@@ -7,10 +7,6 @@ const {
   MQTT_TOPIC,
 } = process.env
 
-// {{BRIDGE_NAME}}/{{DEVICE_NAME}}/action/{{SENSOR_NAME}}/set
-// ${BRIDGE_NAME}/${DEVICE_NAME}/${SENSOR_TYPE}/${SENSOR_NAME}/status
-
-// mqtt.subscribe(MQTT_TOPIC)
 mqtt.listen(MQTT_TOPIC, mqttListener)
 
 amqp.listen(AMQP_MQTT_LISTENER_QUEUE, amqpListener)

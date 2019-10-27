@@ -87,19 +87,19 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
     },
   )
 
-  const {
-    data: subscriptionData,
-  } = useSubscription(
-    SUBSCRIBE_ACTIONS,
-    {
-      variables: {
-        action: {
-          automaticAction: automaticAction.id,
-          scheduledAction: scheduledAction.id,
-        },
-      },
-    },
-  )
+  // const {
+  //   data: subscriptionData,
+  // } = useSubscription(
+  //   SUBSCRIBE_ACTIONS,
+  //   {
+  //     variables: {
+  //       action: {
+  //         automaticAction: automaticAction.id,
+  //         scheduledAction: scheduledAction.id,
+  //       },
+  //     },
+  //   },
+  // )
 
   const [mutateAutomaticAction] = useMutation(MUTATE_AUTOMATIC_ACTION)
   const [mutateScheduledAction] = useMutation(MUTATE_SCHEDULED_ACTION)

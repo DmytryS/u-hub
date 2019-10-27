@@ -1,5 +1,4 @@
 import { logger, amqp } from './lib/index.js' 
-// import { inspect } from 'util'
 
 const {
   AMQP_APPLE_HOMEKIT_QUEUE,

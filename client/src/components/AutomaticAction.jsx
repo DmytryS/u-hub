@@ -113,7 +113,7 @@ const AutomaticAction = ({ automaticAction }) => {
               <FormGroup>
                 <ControlLabel>Enabled</ControlLabel>
                 <Checkbox
-                  checked={automaticAction.enabled}
+                  checked={automaticAction.enabled || false}
                   onChange={
                     e => mutateAutomaticAction({
                       variables: {
@@ -169,7 +169,7 @@ AutomaticAction.propTypes = {
     name: PropTypes.string.isRequired,
     condition: PropTypes.string.isRequired,
     valueToCompare: PropTypes.number.isRequired,
-    enabled: PropTypes.bool.isRequired,
+    enabled: PropTypes.bool,
     actions: PropTypes.arrayOf(PropTypes.shape({
       id: PropTypes.string.isRequired,
       sensor: sensorShape,
