@@ -1,8 +1,6 @@
 import React from 'react'
-import PropTypes from 'prop-types'
 import { Label } from 'react-bootstrap'
 import moment from 'moment'
-import axios from 'axios'
 import ReactHighcharts from 'react-highcharts'
 import DateTimePicker from 'react-datetime-picker'
 
@@ -37,43 +35,43 @@ const handleToDate = (newDate) => {
   }
 }
 
-const loadSensorData = () => {
-  const { nodeId, sensorId, sensorType } = this.props.sensor
-  const fromDate = this.state.fromDate.format('x')
-  const toDate = this.state.toDate.format('x')
+// const loadSensorData = () => {
+//   const { nodeId, sensorId, sensorType } = this.props.sensor
+//   const fromDate = this.state.fromDate.format('x')
+//   const toDate = this.state.toDate.format('x')
 
-  let data = []
-  try {
-    const response = await axios
-      .get(`/nodes/${nodeId}/sensors/${sensorId}/type/${sensorType}/values?fromDate=${fromDate}&toDate=${toDate}`)
-    data = response.data.map(point => [Date.parse(point.timestamp), point.value])
-  } catch (err) {
-    // eslint-disable-next-line
-    alert(err.response.data.details[0].message)
-  }
-}
+//   let data = []
+//   try {
+//     const response = await axios
+//       .get(`/nodes/...`)
+//     data = response.data.map(point => [Date.parse(point.timestamp), point.value])
+//   } catch (err) {
+//     // eslint-disable-next-line
+//     alert(err.response.data.details[0].message)
+//   }
+// }
 
 const Graphic = () => {
-  const fromDate = moment().subtract(6, 'hours'),
+  const fromDate = moment().subtract(6, 'hours')
   const toDate = moment()
 
   return (
     <div>
-    <Label>From</Label>
-    <DateTimePicker
-      onChange={this.handleFromDate}
-      value={fromDate.toDate()}
-    />
-    <Label>To</Label>
-    <DateTimePicker
-      onChange={this.handleToDate}
-      value={toDate.toDate()}
-    />
-    <ReactHighcharts
-      config={highchartsConfig}
-      ref={(ref) => { this.chart = ref }}
-    />
-  </div>
+      <Label>From</Label>
+      <DateTimePicker
+        onChange={handleFromDate}
+        value={fromDate.toDate()}
+      />
+      <Label>To</Label>
+      <DateTimePicker
+        onChange={handleToDate}
+        value={toDate.toDate()}
+      />
+      <ReactHighcharts
+        config={highchartsConfig}
+        // ref={(ref) => { this.chart = ref }}
+      />
+    </div>
   )
 }
 

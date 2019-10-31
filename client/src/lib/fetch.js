@@ -138,6 +138,7 @@ export const MUTATE_AUTOMATIC_ACTION = gql`
         name
         description
         type
+        mqttSetTopic
         mqttStatusTopic
       }
       valueToCompare
@@ -148,9 +149,11 @@ export const MUTATE_AUTOMATIC_ACTION = gql`
         valueToChangeOn
         sensor {
           id
-          type
+          name
           description
+          type
           mqttSetTopic
+          mqttStatusTopic
         }
       }
     }
@@ -202,6 +205,10 @@ export const QUERY_SCHEDULED_ACTIONS = gql`
         sensor {
           id
           name
+          description
+          type
+          mqttSetTopic
+          mqttStatusTopic
         }
         valueToChangeOn
       }
@@ -244,6 +251,10 @@ export const SUBSCRIBE_SCHEDULED_ACTIONS = gql`
         sensor {
           id
           name
+          description
+          type
+          mqttSetTopic
+          mqttStatusTopic
         }
         valueToChangeOn
       }
@@ -277,7 +288,11 @@ export const QUERY_VALUES = gql`
     values(filter: $value) {
       sensor{
         id
+        name
+        description
         type
+        mqttSetTopic
+        mqttStatusTopic
       }
       value
       createdAt
@@ -290,7 +305,11 @@ export const MUTATE_VALUE = gql`
     value(input: $value) {
       sensor {
         id
+        name
+        description
         type
+        mqttSetTopic
+        mqttStatusTopic
       }
       value
     }
@@ -302,7 +321,11 @@ export const SUBSCRIBE_VALUES = gql`
     value(filter: $value) {
       sensor {
         id
+        name
+        description
         type
+        mqttSetTopic
+        mqttStatusTopic
       }
       value
       deleted

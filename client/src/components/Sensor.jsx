@@ -10,15 +10,11 @@ import {
   FormControl,
   ControlLabel,
 } from 'react-bootstrap'
-
-import moment from 'moment'
 import {
-  useQuery,
   useMutation,
 } from '@apollo/react-hooks'
 import AutomaticActionsList from './AutomaticActionsList'
 import {
-  QUERY_VALUES,
   MUTATE_SENSOR,
 } from '../lib/fetch'
 

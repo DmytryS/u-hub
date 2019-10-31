@@ -60,13 +60,13 @@ const ScheduledAction = ({ scheduledAction }) => {
                 <FormControl
                   type="text"
                   placeholder="Enter cron string"
-                  value={scheduledAction.condition || ''}
+                  value={scheduledAction.schedule || ''}
                   onChange={
                     (e) => {
                       mutateScheduledAction({
                         variables: {
                           scheduledAction: {
-                            id: automaticAction.id,
+                            id: scheduledAction.id,
                             schedule: e.target.value,
                           },
                         },
@@ -82,7 +82,7 @@ const ScheduledAction = ({ scheduledAction }) => {
                 <Checkbox
                   checked={scheduledAction.enabled || false}
                   onChange={
-                    e => mutateAutomaticAction({
+                    e => mutateScheduledAction({
                       variables: {
                         scheduledAction: {
                           id: scheduledAction.id,
@@ -101,7 +101,7 @@ const ScheduledAction = ({ scheduledAction }) => {
               <Button
                 bsStyle="danger"
                 onClick={
-                  () => mutateAutomaticAction({
+                  () => mutateScheduledAction({
                     variables: {
                       scheduledAction: {
                         id: scheduledAction.id,
@@ -119,6 +119,29 @@ const ScheduledAction = ({ scheduledAction }) => {
       </Panel.Collapse>
     </Panel>
   )
+}
+
+const sensorShape = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string,
+  type: PropTypes.string,
+  description: PropTypes.string,
+  mqttSetTopic: PropTypes.string,
+  mqttStatusTopic: PropTypes.string.isRequired,
+})
+
+ScheduledAction.propTypes = {
+  scheduledAction: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    schedule: PropTypes.string.isRequired,
+    enabled: PropTypes.bool,
+    actions: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      sensor: sensorShape,
+      valueToChangeOn: PropTypes.number.isRequired,
+    })),
+  }).isRequired,
 }
 
 export default ScheduledAction

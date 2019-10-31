@@ -1,4 +1,4 @@
-// import PropTypes from 'prop-types'
+import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 import {
   Button,
@@ -77,9 +77,6 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
   const [mutateAutomaticAction] = useMutation(MUTATE_AUTOMATIC_ACTION)
   const [mutateScheduledAction] = useMutation(MUTATE_SCHEDULED_ACTION)
 
-  const [sensor, setSensor] = useState(data && data.sensors.length ? data.sensors[0].id : '')
-  const [valueToChangeOn, setValueToChangeOn] = useState('')
-
   const { loading, data } = useQuery(
     QUERY_SENSORS,
     {
@@ -92,6 +89,9 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
       },
     },
   )
+
+  const [sensor, setSensor] = useState(data && data.sensors.length ? data.sensors[0].id : '')
+  const [valueToChangeOn, setValueToChangeOn] = useState('')
 
   const {
     data: subscriptionData,
@@ -111,11 +111,11 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
   }
 
   if (subscriptionData) {
-    console.log('###', subscriptionData)
-
     if (automaticAction) {
+      // eslint-disable-next-line
       automaticAction.actions = updateData(automaticAction.actions, subscriptionData.action)
     } else {
+      // eslint-disable-next-line
       scheduledAction.actions = updateData(scheduledAction.actions, subscriptionData.action)
     }
   }
@@ -222,29 +222,45 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
   )
 }
 
-// const sensorShape = PropTypes.shape({
-//   id: PropTypes.string.isRequired,
-//   name: PropTypes.string,
-//   type: PropTypes.string,
-//   description: PropTypes.string,
-//   mqttSetTopic: PropTypes.string,
-//   mqttStatusTopic: PropTypes.string.isRequired,
-// })
+const sensorShape = PropTypes.shape({
+  id: PropTypes.string.isRequired,
+  name: PropTypes.string,
+  type: PropTypes.string,
+  description: PropTypes.string,
+  mqttSetTopic: PropTypes.string,
+  mqttStatusTopic: PropTypes.string.isRequired,
+})
 
-// ActionsList.propTypes = {
-//   automaticAction: PropTypes.shape({
-//     id: PropTypes.string.isRequired,
-//     name: PropTypes.string.isRequired,
-//     condition: PropTypes.string.isRequired,
-//     valueToCompare: PropTypes.number.isRequired,
-//     enabled: PropTypes.bool.isRequired,
-//     actions: PropTypes.arrayOf(PropTypes.shape({
-//       id: PropTypes.string.isRequired,
-//       sensor: sensorShape,
-//       valueToChangeOn: PropTypes.number.isRequired,
-//     })),
-//     sensor: sensorShape,
-//   }),
-// }
+ActionsList.propTypes = {
+  automaticAction: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    condition: PropTypes.string.isRequired,
+    valueToCompare: PropTypes.number.isRequired,
+    enabled: PropTypes.bool.isRequired,
+    actions: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      sensor: sensorShape,
+      valueToChangeOn: PropTypes.number.isRequired,
+    })),
+    sensor: sensorShape,
+  }),
+  scheduledAction: PropTypes.shape({
+    id: PropTypes.string.isRequired,
+    name: PropTypes.string.isRequired,
+    schedule: PropTypes.string.isRequired,
+    enabled: PropTypes.bool,
+    actions: PropTypes.arrayOf(PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      sensor: sensorShape,
+      valueToChangeOn: PropTypes.number.isRequired,
+    })),
+  }),
+}
+
+ActionsList.defaultProps = {
+  automaticAction: false,
+  scheduledAction: false,
+}
 
 export default ActionsList
