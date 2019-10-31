@@ -108,7 +108,7 @@ const Sensor = ({ sensor }) => {
                 <ControlLabel>Description</ControlLabel>
                 <FormControl
                   type="text"
-                  placeholder="Enter value to compare"
+                  placeholder="Enter sensor description"
                   value={sensor.description || ''}
                   onChange={
                     e => mutateSensor({
@@ -128,7 +128,7 @@ const Sensor = ({ sensor }) => {
                 <ControlLabel>Type</ControlLabel>
                 <FormControl
                   componentClass="select"
-                  placeholder="Enter value to compare"
+                  placeholder="Select sensor type"
                   value={sensor.type || ''}
                   onChange={
                     e => mutateSensor({
@@ -156,14 +156,14 @@ const Sensor = ({ sensor }) => {
                 <ControlLabel>Mqtt set topic</ControlLabel>
                 <FormControl
                   type="text"
-                  placeholder="Enter value to compare"
+                  placeholder="Enter set topic"
                   value={sensor.mqttSetTopic || ''}
                   onChange={
                     e => mutateSensor({
                       variables: {
                         sensor: {
                           id: sensor.id,
-                          mqttSetTopic: e.target.type,
+                          mqttSetTopic: e.target.value,
                         },
                       },
                     })
@@ -176,14 +176,14 @@ const Sensor = ({ sensor }) => {
                 <ControlLabel>Mqtt status topic</ControlLabel>
                 <FormControl
                   type="text"
-                  placeholder="Enter value to compare"
+                  placeholder="Enter status topic"
                   value={sensor.mqttStatusTopic || ''}
                   onChange={
                     e => mutateSensor({
                       variables: {
                         sensor: {
                           id: sensor.id,
-                          mqttStatusTopic: e.target.type,
+                          mqttStatusTopic: e.target.value,
                         },
                       },
                     })

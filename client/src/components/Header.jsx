@@ -17,7 +17,7 @@ class Header extends React.Component {
             <Link to="/">Main</Link>
           </Navbar.Brand>
           <Navbar.Brand>
-            <Link to="/schedules">Schedules</Link>
+            <Link to="/scheduled_actions">Schedules</Link>
           </Navbar.Brand>
         </Navbar.Header>
       </Navbar>

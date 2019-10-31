@@ -49,31 +49,37 @@ const sensorActionTypes = [
   'WindowCovering',
 ]
 
-const updateData = (automaticActions, newAutomaticAction) => {
-  const existingAutomaticActionIndex = automaticActions
-    .findIndex(k => k.id === newAutomaticAction.id)
+const updateData = (array, newEl) => {
+  const existingElIndex = array
+    .findIndex(k => k.id === newEl.id)
 
-  if (existingAutomaticActionIndex === -1 && !newAutomaticAction.deleted) {
-    automaticActions.push(newAutomaticAction)
+  if (existingElIndex === -1 && !newEl.deleted) {
+    array.push(newEl)
 
-    return automaticActions
+    return array
   }
-  if (existingAutomaticActionIndex !== -1 && newAutomaticAction.deleted) {
-    automaticActions.splice(existingAutomaticActionIndex, 1)
+  if (existingElIndex !== -1 && newEl.deleted) {
+    array.splice(existingElIndex, 1)
 
-    return automaticActions
+    return array
   }
-  if (existingAutomaticActionIndex !== -1 && !newAutomaticAction.deleted) {
+  if (existingElIndex !== -1 && !newEl.deleted) {
     // eslint-disable-next-line
-    automaticActions[existingAutomaticActionIndex] = newAutomaticAction
+    array[existingElIndex] = newEl
 
-    return automaticActions
+    return array
   }
 
-  return automaticActions
+  return array
 }
 
 const ActionsList = ({ automaticAction, scheduledAction }) => {
+  const [mutateAutomaticAction] = useMutation(MUTATE_AUTOMATIC_ACTION)
+  const [mutateScheduledAction] = useMutation(MUTATE_SCHEDULED_ACTION)
+
+  const [sensor, setSensor] = useState(data && data.sensors.length ? data.sensors[0].id : '')
+  const [valueToChangeOn, setValueToChangeOn] = useState('')
+
   const { loading, data } = useQuery(
     QUERY_SENSORS,
     {
@@ -87,30 +93,32 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
     },
   )
 
-  // const {
-  //   data: subscriptionData,
-  // } = useSubscription(
-  //   SUBSCRIBE_ACTIONS,
-  //   {
-  //     variables: {
-  //       action: {
-  //         automaticAction: automaticAction.id,
-  //         scheduledAction: scheduledAction.id,
-  //       },
-  //     },
-  //   },
-  // )
-
-  const [mutateAutomaticAction] = useMutation(MUTATE_AUTOMATIC_ACTION)
-  const [mutateScheduledAction] = useMutation(MUTATE_SCHEDULED_ACTION)
-
-  const [sensor, setSensor] = useState(data && data.sensors.length ? data.sensors[0].id : '')
-  const [valueToChangeOn, setValueToChangeOn] = useState('')
+  const {
+    data: subscriptionData,
+  } = useSubscription(
+    SUBSCRIBE_ACTIONS,
+    {
+      variables: {
+        action: {
+          [automaticAction ? 'automaticAction' : 'scheduledAction']: automaticAction ? automaticAction.id : scheduledAction.id,
+        },
+      },
+    },
+  )
 
   if (loading) {
     return <p>Loading actions</p>
   }
 
+  if (subscriptionData) {
+    console.log('###', subscriptionData)
+
+    if (automaticAction) {
+      automaticAction.actions = updateData(automaticAction.actions, subscriptionData.action)
+    } else {
+      scheduledAction.actions = updateData(scheduledAction.actions, subscriptionData.action)
+    }
+  }
 
   return (
     <div>
@@ -172,7 +180,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
                   } else {
                     mutateScheduledAction({
                       variables: {
-                        automaticAction: {
+                        scheduledAction: {
                           id: scheduledAction.id,
                           actions: [{
                             sensor,
@@ -194,19 +202,21 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
         </Col>
       </Row>
       {
-        // automaticAction
-        //   ? automaticAction.actions.map(a => (
-        //     <Action
-        //       automaticAction={automaticAction}
-        //       action={a}
-        //     />
-        //   ))
-        //   : scheduledAction.actions.map(a => (
-        //     <Action
-        //       scheduledAction={scheduledAction}
-        //       action={a}
-        //     />
-        //   ))
+        automaticAction
+          ? automaticAction.actions.map(a => (
+            <Action
+              key={a.id}
+              automaticAction={automaticAction}
+              action={a}
+            />
+          ))
+          : scheduledAction.actions.map(a => (
+            <Action
+              key={a.id}
+              scheduledAction={scheduledAction}
+              action={a}
+            />
+          ))
       }
     </div>
   )

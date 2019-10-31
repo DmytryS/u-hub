@@ -30,7 +30,7 @@ const Action = ({ automaticAction, scheduledAction, action }) => {
           <FormGroup>
             <ControlLabel>Sensor</ControlLabel>
             <FormControl
-              componentClass="text"
+              type="text"
               value={action.sensor.name}
               disabled
             />
@@ -41,20 +41,34 @@ const Action = ({ automaticAction, scheduledAction, action }) => {
             <ControlLabel>Value to change on</ControlLabel>
             <FormControl
               type="text"
-              placeholder="Enter value to compare"
+              placeholder="Enter value to change on"
               value={action.valueToChangeOn}
               onChange={
-                e => mutateAutomaticAction({
-                  variables: {
-                    automaticAction: {
-                      id: automaticAction.id,
-                      actions: [{
-                        id: action.id,
-                        valueToChangeOn: parseInt(e.target.value, 10),
-                      }],
-                    },
-                  },
-                })
+                (e) => {
+                  automaticAction
+                    ? mutateAutomaticAction({
+                      variables: {
+                        automaticAction: {
+                          id: automaticAction.id,
+                          actions: [{
+                            id: action.id,
+                            valueToChangeOn: parseInt(e.target.value, 10),
+                          }],
+                        },
+                      },
+                    })
+                    : mutateScheduledAction({
+                      variables: {
+                        scheduledAction: {
+                          id: scheduledAction.id,
+                          actions: [{
+                            id: action.id,
+                            valueToChangeOn: parseInt(e.target.value, 10),
+                          }],
+                        },
+                      },
+                    })
+                }
               }
             />
           </FormGroup>
@@ -66,17 +80,29 @@ const Action = ({ automaticAction, scheduledAction, action }) => {
               bsStyle="danger"
               onClick={
                 () => {
-                  mutateAutomaticAction({
-                    variables: {
-                      automaticAction: {
-                        id: automaticAction.id,
-                        actions: [{
-                          id: action.id,
-                          deleted: true,
-                        }],
+                  automaticAction
+                    ? mutateAutomaticAction({
+                      variables: {
+                        automaticAction: {
+                          id: automaticAction.id,
+                          actions: [{
+                            id: action.id,
+                            deleted: true,
+                          }],
+                        },
                       },
-                    },
-                  })
+                    })
+                    : mutateScheduledAction({
+                      variables: {
+                        scheduledAction: {
+                          id: scheduledAction.id,
+                          actions: [{
+                            id: action.id,
+                            deleted: true,
+                          }],
+                        },
+                      },
+                    })
                 }
               }
             >

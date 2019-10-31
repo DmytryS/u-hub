@@ -165,9 +165,10 @@ export const SUBSCRIBE_AUTOMATIC_ACTIONS = gql`
       sensor {
         id
         name
-        description
         type
+        description
         mqttStatusTopic
+        mqttSetTopic
       }
       valueToCompare
       condition
@@ -177,8 +178,10 @@ export const SUBSCRIBE_AUTOMATIC_ACTIONS = gql`
         valueToChangeOn
         sensor {
           id
+          name
           type
           description
+          mqttStatusTopic
           mqttSetTopic
         }
       }
@@ -208,7 +211,7 @@ export const QUERY_SCHEDULED_ACTIONS = gql`
 
 export const MUTATE_SCHEDULED_ACTION = gql`
   mutation MutateScheduledAction($scheduledAction: ScheduledActionInput!){
-    scheduledAction {
+    scheduledAction(input: $scheduledAction) {
       id
       name
       schedule
@@ -218,6 +221,10 @@ export const MUTATE_SCHEDULED_ACTION = gql`
         sensor {
           id
           name
+          description
+          type
+          mqttSetTopic
+          mqttStatusTopic
         }
         valueToChangeOn
       }

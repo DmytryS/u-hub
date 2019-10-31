@@ -1,18 +1,18 @@
 type Action {
   id: ID!
-  sensor: Sensor!
+  sensor: Sensor
   automaticAction: AutomaticAction
   scheduledAction: ScheduledAction
-  valueToChangeOn: Int!
+  valueToChangeOn: Int
   deleted: Boolean
 }
 
 input ActionInput {
   id: ID
-  sensor: ID!
+  sensor: ID
   automaticAction: ID
   scheduledAction: ID
-  valueToChangeOn: Int!
+  valueToChangeOn: Int
   deleted: Boolean
 }
 

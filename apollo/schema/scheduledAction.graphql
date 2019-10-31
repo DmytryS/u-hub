@@ -1,15 +1,15 @@
 type ScheduledAction {
-  id: ID!
-  name: String!
-  schedule: String!
-  enabled: Boolean!
+  id: ID
+  name: String
+  schedule: String
+  enabled: Boolean
   actions: [Action]
   deleted: Boolean
 }
 
 input ScheduledActionInput {
   id: ID
-  name: String!
+  name: String
   schedule: String
   enabled: Boolean
   actions: [ActionInput]

@@ -1,6 +1,6 @@
 import React from 'react'
 import { useQuery } from '@apollo/react-hooks'
-import Navbar from './Header'
+import Header from './Header'
 import Sensor from './Sensor'
 import { QUERY_SENSORS } from '../lib/fetch'
 
@@ -30,7 +30,7 @@ const SensorsList = () => {
 
   return (
     <div>
-      <Navbar />
+      <Header />
       {data.sensors.map(sensor => (
         <Sensor key={sensor.id} sensor={sensor} />
       ))}

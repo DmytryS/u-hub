@@ -31,28 +31,28 @@ const conditions = [
   'EQUAL',
 ]
 
-const updateData = (automaticActions, newAutomaticAction) => {
-  const existingAutomaticActionIndex = automaticActions
-    .findIndex(k => k.id === newAutomaticAction.id)
+const updateData = (array, newEl) => {
+  const existingElIndex = array
+    .findIndex(k => k.id === newEl.id)
 
-  if (existingAutomaticActionIndex === -1 && !newAutomaticAction.deleted) {
-    automaticActions.push(newAutomaticAction)
+  if (existingElIndex === -1 && !newEl.deleted) {
+    array.push(newEl)
 
-    return automaticActions
+    return array
   }
-  if (existingAutomaticActionIndex !== -1 && newAutomaticAction.deleted) {
-    automaticActions.splice(existingAutomaticActionIndex, 1)
+  if (existingElIndex !== -1 && newEl.deleted) {
+    array.splice(existingElIndex, 1)
 
-    return automaticActions
+    return array
   }
-  if (existingAutomaticActionIndex !== -1 && !newAutomaticAction.deleted) {
+  if (existingElIndex !== -1 && !newEl.deleted) {
     // eslint-disable-next-line
-    automaticActions[existingAutomaticActionIndex] = newAutomaticAction
+    array[existingElIndex] = newEl
 
-    return automaticActions
+    return array
   }
 
-  return automaticActions
+  return array
 }
 
 const AutomaticActionsList = ({ sensor }) => {
@@ -196,7 +196,6 @@ const AutomaticActionsList = ({ sensor }) => {
           <AutomaticAction key={automaticAction.id} automaticAction={automaticAction} />
         ))
       }
-      {/* <h4>{subscriptionData ? subscriptionData.automaticAction.id : 'NULL'}</h4> */}
     </div>
   )
 }
