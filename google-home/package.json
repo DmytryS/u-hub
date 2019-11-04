@@ -1,40 +1,42 @@
 {
-  "name": "google-home-server",
+  "name": "smart-home-app-sample",
   "version": "0.0.1",
-  "description": "Google home server",
-  "main": "src/index.js",
+  "description": "Mock implementation of device manufacturer platform to facilitate development of sample device and adapter.",
+  "main": "dist/index.js",
   "type": "module",
-  "directories": {
-    "test": "tests"
-  },
+  "private": true,
   "scripts": {
-    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon --experimental-modules src/index.js; else node --experimental-modules src/index.js; fi",
-    "test": "mocha --recursive ./tests",
+    "build": "tsc && cp src/*.json dist/",
+    "deploy": "npm run build && gcloud app deploy && gcloud app logs tail -s default",
+    "start": "node --experimental-modules src/index.js",
+    "start:local": "ts-node ./src/index.ts isLocal",
+    "dev": "nodemon --experimental-modules ./src/index.js",
+    "ngrok": "ngrok http 3000",
+    "test": "npm run lint",
     "lint": "eslint src/**",
     "lint:fix": "eslint src/** --fix"
   },
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/DmytryS/u-hub.git"
-  },
-  "keywords": [
-    "iot",
-    "google-home"
-  ],
-  "author": "Dmytro Shvaika",
-  "license": "MIT",
-  "bugs": {
-    "url": "https://github.com/DmytryS/u-hub/issues"
-  },
-  "homepage": "https://github.com/DmytryS/u-hub#readme",
-  "devDependencies": {
-    "eslint": "^6.4.0",
-    "esm": "^3.2.25",
-    "mocha": "^6.2.0",
-    "nodemon": "^1.19.2"
+  "author": "Google Inc.",
+  "license": "Apache-2.0",
+  "engines": {
+    "node": "^8.0.0"
   },
   "dependencies": {
+    "actions-on-google": "^2.12.0",
     "amqplib": "^0.5.5",
+    "body-parser": "^1.18.3",
+    "cors": "^2.8.4",
+    "dotenv": "^8.2.0",
+    "express": "^4.16.0",
+    "firebase-admin": "~5.13.0",
+    "morgan": "^1.9.0",
+    "ngrok": "^3.2.5",
     "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "eslint": "^6.6.0",
+    "firebase-tools": "^6.10.0",
+    "mocha": "^6.2.2",
+    "nodemon": "^1.19.4"
   }
 }
