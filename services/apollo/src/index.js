@@ -96,6 +96,6 @@ const httpServer = http.createServer(app)
 
 apollo.installSubscriptionHandlers(httpServer)
 
-httpServer.listen(HTTP_PORT || 3000, HTTP_HOST || '0.0.0.0', onReady)
+httpServer.listen(HTTP_PORT || 3000, onReady) //  HTTP_HOST || '0.0.0.0'
 
 amqp.listen(AMQP_APOLLO_QUEUE, listener)

@@ -29,7 +29,7 @@ services:
       context: ./services/apollo
     restart: always
     ports:
-      - "80:80"
+      - "3000:3000"
     depends_on:
       - mosquitto
       - mongo
@@ -67,7 +67,7 @@ services:
       context: ./services/client
     restart: always
     ports:
-      - "3000:3000"
+      - "3001:3001"
     depends_on:
       - automatic-action
     env_file:
@@ -91,7 +91,8 @@ services:
       context: ./services/mqtt-listener
     restart: always
     depends_on:
-      - google-home
+      # - google-home
+      - client
     env_file:
       - ./services/mqtt-listener/.env
       - ./infrastructure/rabbit/.env

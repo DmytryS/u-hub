@@ -6,6 +6,8 @@ const HtmlWebpackPlugin = require('html-webpack-plugin')
 
 const webpackCommon = require('./webpack-common.config')
 
+const { PORT } = process.env
+
 module.exports = webpackMerge(webpackCommon, {
   mode: 'development',
   entry: ['babel-polyfill', './src/App.jsx'],
@@ -31,7 +33,7 @@ module.exports = webpackMerge(webpackCommon, {
     },
     // https: true,
     host: '0.0.0.0',
-    port: 3000,
+    port: PORT || 3000,
     hot: true,
     stats: 'minimal',
     clientLogLevel: 'info',
