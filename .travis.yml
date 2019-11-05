@@ -10,89 +10,75 @@ jobs:
     script:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
       - export REVISION=`if [ "$TRAVIS_BRANCH" == "master" ]; then echo "latest"; else echo $TRAVIS_BRANCH ; fi`
-      - export APOLLO_IMAGE_TAG=$DOCKER_REPO_APOLLO:$REVISION
-      - export APPLE_HOMEKIT_IMAGE_TAG=$DOCKER_REPO_APPLE_HOMEKIT:$REVISION
-      - export CLIENT_IMAGE_TAG=$DOCKER_REPO_CLIENT:$REVISION
-      - export SCHEDULED_ACTION_IMAGE_TAG=$DOCKER_REPO_SCHEDULED_ACTION:$REVISION
-      - export AUTOMATIC_ACTION_IMAGE_TAG=$DOCKER_REPO_AUTOMATIC_ACTION:$REVISION
-      - export GOOGLE_HOME_IMAGE_TAG=$DOCKER_REPO_GOOGLE_HOME:$REVISION
-      - export MQTT_LISTENER_IMAGE_TAG=$DOCKER_REPO_MQTT_LISTENER:$REVISION
 
-      - docker build -t $APOLLO_IMAGE_TAG ./apollo
-      - docker run $APOLLO_IMAGE_TAG run lint
-      - docker run $APOLLO_IMAGE_TAG run test
-      - docker push $APOLLO_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_APOLLO:$REVISION ./services/apollo
+      - docker run $DOCKER_REPO_APOLLO:$REVISION run lint
+      - docker run $DOCKER_REPO_APOLLO:$REVISION run test
+      - docker push $DOCKER_REPO_APOLLO:$REVISION
 
-      - docker build -t $APPLE_HOMEKIT_IMAGE_TAG ./apple-homekit
-      - docker run $APPLE_HOMEKIT_IMAGE_TAG run lint
-      - docker run $APPLE_HOMEKIT_IMAGE_TAG run test
-      - docker push $APPLE_HOMEKIT_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_APPLE_HOMEKIT:$REVISION ./services/apple-homekit
+      - docker run $DOCKER_REPO_APPLE_HOMEKIT:$REVISION run lint
+      - docker run $DOCKER_REPO_APPLE_HOMEKIT:$REVISION run test
+      - docker push $DOCKER_REPO_APPLE_HOMEKIT:$REVISION
 
-      - docker build -t $CLIENT_IMAGE_TAG ./client
-      - docker run $CLIENT_IMAGE_TAG run lint
-      - docker push $CLIENT_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_CLIENT:$REVISION ./services/client
+      - docker run $DOCKER_REPO_CLIENT:$REVISION run lint
+      - docker push $DOCKER_REPO_CLIENT:$REVISION
 
-      - docker build -t $SCHEDULED_ACTION_IMAGE_TAG ./scheduled-action
-      - docker run $SCHEDULED_ACTION_IMAGE_TAG run lint
-      - docker run $SCHEDULED_ACTION_IMAGE_TAG run test
-      - docker push $SCHEDULED_ACTION_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_SCHEDULED_ACTION:$REVISION ./cronjobs/scheduled-action
+      - docker run $DOCKER_REPO_SCHEDULED_ACTION:$REVISION run lint
+      - docker run $DOCKER_REPO_SCHEDULED_ACTION:$REVISION run test
+      - docker push $DOCKER_REPO_SCHEDULED_ACTION:$REVISION
 
-      - docker build -t $GOOGLE_HOME_IMAGE_TAG ./google-home
-      - docker run $GOOGLE_HOME_IMAGE_TAG run lint
-      - docker run $GOOGLE_HOME_IMAGE_TAG run test
-      - docker push $GOOGLE_HOME_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_GOOGLE_HOME:$REVISION ./services/google-home
+      - docker run $DOCKER_REPO_GOOGLE_HOME:$REVISION run lint
+      - docker run $DOCKER_REPO_GOOGLE_HOME:$REVISION run test
+      - docker push $DOCKER_REPO_GOOGLE_HOME:$REVISION
 
-      - docker build -t $MQTT_LISTENER_IMAGE_TAG ./mqtt-listener
-      - docker run $MQTT_LISTENER_IMAGE_TAG run lint
-      - docker run $MQTT_LISTENER_IMAGE_TAG run test
-      - docker push $MQTT_LISTENER_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_MQTT_LISTENER:$REVISION ./services/mqtt-listener
+      - docker run $DOCKER_REPO_MQTT_LISTENER:$REVISION run lint
+      - docker run $DOCKER_REPO_MQTT_LISTENER:$REVISION run test
+      - docker push $DOCKER_REPO_MQTT_LISTENER:$REVISION
 
-      - docker build -t $AUTOMATIC_ACTION_IMAGE_TAG ./automatic-action
-      - docker run $AUTOMATIC_ACTION_IMAGE_TAG run lint
-      - docker run $AUTOMATIC_ACTION_IMAGE_TAG run test
-      - docker push $AUTOMATIC_ACTION_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_AUTOMATIC_ACTION:$REVISION ./services/automatic-action
+      - docker run $DOCKER_REPO_AUTOMATIC_ACTION:$REVISION run lint
+      - docker run $DOCKER_REPO_AUTOMATIC_ACTION:$REVISION run test
+      - docker push $DOCKER_REPO_AUTOMATIC_ACTION:$REVISION
   - stage: build_version
     if: tag IS present
     script:
       - echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
-      - export APOLLO_IMAGE_TAG=$DOCKER_REPO_APOLLO:$TRAVIS_TAG
-      - export APPLE_HOMEKIT_IMAGE_TAG=$DOCKER_REPO_APPLE_HOMEKIT:$TRAVIS_TAG
-      - export CLIENT_IMAGE_TAG=$DOCKER_REPO_CLIENT:$REVISION
-      - export SCHEDULED_ACTION_IMAGE_TAG=$DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG
-      - export AUTOMATIC_ACTION_IMAGE_TAG=$DOCKER_REPO_AUTOMATIC_ACTION:$TRAVIS_TAG
-      - export GOOGLE_HOME_IMAGE_TAG=$DOCKER_REPO_GOOGLE_HOME:$TRAVIS_TAG
-      - export MQTT_LISTENER_IMAGE_TAG=$DOCKER_REPO_MQTT_LISTENER:$TRAVIS_TAG
 
-      - docker build -t $APOLLO_IMAGE_TAG ./apollo
-      - docker run $APOLLO_IMAGE_TAG run lint
-      - docker run $APOLLO_IMAGE_TAG run test
-      - docker push $APOLLO_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_APOLLO:$TRAVIS_TAG ./apollo
+      - docker run $DOCKER_REPO_APOLLO:$TRAVIS_TAG run lint
+      - docker run $DOCKER_REPO_APOLLO:$TRAVIS_TAG run test
+      - docker push $DOCKER_REPO_APOLLO:$TRAVIS_TAG
 
-      - docker build -t $APPLE_HOMEKIT_IMAGE_TAG ./apple-homekit
-      - docker run $APPLE_HOMEKIT_IMAGE_TAG run lint
-      - docker run $APPLE_HOMEKIT_IMAGE_TAG run test
-      - docker push $APPLE_HOMEKIT_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_APPLE_HOMEKIT:$TRAVIS_TAG ./services/apple-homekit
+      - docker run $DOCKER_REPO_APPLE_HOMEKIT:$TRAVIS_TAG run lint
+      - docker run $DOCKER_REPO_APPLE_HOMEKIT:$TRAVIS_TAG run test
+      - docker push $DOCKER_REPO_APPLE_HOMEKIT:$TRAVIS_TAG
 
-      - docker build -t $CLIENT_IMAGE_TAG ./client
-      - docker run $CLIENT_IMAGE_TAG run lint
-      - docker push $CLIENT_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_CLIENT:$REVISION ./services/client
+      - docker run $DOCKER_REPO_CLIENT:$REVISION run lint
+      - docker push $DOCKER_REPO_CLIENT:$REVISION
 
-      - docker build -t $SCHEDULED_ACTION_IMAGE_TAG ./scheduled-action
-      - docker run $SCHEDULED_ACTION_IMAGE_TAG run lint
-      - docker run $SCHEDULED_ACTION_IMAGE_TAG run test
-      - docker push $SCHEDULED_ACTION_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG ./cronjobs/scheduled-action
+      - docker run $DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG run lint
+      - docker run $DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG run test
+      - docker push $DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG
 
-      - docker build -t $GOOGLE_HOME_IMAGE_TAG ./google-home
-      - docker run $GOOGLE_HOME_IMAGE_TAG run lint
-      - docker run $GOOGLE_HOME_IMAGE_TAG run test
-      - docker push $GOOGLE_HOME_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_GOOGLE_HOME:$TRAVIS_TAG ./services/google-home
+      - docker run $DOCKER_REPO_GOOGLE_HOME:$TRAVIS_TAG run lint
+      - docker run $DOCKER_REPO_GOOGLE_HOME:$TRAVIS_TAG run test
+      - docker push $DOCKER_REPO_GOOGLE_HOME:$TRAVIS_TAG
 
-      - docker build -t $MQTT_LISTENER_IMAGE_TAG ./mqtt-listener
-      - docker run $MQTT_LISTENER_IMAGE_TAG run lint
-      - docker run $MQTT_LISTENER_IMAGE_TAG run test
-      - docker push $MQTT_LISTENER_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_MQTT_LISTENER:$TRAVIS_TAG ./services/mqtt-listener
+      - docker run $DOCKER_REPO_MQTT_LISTENER:$TRAVIS_TAG run lint
+      - docker run $DOCKER_REPO_MQTT_LISTENER:$TRAVIS_TAG run test
+      - docker push $DOCKER_REPO_MQTT_LISTENER:$TRAVIS_TAG
 
-      - docker build -t $AUTOMATIC_ACTION_IMAGE_TAG ./automatic-action
-      - docker run $AUTOMATIC_ACTION_IMAGE_TAG run lint
-      - docker run $AUTOMATIC_ACTION_IMAGE_TAG run test
-      - docker push $AUTOMATIC_ACTION_IMAGE_TAG
+      - docker build -t $DOCKER_REPO_AUTOMATIC_ACTION:$TRAVIS_TAG ./services/automatic-action
+      - docker run $DOCKER_REPO_AUTOMATIC_ACTION:$TRAVIS_TAG run lint
+      - docker run $DOCKER_REPO_AUTOMATIC_ACTION:$TRAVIS_TAG run test
+      - docker push $DOCKER_REPO_AUTOMATIC_ACTION:$TRAVIS_TAG

@@ -1,0 +1,21 @@
+apiVersion: settings.k8s.io/v1alpha1
+kind: PodPreset
+metadata:
+  name: apollo
+spec:
+  selector:
+    matchLabels:
+      app: apollo
+  env:
+  - name: NODE_ENV
+    value: development
+  - name: CHOKIDAR_USEPOLLING
+    value: 'true'
+  volumeMounts:
+  - name: u-hub
+    mountPath: /usr/src/app
+    subPath: services/apollo
+  volumes:
+  - name: u-hub
+    persistentVolumeClaim:
+      claimName: u-hub

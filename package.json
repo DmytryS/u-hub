@@ -1,0 +1,13 @@
+{
+  "name": "u-hub",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:DmytryS/u-hub.git"
+  },
+  "scripts": {
+    "lint": "lerna run lint"
+  },
+  "devDependencies": {
+    "lerna": "^3.18.3"
+  }
+}

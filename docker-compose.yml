@@ -1,0 +1,100 @@
+version: "3"
+services:
+  mongo:
+    container_name: mongo
+    hostname: mongo
+    image: "mongo:latest"
+    restart: always
+    ports:
+      - "27017:27017"
+  rabbit:
+    container_name: rabbit
+    image: rabbitmq:3.7-management-alpine
+    hostname: rabbit
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+  mosquitto:
+    container_name: mosquitto
+    image: toke/mosquitto:latest
+    hostname: mosquitto
+    restart: always
+    ports:
+      - "1883:1883"
+  apollo:
+    build:
+      context: ./services/apollo
+    restart: always
+    ports:
+      - "80:80"
+    depends_on:
+      - mosquitto
+      - mongo
+      - rabbit
+    env_file:
+      - ./services/apollo/.env
+      - ./infrastructure/mongo/.env
+      - ./infrastructure/rabbit/.env
+    volumes:
+      - ./services/apollo/src:/usr/src/app/src:cached
+  apple-homekit:
+    build:
+      context: ./services/apple-homekit
+    restart: always
+    depends_on:
+      - apollo
+    env_file:
+      - ./services/apple-homekit/.env
+      - ./infrastructure/rabbit/.env
+    volumes:
+      - ./services/apple-homekit/src:/usr/src/app/src:cached
+  automatic-action:
+    build:
+      context: ./services/automatic-action
+    restart: always
+    depends_on:
+      - apple-homekit
+    env_file:
+      - ./services/automatic-action/.env
+      - ./infrastructure/rabbit/.env
+    volumes:
+      - ./services/automatic-action/src:/usr/src/app/src:cached
+  client:
+    build:
+      context: ./services/client
+    restart: always
+    ports:
+      - "3000:3000"
+    depends_on:
+      - automatic-action
+    env_file:
+      - ./services/client/.env
+      - ./infrastructure/rabbit/.env
+    volumes:
+      - ./services/client/src:/usr/src/app/src:cached
+  google-home:
+    build:
+      context: ./services/google-home
+    restart: always
+    depends_on:
+      - client
+    env_file:
+      - ./services/google-home/.env
+      - ./infrastructure/rabbit/.env
+    volumes:
+      - ./services/google-home/src:/usr/src/app/src:cached
+  mqtt-listener:
+    build:
+      context: ./services/mqtt-listener
+    restart: always
+    depends_on:
+      - google-home
+    env_file:
+      - ./services/mqtt-listener/.env
+      - ./infrastructure/rabbit/.env
+      - ./infrastructure/mosquitto/.env
+    volumes:
+      - ./services/mqtt-listener/src:/usr/src/app/src:cached

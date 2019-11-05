@@ -1,0 +1,37 @@
+{
+  "name": "mqtt-listener",
+  "version": "0.0.1",
+  "description": "Mqtt listener",
+  "type": "module",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon --experimental-modules src/index.js; else node --experimental-modules  src/index.js; fi",
+    "test": "mocha --recursive ./tests",
+    "lint": "eslint src/**",
+    "lint:fix": "eslint src/** --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/DmytryS/u-hub.git"
+  },
+  "keywords": [
+    "Apollo"
+  ],
+  "author": "Dmytro Shvaika",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/DmytryS/u-hub/issues"
+  },
+  "homepage": "https://github.com/DmytryS/u-hub#readme",
+  "dependencies": {
+    "amqplib": "^0.5.5",
+    "mqtt": "^3.0.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "babel-eslint": "^10.0.3",
+    "eslint": "^6.3.0",
+    "mocha": "^6.2.0",
+    "nodemon": "^1.19.2"
+  }
+}

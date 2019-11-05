@@ -1,0 +1,8 @@
+{
+  "packages": [
+    "cronjobs/*",
+    "infrastructure/*",
+    "services/*"
+  ],
+  "version": "0.0.0"
+}

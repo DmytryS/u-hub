@@ -1,8 +1,0 @@
-node_modules/
-frontend/
-dist/
-.vscode/
-
-# service account keys
-src/*.json
-.firebaserc
