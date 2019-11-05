@@ -75,17 +75,17 @@ services:
       - ./infrastructure/rabbit/.env
     volumes:
       - ./services/client/src:/usr/src/app/src:cached
-  google-home:
-    build:
-      context: ./services/google-home
-    restart: always
-    depends_on:
-      - client
-    env_file:
-      - ./services/google-home/.env
-      - ./infrastructure/rabbit/.env
-    volumes:
-      - ./services/google-home/src:/usr/src/app/src:cached
+  # google-home:
+  #   build:
+  #     context: ./services/google-home
+  #   restart: always
+  #   depends_on:
+  #     - client
+  #   env_file:
+  #     - ./services/google-home/.env
+  #     - ./infrastructure/rabbit/.env
+  #   volumes:
+  #     - ./services/google-home/src:/usr/src/app/src:cached
   mqtt-listener:
     build:
       context: ./services/mqtt-listener
