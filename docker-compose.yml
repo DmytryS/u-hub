@@ -40,24 +40,25 @@ services:
       - ./infrastructure/rabbit/.env
     volumes:
       - ./services/apollo/src:/usr/src/app/src:cached
-  apple-homekit:
-    build:
-      context: ./services/apple-homekit
-    restart: always
-    network_mode: host
-    depends_on:
-      - apollo
-    env_file:
-      - ./services/apple-homekit/.env
-      - ./infrastructure/rabbit/.env
-    volumes:
-      - ./services/apple-homekit/src:/usr/src/app/src:cached
+  # apple-homekit:
+  #   build:
+  #     context: ./services/apple-homekit
+  #   restart: always
+  #   network_mode: host
+  #   depends_on:
+  #     - apollo
+  #   env_file:
+  #     - ./services/apple-homekit/.env
+  #     - ./infrastructure/rabbit/.env
+  #   volumes:
+  #     - ./services/apple-homekit/src:/usr/src/app/src:cached
   automatic-action:
     build:
       context: ./services/automatic-action
     restart: always
     depends_on:
-      - apple-homekit
+      # - apple-homekit
+      - apollo
     env_file:
       - ./services/automatic-action/.env
       - ./infrastructure/rabbit/.env
