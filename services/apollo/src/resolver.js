@@ -204,8 +204,16 @@ const makeReferences = async (data, parent, collection, parentCollection, fieldN
     let parentDataUpdate
 
     if (isArray(returnType)) {
+      // parentDataUpdate = {
+      //   $push: {
+      //     [parentFieldName]: {
+      //       $each: data.map(k => makeObjectId(k.id))
+      //     }
+      //   },
+      // }
+
       parentDataUpdate = {
-        $push: {
+        $addToSet: {
           [parentFieldName]: {
             $each: data.map(k => makeObjectId(k.id))
           }

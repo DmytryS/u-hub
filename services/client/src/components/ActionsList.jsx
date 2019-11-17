@@ -112,7 +112,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
 
   if (subscriptionData) {
     console.log('action', subscriptionData)
-    
+
     if (automaticAction) {
       // eslint-disable-next-line
       automaticAction.actions = updateData(automaticAction.actions, subscriptionData.action)
@@ -234,32 +234,38 @@ const sensorShape = PropTypes.shape({
   mqttStatusTopic: PropTypes.string.isRequired,
 })
 
-// ActionsList.propTypes = {
-//   automaticAction: PropTypes.shape({
-//     id: PropTypes.string.isRequired,
-//     name: PropTypes.string.isRequired,
-//     condition: PropTypes.string.isRequired,
-//     valueToCompare: PropTypes.number.isRequired,
-//     enabled: PropTypes.bool.isRequired,
-//     actions: PropTypes.arrayOf(PropTypes.shape({
-//       id: PropTypes.string.isRequired,
-//       sensor: sensorShape,
-//       valueToChangeOn: PropTypes.number.isRequired,
-//     })),
-//     sensor: sensorShape,
-//   }),
-//   scheduledAction: PropTypes.shape({
-//     id: PropTypes.string.isRequired,
-//     name: PropTypes.string.isRequired,
-//     schedule: PropTypes.string.isRequired,
-//     enabled: PropTypes.bool,
-//     actions: PropTypes.arrayOf(PropTypes.shape({
-//       id: PropTypes.string.isRequired,
-//       sensor: sensorShape,
-//       valueToChangeOn: PropTypes.number.isRequired,
-//     })),
-//   }),
-// }
+ActionsList.propTypes = {
+  automaticAction: PropTypes.oneOfType([
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      condition: PropTypes.string.isRequired,
+      valueToCompare: PropTypes.number.isRequired,
+      enabled: PropTypes.bool.isRequired,
+      actions: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        sensor: sensorShape,
+        valueToChangeOn: PropTypes.number.isRequired,
+      })),
+      sensor: sensorShape,
+    }),
+    PropTypes.bool,
+  ]),
+  scheduledAction: PropTypes.oneOfType([
+    PropTypes.shape({
+      id: PropTypes.string.isRequired,
+      name: PropTypes.string.isRequired,
+      schedule: PropTypes.string.isRequired,
+      enabled: PropTypes.bool,
+      actions: PropTypes.arrayOf(PropTypes.shape({
+        id: PropTypes.string.isRequired,
+        sensor: sensorShape,
+        valueToChangeOn: PropTypes.number.isRequired,
+      })),
+    }),
+    PropTypes.bool,
+  ]),
+}
 
 ActionsList.defaultProps = {
   automaticAction: false,

@@ -7,11 +7,11 @@ import { QUERY_APPLE_HOME_KIT } from '../lib/fetch'
 
 const Header = () => {
   const { loading, data } = useQuery(QUERY_APPLE_HOME_KIT)
-  
-  const [ showQRCode, setQRCodeShow ] = useState(false);
 
-  const handleCloseQRCode = () => setQRCodeShow(false);
-  const handleShowQRCode = () => setQRCodeShow(true);
+  const [showQRCode, setQRCodeShow] = useState(false)
+
+  const handleCloseQRCode = () => setQRCodeShow(false)
+  const handleShowQRCode = () => setQRCodeShow(true)
 
   if (loading) {
     return (
@@ -43,10 +43,8 @@ const Header = () => {
           <Navbar.Brand>
             <Link to="/scheduled_actions">Schedules</Link>
           </Navbar.Brand>
-          <Navbar.Brand>
-            <div onClick={handleShowQRCode}>
-              Connect Apple HomeKit
-            </div>
+          <Navbar.Brand onClick={handleShowQRCode}>
+            Connect Apple HomeKit
           </Navbar.Brand>
         </Navbar.Header>
       </Navbar>
@@ -55,7 +53,7 @@ const Header = () => {
           <Modal.Title>Scan QR code on your iPhone</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <QRCode value={data.appleHomeKit ? data.appleHomeKit.uri : false}/>
+          <QRCode value={data.appleHomeKit ? data.appleHomeKit.uri : false} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseQRCode}>

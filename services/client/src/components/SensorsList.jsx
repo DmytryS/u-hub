@@ -4,8 +4,7 @@ import Header from './Header'
 import Sensor from './Sensor'
 import { QUERY_SENSORS, SUBSCRIBE_SENSORS } from '../lib/fetch'
 
-const updateData = (array, newEl) => {
-
+const updateData = (existingArray, el) => {
   const handle = (array, newEl) => {
     const existingElIndex = array
       .findIndex(k => k.id === newEl.id)
@@ -13,34 +12,37 @@ const updateData = (array, newEl) => {
     if (existingElIndex === -1 && !newEl.deleted) {
       array.push(newEl)
 
-      return array
+      // return array
     }
     if (existingElIndex !== -1 && newEl.deleted) {
       array.splice(existingElIndex, 1)
 
-      return array
+      // return array
     }
     if (existingElIndex !== -1 && !newEl.deleted) {
       // eslint-disable-next-line
       array[existingElIndex] = newEl
 
-      return array
+      // return array
     }
+    return array
   }
 
-  if (Array.isArray(newEl)) {
-    newEl.forEach(el => {
-      array = handle(array, el)
+  if (Array.isArray(el)) {
+    el.forEach((k) => {
+      // eslint-disable-next-line
+      existingArray = handle(existingArray, k)
     })
   } else {
-    array = handle(array, newEl)
+    // eslint-disable-next-line
+    existingArray = handle(existingArray, el)
   }
 
-  return array
+  return existingArray
 }
 
 const SensorsList = () => {
-  let { loading, data } = useQuery(QUERY_SENSORS)
+  const { loading, data } = useQuery(QUERY_SENSORS)
 
   const {
     data: subscriptionData,
@@ -54,8 +56,8 @@ const SensorsList = () => {
   }
 
   if (subscriptionData) {
-    console.log('sensor', subscriptionData);
-    
+    console.log('sensor', subscriptionData)
+
     data.sensors = updateData(data.sensors, subscriptionData.sensor)
   }
 
