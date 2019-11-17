@@ -63,7 +63,7 @@ jobs:
       - docker run $DOCKER_REPO_CLIENT:$REVISION run lint
       - docker push $DOCKER_REPO_CLIENT:$REVISION
 
-      - docker build -t $DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG ./cronjobs/scheduled-action
+      - docker build -t $DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG ./services/scheduled-action
       - docker run $DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG run lint
       - docker run $DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG run test
       - docker push $DOCKER_REPO_SCHEDULED_ACTION:$TRAVIS_TAG
