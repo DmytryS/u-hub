@@ -44,7 +44,7 @@ const Header = () => {
             <Link to="/scheduled_actions">Schedules</Link>
           </Navbar.Brand>
           <Navbar.Brand>
-            <div  onClick={handleShowQRCode}>
+            <div onClick={handleShowQRCode}>
               Connect Apple HomeKit
             </div>
           </Navbar.Brand>
