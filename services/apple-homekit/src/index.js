@@ -12,7 +12,7 @@ const EventBridge = new EventEmitter()
 
 const sensorStatuses = {}
 const getSensorStatus = (sensorId) => sensorStatuses[sensorId]
-
+let ACCESSORIES = []
 const {
   BRIDGE_NAME,
   PORT,
@@ -73,6 +73,9 @@ const mac = (data) => {
 }
 
 const initSensors = async (bridge) => {
+  bridge.removeBridgedAccessories(ACCESSORIES)
+  ACCESSORIES = []
+
   let { output: sensors } = await amqp.request(AMQP_APOLLO_QUEUE, {
     info: {
       operation: 'get-sensor'
@@ -91,6 +94,7 @@ const initSensors = async (bridge) => {
     }
     const acc = createAccessory(accConfig)
 
+    ACCESSORIES.push(acc)
     // logger.debug('adding service', accConfig.service, 'to accessory', accConfig.name)
     // addService[s.service](acc, s, String(i))
 
@@ -105,9 +109,9 @@ const initSensors = async (bridge) => {
       EventBridge
     })(acc)
 
-    logger.debug(`addBridgedAccessory ${accConfig.name}`)
+    bridge.addBridgedAccessory(acc)
 
-    bridge.addBridgedAccessory(acc, )
+    logger.info(`Added  ${accConfig.category} ${acc.displayName}`)
   })
 }
 
@@ -120,20 +124,35 @@ bridge.on('identify', (paired, callback) => {
 
 const listener = (message) => {
   logger.info(`MESSAGE: ${inspect(message, {depth: 7, colors: true})}`)
+
   switch (message.info.operation) {
     case 'reinitialize-sensors':
       initSensors(bridge)
+
+      message.output = {
+        status: 'OK'
+      }
       break
     case 'add-value':
+      sensorStatuses[message.input.sensor.id] = message.input.sensor.value
     
       EventBridge.emit(
         message.input.sensor._id,
         message.input.sensor.value
       )
 
-      sensorStatuses[message.input.sensor._id] = message.input.sensor.value
+      message.output = {
+        status: 'OK'
+      }
+      break
+    case 'get-info':
+      message.output = {
+        'uri': bridge.setupURI()
+      }
       break
   }
+
+  return message
 }
 
 const createBridge = async () => {

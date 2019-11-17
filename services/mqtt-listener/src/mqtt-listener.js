@@ -52,7 +52,7 @@ const listener = async (topic, payload) => {
 
   if (data.sensor.type) { // data.sensor.mqttSetTopic && 
     message.input.sensor.mqttSetTopic = data.sensor.mqttSetTopic
-    message.input.sensor._id = data.sensor._id
+    message.input.sensor.id = data.sensor.id
     await Promise.all([
       amqp.publish(
         AMQP_APPLE_HOMEKIT_QUEUE,

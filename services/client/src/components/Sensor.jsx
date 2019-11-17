@@ -59,6 +59,33 @@ const sensorTypes = [
   'WindowCovering',
 ]
 
+const sensorActionTypes = [
+  'AirPurifier',
+  'BatteryService',
+  'Door',
+  'Doorbell',
+  'Fan',
+  'Fanv2',
+  'Faucet',
+  'FilterMaintenance',
+  'GarageDoorOpener',
+  'HeaterCooler',
+  'HumidifierDehumidifier',
+  'IrrigationSystem',
+  'LockManagement',
+  'LockMechanism',
+  'Microphone',
+  'Outlet',
+  'SecuritySystem',
+  'Speaker',
+  'StatelessProgrammableSwitch',
+  'Switch',
+  'Thermostat',
+  'Valve',
+  'Window',
+  'WindowCovering',
+]
+
 const Sensor = ({ sensor }) => {
   // if (loading) {
   // console.log('LOADING', loading)
@@ -125,7 +152,7 @@ const Sensor = ({ sensor }) => {
                 <FormControl
                   componentClass="select"
                   placeholder="Select sensor type"
-                  value={sensor.type || ''}
+                  value={sensor.type || 'default'}
                   onChange={
                     e => mutateSensor({
                       variables: {
@@ -137,6 +164,7 @@ const Sensor = ({ sensor }) => {
                     })
                   }
                 >
+                  <option value="default" disabled>-</option>
                   {
                     sensorTypes.map(sensorType => (
                       <option key={`${sensor.id}_${sensorType}`} value={sensorType}>

@@ -90,7 +90,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
     },
   )
 
-  const [sensor, setSensor] = useState(data && data.sensors.length ? data.sensors[0].id : '')
+  const [sensor, setSensor] = useState(data && data.sensors.length ? data.sensors[0].id : 'default')
   const [valueToChangeOn, setValueToChangeOn] = useState('')
 
   const {
@@ -111,6 +111,8 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
   }
 
   if (subscriptionData) {
+    console.log('action', subscriptionData)
+    
     if (automaticAction) {
       // eslint-disable-next-line
       automaticAction.actions = updateData(automaticAction.actions, subscriptionData.action)
@@ -135,6 +137,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
                 (e) => { setSensor(e.target.value) }
               }
             >
+              <option value="default" disabled>-</option>
               {
                 data.sensors.map(s => (
                   <option key={`${s.id}_${s.id}`} value={s.id}>
@@ -191,7 +194,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
                     })
                   }
 
-                  setSensor(data.sensors.length ? data.sensors[0].id : '')
+                  setSensor('default')
                   setValueToChangeOn('')
                 }
               }
@@ -231,32 +234,32 @@ const sensorShape = PropTypes.shape({
   mqttStatusTopic: PropTypes.string.isRequired,
 })
 
-ActionsList.propTypes = {
-  automaticAction: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    condition: PropTypes.string.isRequired,
-    valueToCompare: PropTypes.number.isRequired,
-    enabled: PropTypes.bool.isRequired,
-    actions: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      sensor: sensorShape,
-      valueToChangeOn: PropTypes.number.isRequired,
-    })),
-    sensor: sensorShape,
-  }),
-  scheduledAction: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    schedule: PropTypes.string.isRequired,
-    enabled: PropTypes.bool,
-    actions: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      sensor: sensorShape,
-      valueToChangeOn: PropTypes.number.isRequired,
-    })),
-  }),
-}
+// ActionsList.propTypes = {
+//   automaticAction: PropTypes.shape({
+//     id: PropTypes.string.isRequired,
+//     name: PropTypes.string.isRequired,
+//     condition: PropTypes.string.isRequired,
+//     valueToCompare: PropTypes.number.isRequired,
+//     enabled: PropTypes.bool.isRequired,
+//     actions: PropTypes.arrayOf(PropTypes.shape({
+//       id: PropTypes.string.isRequired,
+//       sensor: sensorShape,
+//       valueToChangeOn: PropTypes.number.isRequired,
+//     })),
+//     sensor: sensorShape,
+//   }),
+//   scheduledAction: PropTypes.shape({
+//     id: PropTypes.string.isRequired,
+//     name: PropTypes.string.isRequired,
+//     schedule: PropTypes.string.isRequired,
+//     enabled: PropTypes.bool,
+//     actions: PropTypes.arrayOf(PropTypes.shape({
+//       id: PropTypes.string.isRequired,
+//       sensor: sensorShape,
+//       valueToChangeOn: PropTypes.number.isRequired,
+//     })),
+//   }),
+// }
 
 ActionsList.defaultProps = {
   automaticAction: false,

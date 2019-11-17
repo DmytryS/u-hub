@@ -118,46 +118,46 @@ const Action = ({ automaticAction, scheduledAction, action }) => {
   )
 }
 
-const sensorShape = PropTypes.shape({
-  id: PropTypes.string.isRequired,
-  name: PropTypes.string,
-  type: PropTypes.string,
-  description: PropTypes.string,
-  mqttSetTopic: PropTypes.string,
-  mqttStatusTopic: PropTypes.string.isRequired,
-})
+// const sensorShape = PropTypes.shape({
+//   id: PropTypes.string.isRequired,
+//   name: PropTypes.string,
+//   type: PropTypes.string,
+//   description: PropTypes.string,
+//   mqttSetTopic: PropTypes.string,
+//   mqttStatusTopic: PropTypes.string.isRequired,
+// })
 
-Action.propTypes = {
-  automaticAction: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    condition: PropTypes.string.isRequired,
-    valueToCompare: PropTypes.number.isRequired,
-    enabled: PropTypes.bool.isRequired,
-    actions: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      sensor: sensorShape,
-      valueToChangeOn: PropTypes.number.isRequired,
-    })),
-    sensor: sensorShape,
-  }),
-  scheduledAction: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    name: PropTypes.string.isRequired,
-    schedule: PropTypes.string.isRequired,
-    enabled: PropTypes.bool,
-    actions: PropTypes.arrayOf(PropTypes.shape({
-      id: PropTypes.string.isRequired,
-      sensor: sensorShape,
-      valueToChangeOn: PropTypes.number.isRequired,
-    })),
-  }),
-  action: PropTypes.shape({
-    id: PropTypes.string.isRequired,
-    sensor: sensorShape,
-    valueToChangeOn: PropTypes.number.isRequired,
-  }).isRequired,
-}
+// Action.propTypes = {
+//   automaticAction: PropTypes.shape({
+//     id: PropTypes.string.isRequired,
+//     name: PropTypes.string.isRequired,
+//     condition: PropTypes.string.isRequired,
+//     valueToCompare: PropTypes.number.isRequired,
+//     enabled: PropTypes.bool.isRequired,
+//     actions: PropTypes.arrayOf(PropTypes.shape({
+//       id: PropTypes.string.isRequired,
+//       sensor: sensorShape,
+//       valueToChangeOn: PropTypes.number.isRequired,
+//     })),
+//     sensor: sensorShape,
+//   }),
+//   scheduledAction: PropTypes.shape({
+//     id: PropTypes.string.isRequired,
+//     name: PropTypes.string.isRequired,
+//     schedule: PropTypes.string.isRequired,
+//     enabled: PropTypes.bool,
+//     actions: PropTypes.arrayOf(PropTypes.shape({
+//       id: PropTypes.string.isRequired,
+//       sensor: sensorShape,
+//       valueToChangeOn: PropTypes.number.isRequired,
+//     })),
+//   }),
+//   action: PropTypes.shape({
+//     id: PropTypes.string.isRequired,
+//     sensor: sensorShape,
+//     valueToChangeOn: PropTypes.number.isRequired,
+//   }).isRequired,
+// }
 
 Action.defaultProps = {
   automaticAction: false,

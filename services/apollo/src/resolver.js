@@ -12,6 +12,7 @@ const { ObjectID } = mongodb
 const {
   AMQP_MQTT_LISTENER_QUEUE,
   AMQP_SCHEDULED_ACTION_QUEUE,
+  AMQP_APPLE_HOMEKIT_QUEUE,
 } = process.env
 
 const makeObjectId = (id) => ObjectID.isValid(id) && typeof id !== 'string' ? id : ObjectID(id)
@@ -289,6 +290,30 @@ const reinitializeScheduledJobs = async () => {
   )
 }
 
+const reinitializeAppleHomeKit = () => amqp.publish(
+  AMQP_APPLE_HOMEKIT_QUEUE,
+  {
+    info: {
+      operation: 'reinitialize-sensors'
+    }
+  }
+)
+
+const getAppleHomeKitInfo = async () => {
+  const message = {
+    info: {
+      operation: 'get-info'
+    }
+  }
+
+  const { output: data } = await amqp.request(
+    AMQP_APPLE_HOMEKIT_QUEUE,
+    message
+  )
+
+  return data
+}
+
 const resolver = async (parent, args, context, info) => {
   const client = mongo.connection()
   let { returnType, fieldName, parentType } = info
@@ -304,20 +329,27 @@ const resolver = async (parent, args, context, info) => {
 
   switch(operation) {
     case 'query':
+
+      if (isRoot(parentType) && collection === 'AppleHomeKit') {
+        const appleHomeKitInfo = await getAppleHomeKitInfo()
+
+        outputMessage = [ appleHomeKitInfo ]
+      } else {
       // eslint-disable-next-line
       let filter = null
-      if (parent) {
-        filter = getFilterFromParent(parent, fieldName)
-      } else {
-        filter = getFilterFromArgs(args)
-      }
+        if (parent) {
+          filter = getFilterFromParent(parent, fieldName)
+        } else {
+          filter = getFilterFromArgs(args)
+        }
 
-      if (filter !== null) {
-        filter.deleted = { $ne: true }
-        outputMessage = await client.collection(collection).find(filter).toArray()
-        outputMessage = outputMessage.map(renameId)
-      } else {
-        outputMessage = []
+        if (filter !== null) {
+          filter.deleted = { $ne: true }
+          outputMessage = await client.collection(collection).find(filter).toArray()
+          outputMessage = outputMessage.map(renameId)
+        } else {
+          outputMessage = []
+        }
       }
       
       if (!isArray(returnType)) {
@@ -380,12 +412,21 @@ const resolver = async (parent, args, context, info) => {
           makeInputType(returnType),
           makeInputType(parentType),
         )
+
+        if (parent) {
+          const parentFieldName = parentCollection.charAt(0).toLowerCase() + parentCollection.substring(1)
+          
+          outputMessage = outputMessage.map(k => ({[parentFieldName]: parent.id,...k}))
+        }
       }
 
       if (isRoot(parentType)) {
         switch(collection) {
           case 'ScheduledAction':
             await reinitializeScheduledJobs()
+            break
+          case 'Sensor':
+            await reinitializeAppleHomeKit()
             break
           case 'AutomaticAction':
             if (outputMessage[0].sensor){
@@ -407,8 +448,13 @@ const resolver = async (parent, args, context, info) => {
       if (!isArray(returnType)) {
         outputMessage = outputMessage[0]
       }
-
-      context.pubsub.publish(fieldName, { [fieldName]: JSON.parse(JSON.stringify(outputMessage)) })
+      
+      // eslint-disable-next-line
+      const entityName = collection.charAt(0).toLowerCase() + collection.substring(1)
+      // eslint-disable-next-line
+      const emitData = Array.isArray(outputMessage) ? outputMessage[0] : outputMessage
+      
+      context.pubsub.publish(entityName, { [entityName]: JSON.parse(JSON.stringify(emitData)) })
       break
     default:
       outputMessage = Error('Unknown operation')

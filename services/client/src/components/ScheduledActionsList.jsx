@@ -50,11 +50,6 @@ const ScheduledActionsList = () => {
   const [name, setName] = useState('')
   const [schedule, setSchedule] = useState('')
   const [enabled, setEnabled] = useState(false)
-  const newScheduledAction = {
-    name,
-    schedule,
-    enabled,
-  }
 
   const {
     data: subscriptionData,
@@ -82,7 +77,7 @@ const ScheduledActionsList = () => {
             <FormControl
               type="text"
               placeholder="Enter schedule name"
-              value={newScheduledAction.name}
+              value={name}
               onChange={
                 (e) => { setName(e.target.value) }
               }
@@ -95,7 +90,7 @@ const ScheduledActionsList = () => {
             <FormControl
               type="text"
               placeholder="Enter cron string"
-              value={newScheduledAction.schedule}
+              value={schedule}
               onChange={
                 (e) => { setSchedule(e.target.value) }
               }
@@ -106,7 +101,7 @@ const ScheduledActionsList = () => {
           <FormGroup>
             <ControlLabel>Enabled</ControlLabel>
             <Checkbox
-              checked={newScheduledAction.enabled}
+              checked={enabled}
               onChange={
                 (e) => {
                   setEnabled(e.target.checked)
@@ -125,7 +120,9 @@ const ScheduledActionsList = () => {
                   mutateScheduledAction({
                     variables: {
                       scheduledAction: {
-                        ...newScheduledAction,
+                        name,
+                        schedule,
+                        enabled,
                       },
                     },
                   })

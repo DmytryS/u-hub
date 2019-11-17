@@ -57,15 +57,9 @@ const updateData = (array, newEl) => {
 
 const AutomaticActionsList = ({ sensor }) => {
   const [name, setName] = useState('')
-  const [condition, setCondition] = useState('LESS')
+  const [condition, setCondition] = useState('default')
   const [valueToCompare, setValueToCompare] = useState('')
   const [enabled, setEnabled] = useState(false)
-  const newAutomaticAction = {
-    name,
-    condition,
-    valueToCompare,
-    enabled,
-  }
 
   const {
     data: subscriptionData,
@@ -97,6 +91,7 @@ const AutomaticActionsList = ({ sensor }) => {
   }
 
   if (subscriptionData) {
+    console.log('actioautomaticAction', subscriptionData)
     data.automaticActions = updateData(data.automaticActions, subscriptionData.automaticAction)
   }
 
@@ -110,7 +105,7 @@ const AutomaticActionsList = ({ sensor }) => {
             <FormControl
               type="text"
               placeholder="Enter value to compare"
-              value={newAutomaticAction.name}
+              value={name}
               onChange={
                 (e) => { setName(e.target.value) }
               }
@@ -123,11 +118,12 @@ const AutomaticActionsList = ({ sensor }) => {
             <FormControl
               componentClass="select"
               placeholder="Enter description for automatic action"
-              value={newAutomaticAction.condition}
+              value={condition}
               onChange={
                 (e) => { setCondition(e.target.value) }
               }
             >
+              <option value="default" disabled>-</option>
               {
                 conditions.map(c => (
                   <option key={c} value={c}>
@@ -144,7 +140,7 @@ const AutomaticActionsList = ({ sensor }) => {
             <FormControl
               type="text"
               placeholder="Enter value to compare"
-              value={newAutomaticAction.valueToCompare}
+              value={valueToCompare}
               onChange={
                 (e) => { setValueToCompare(parseInt(e.target.value, 10)) }
               }
@@ -155,7 +151,7 @@ const AutomaticActionsList = ({ sensor }) => {
           <FormGroup>
             <ControlLabel>Enabled</ControlLabel>
             <Checkbox
-              checked={newAutomaticAction.enabled}
+              checked={enabled}
               onChange={
                 (e) => {
                   setEnabled(e.target.checked)
@@ -174,13 +170,16 @@ const AutomaticActionsList = ({ sensor }) => {
                   mutateAutomaticAction({
                     variables: {
                       automaticAction: {
-                        ...newAutomaticAction,
+                        name,
+                        condition,
+                        enabled,
+                        valueToCompare,
                         sensor: sensor.id,
                       },
                     },
                   })
                   setName('')
-                  setCondition('LESS')
+                  setCondition('default')
                   setValueToCompare('')
                   setEnabled(false)
                 }

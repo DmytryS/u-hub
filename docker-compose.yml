@@ -7,6 +7,11 @@ services:
     restart: always
     ports:
       - "27017:27017"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./data/db:/data/db
   rabbit:
     container_name: rabbit
     image: rabbitmq:3.7-management-alpine
@@ -101,3 +106,14 @@ services:
       - ./infrastructure/mosquitto/.env
     volumes:
       - ./services/mqtt-listener/src:/usr/src/app/src:cached
+  scheduled-action:
+    build:
+      context: ./services/scheduled-action
+    restart: always
+    depends_on:
+      - mqtt-listener
+    env_file:
+      - ./infrastructure/rabbit/.env
+      - ./services/scheduled-action/.env
+    volumes:
+      - ./services/scheduled-action/src:/usr/src/app/src:cached

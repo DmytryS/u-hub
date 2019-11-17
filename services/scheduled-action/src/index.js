@@ -91,10 +91,10 @@ const initJobs = async () => {
 
 initJobs()
 
-const reinitializeJobs = (message) => {
+const reinitializeJobs = async (message) => {
   if (message.info.operation === 'reinitialize-jobs') {
     scheduler.stopJobs()
-    initJobs()
+    await initJobs()
   }
 }
 

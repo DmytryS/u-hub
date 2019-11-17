@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm src/index.js; else node -r esm src/index.js; fi",
-    "start:preset": "RABBIT_MQ_URI=amqp://127.0.0.1:5672 BRIDGE_NAME=TEST-BRIDGE PORT=51826 NODE_ENV=production RABBIT_RECONNECT_INTERVAL=1000 AMQP_APPLE_HOMEKIT_QUEUE=apple_homekit AMQP_APOLLO_QUEUE=apollo AMQP_MQTT_LISTENER_QUEUE=mqtt-listener npm start",
+    "start:preset": "NODE_ENV=development RABBIT_MQ_URI=amqp://127.0.0.1:5672 BRIDGE_NAME=TEST-BRIDGE PORT=51826 NODE_ENV=production RABBIT_RECONNECT_INTERVAL=1000 AMQP_APPLE_HOMEKIT_QUEUE=apple_homekit AMQP_APOLLO_QUEUE=apollo AMQP_MQTT_LISTENER_QUEUE=mqtt-listener npm start",
     "test": "mocha --recursive ./tests",
     "lint": "eslint src/** --fix",
     "lint:fix": "eslint src/** --fix"

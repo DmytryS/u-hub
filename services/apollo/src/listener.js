@@ -35,6 +35,8 @@ const getSensor = async (client, message) => {
     .then(async res => {
       if (res.lastErrorObject.updatedExisting === false) {
         await reinitializeAppleHomeKit()
+
+        pubsub.publish('sensor', { sensor: res.value })
       }
 
       return res.value
@@ -93,6 +95,8 @@ export default async (message) => {
           type: sensor.type
         },
       }
+
+      sensor.id = sensor._id
 
       pubsub.publish('value', { value: message.output })
       break

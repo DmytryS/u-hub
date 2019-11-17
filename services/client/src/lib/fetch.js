@@ -29,7 +29,7 @@ const httpLink = new HttpLink({
   fetch,
 })
 const wsLink = new WebSocketLink({
-  uri: `wss://${API_URL}/graphql`,
+  uri: `ws://${API_URL}/graphql`,
   options: {
     reconnect: true,
   },
@@ -55,6 +55,14 @@ export const client = new ApolloClient({
   cache,
   defaultOptions,
 })
+
+export const QUERY_APPLE_HOME_KIT = gql`
+  query QueryAppleHomeKit {
+    appleHomeKit {
+      uri
+    }
+  }
+`
 
 export const QUERY_SENSORS = gql`
   query QuerySensors($sensor: SensorFilterInput) {
@@ -275,8 +283,12 @@ export const SUBSCRIBE_ACTIONS = gql`
         mqttSetTopic
         mqttStatusTopic
       }
-      automaticAction
-      scheduledAction
+      automaticAction{
+        id
+      }
+      scheduledAction{
+        id
+      }
       valueToChangeOn
       deleted
     }

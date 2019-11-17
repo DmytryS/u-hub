@@ -28,9 +28,6 @@ const resolvers = {
     value: subscriber('value'),
   },
   Query: {
-    // device: resolver,
-    // devices: resolver,
-    // action: resolver,
     sensor: resolver,
     sensors: resolver,
     automaticAction: resolver,
@@ -39,17 +36,14 @@ const resolvers = {
     scheduledActions: resolver,
     value: resolver,
     values: resolver,
+    appleHomeKit: resolver,
   },
   Mutation: {
-    // device: resolver,
     sensor: resolver,
     automaticAction: resolver,
     scheduledAction: resolver,
     value: resolver,
   },
-  // Device: {
-  //   sensors: resolver,
-  // },
   AutomaticAction: {
     actions: resolver,
     sensor: resolver,
@@ -63,7 +57,6 @@ const resolvers = {
     scheduledAction: resolver,
   },
   Sensor: {
-    // device: resolver,
     automaticActions: resolver,
   },
   Value: {

@@ -1,0 +1,7 @@
+type AppleHomeKit {
+  uri: String!
+}
+
+extend type Query {
+  appleHomeKit: AppleHomeKit
+}
