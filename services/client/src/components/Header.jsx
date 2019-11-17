@@ -50,9 +50,9 @@ const Header = () => {
           </Navbar.Brand>
         </Navbar.Header>
       </Navbar>
-      <Modal show={showQRCode}>
+      <Modal show={showQRCode} onHide={handleCloseQRCode}>
         <Modal.Header closeButton>
-          <Modal.Title>Modal title</Modal.Title>
+          <Modal.Title>Scan QR code on your iPhone</Modal.Title>
         </Modal.Header>
         <Modal.Body>
           <QRCode value={data.appleHomeKit ? data.appleHomeKit.uri : false}/>
