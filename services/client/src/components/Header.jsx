@@ -53,7 +53,7 @@ const Header = () => {
           <Modal.Title>Scan QR code on your iPhone</Modal.Title>
         </Modal.Header>
         <Modal.Body>
-          <QRCode value={data.appleHomeKit ? data.appleHomeKit.uri : false} />
+          <QRCode value={data.appleHomeKit ? data.appleHomeKit.uri : 'apple home kit is not running'} />
         </Modal.Body>
         <Modal.Footer>
           <Button variant="secondary" onClick={handleCloseQRCode}>
