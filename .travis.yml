@@ -25,7 +25,7 @@ jobs:
       - docker run $DOCKER_REPO_CLIENT:$REVISION run lint
       - docker push $DOCKER_REPO_CLIENT:$REVISION
 
-      - docker build -t $DOCKER_REPO_SCHEDULED_ACTION:$REVISION ./cronjobs/scheduled-action
+      - docker build -t $DOCKER_REPO_SCHEDULED_ACTION:$REVISION ./services/scheduled-action
       - docker run $DOCKER_REPO_SCHEDULED_ACTION:$REVISION run lint
       - docker run $DOCKER_REPO_SCHEDULED_ACTION:$REVISION run test
       - docker push $DOCKER_REPO_SCHEDULED_ACTION:$REVISION
