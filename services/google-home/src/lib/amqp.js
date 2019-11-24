@@ -1,7 +1,7 @@
 import amqp from 'amqplib'
 import crypto from 'crypto'
 import EventEmitter from 'events'
-import logger from './logger.js.js.js'
+import logger from './logger.js'
 
 const REPLY_QUEUE = 'amq.rabbitmq.reply-to'
 const RETRIES = 5

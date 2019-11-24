@@ -1,6 +1,6 @@
 .DS_store
 .idea
-
+data
 # package directories
 node_modules
 jspm_packages

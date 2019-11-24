@@ -1,307 +1,151 @@
 import 'dotenv/config.js'
-import { inspect } from 'util'
-import express from 'express'
-import bodyParser from 'body-parser'
-import cors from 'cors'
-import ngrok from 'ngrok'
-import actionsOnGoogle from 'actions-on-google'
+import { logger, amqp } from './lib/index.js'
+import jwt from 'jsonwebtoken'
+import axios from'axios'
 
-import * as Firestore from './firestore.js.js.js'
-import * as Auth from './auth-provider.js.js.js'
-import * as Config from './config-provider.js.js.js'
-import { logger, amqp } from './lib/index.js.js.js'
+// import uuid from 'uuid/v4.js'
+// import util from 'util'
 
-const { smarthome } = actionsOnGoogle
+import serviceAcc from './smart-home-key.json'
 
 const {
+  ACCESS_TOKEN_RENEW_INTERVAL,
   AMQP_GOOGLE_HOME_QUEUE,
-  // AMQP_MQTT_LISTENER_QUEUE,
   AMQP_APOLLO_QUEUE,
 } = process.env
 
-const expressApp = express()
-expressApp.use(cors())
-expressApp.use(bodyParser.json())
-expressApp.use(bodyParser.urlencoded({extended: true}))
-expressApp.set('trust proxy', 1)
+// let ACCESSORIES = []
 
-Auth.registerAuthEndpoints(expressApp)
+let ACCESS_TOKEN = ''
 
-let jwt
-try {
-  jwt = require('./smart-home-key.json.js.js')
-} catch (e) {
-  console.warn('Service account key is not found')
-  console.warn('Report state and Request sync will be unavailable')
-}
+const newAccessToken = async () => {
+  let claims = {}
 
-const app = smarthome({
-  jwt,
-  debug: true,
-})
+  //issued at, expiry time and issuer will be handled by jwt lib
 
-const asyncForEach = async (array, callback) => {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array)
-  }
-}
+  claims['scope'] = 'https://www.googleapis.com/auth/homegraph'
+  claims['aud'] = 'https://accounts.google.com/o/oauth2/token'
 
-const getUserIdOrThrow = async (headers) => {
-  const userId = await Auth.getUser(headers)
-  const userExists = await Firestore.userExists(userId)
-  if (!userExists) {
-    throw new Error(`User ${userId} has not created an account, so there are no devices`)
-  }
-  return userId
-}
-
-app.onSync(async (body, headers) => {
-  const userId = await getUserIdOrThrow(headers)
-  await Firestore.setHomegraphEnable(userId, true)
-
-  const devices = await Firestore.getDevices(userId)
-  return {
-    requestId: body.requestId,
-    payload: {
-      agentUserId: userId,
-      devices,
-    },
-  }
-})
-
-app.onQuery(async (body, headers) => {
-  const userId = await getUserIdOrThrow(headers)
-  const deviceStates = {}
-  const {devices} = body.inputs[0].payload
-  await asyncForEach(devices, async (device) => {
-    const states = await Firestore.getState(userId, device.id)
-    deviceStates[device.id] = states
-  })
-  return {
-    requestId: body.requestId,
-    payload: {
-      devices: deviceStates,
-    },
-  }
-})
-
-app.onExecute(async (body, headers) => {
-  const userId = await getUserIdOrThrow(headers)
-  const commands= []
-  const successCommand = {
-    ids: [],
-    status: 'SUCCESS',
-    states: {},
-  }
-
-  const {devices, execution} = body.inputs[0].payload.commands[0]
-  await asyncForEach(devices, async (device) => {
-    try {
-      const states = await Firestore.execute(userId, device.id, execution[0])
-      successCommand.ids.push(device.id)
-      successCommand.states = states
-
-      // Report state back to Homegraph
-      await app.reportState({
-        agentUserId: userId,
-        requestId: Math.random().toString(),
-        payload: {
-          devices: {
-            states: {
-              [device.id]: states,
-            },
-          },
-        },
-      })
-      console.log('device state reported:', states)
-    } catch (e) {
-      if (e.message === 'pinNeeded') {
-        commands.push({
-          ids: [device.id],
-          status: 'ERROR',
-          errorCode: 'challengeNeeded',
-          challengeNeeded: {
-            type: 'pinNeeded',
-          },
-        })
-        return
-      } else if (e.message === 'challengeFailedPinNeeded') {
-        commands.push({
-          ids: [device.id],
-          status: 'ERROR',
-          errorCode: 'challengeNeeded',
-          challengeNeeded: {
-            type: 'challengeFailedPinNeeded',
-          },
-        })
-        return
-      } else if (e.message === 'ackNeeded') {
-        commands.push({
-          ids: [device.id],
-          status: 'ERROR',
-          errorCode: 'challengeNeeded',
-          challengeNeeded: {
-            type: 'ackNeeded',
-          },
-        })
-        return
-      }
-      commands.push({
-        ids: [device.id],
-        status: 'ERROR',
-        errorCode: e.message,
-      })
-    }
+  const token = jwt.sign(claims, serviceAcc.private_key, {
+    expiresIn: parseInt(ACCESS_TOKEN_RENEW_INTERVAL),
+    algorithm: 'RS256',
+    issuer: serviceAcc.client_email
   })
 
-  if (successCommand.ids.length) {
-    commands.push(successCommand)
-  }
-
-  return {
-    requestId: body.requestId,
-    payload: {
-      commands,
-    },
-  }
-})
-
-app.onDisconnect(async (body, headers) => {
-  const userId = await getUserIdOrThrow(headers)
-  await Firestore.disconnect(userId)
-})
-
-expressApp.post('/smarthome', app)
-
-expressApp.post('/smarthome/update', async (req, res) => {
-  console.log(req.body)
-  const {userId, deviceId, name, nickname, states, localDeviceId, errorCode, tfa} = req.body
   try {
-    await Firestore.updateDevice(userId, deviceId, name, nickname, states, localDeviceId,
-      errorCode, tfa)
-    if (localDeviceId || localDeviceId === null) {
-      await app.requestSync(userId)
+    const response = await axios
+      .post(
+        'https://accounts.google.com/o/oauth2/token',
+        'grant_type=urn:ietf:params:oauth:grant-type:jwt-bearer&assertion=' +
+      token,
+        {
+          headers: {
+            'Content-Type': 'application/x-www-form-urlencoded',
+            Authorization: 'Bearer ' + token
+          }
+        }
+      )
+
+    if (!('access_token' in response.data)) {
+      logger.info('[NewAccessToken] Key "access_token" was not in response data')
+      return
     }
-    if (states !== undefined) {
-      await app.reportState({
-        agentUserId: userId,
-        requestId: Math.random().toString(),
-        payload: {
-          devices: {
-            states: {
-              [deviceId]: states,
-            },
-          },
-        },
-      })
-      console.log('device state reported:', states)
-    }
-    res.status(200).send('OK')
-  } catch(e) {
-    console.error(e)
-    res.status(400).send(`Error updating device: ${e}`)
+    ACCESS_TOKEN = response.data.access_token
+    logger.info('[NewAccessToken] Successfully generated new access token!')
+  } catch(err) {
+    logger.error(`[NewAccessToken] error: ${err}`)
   }
-})
+}
 
-expressApp.post('/smarthome/create', async (req, res) => {
-  console.log('/smarthome/create', req.body)
-  const {userId, data} = req.body
-  
-  try {
-    await Firestore.addDevice(userId, data)
-    await app.requestSync(userId)
-  } catch(e) {
-    console.error(e)
-  } finally {
-    res.status(200).send('OK')
-  }
-})
+//Periodically create a new access token, after (less than) half of expiry period
+setInterval(newAccessToken, (parseInt(ACCESS_TOKEN_RENEW_INTERVAL) - 2) * 500)
 
-expressApp.post('/smarthome/delete', async (req, res) => {
-  console.log(req.body)
-  const {userId, deviceId} = req.body
-  try {
-    await Firestore.deleteDevice(userId, deviceId)
-    await app.requestSync(userId)
-  } catch(e) {
-    console.error(e)
-  } finally {
-    res.status(200).send('OK')
-  }
-})
+// const reportState = async (userid, data) => {
+//   try {
+//     const response = await axios
+//       .post(
+//         'https://homegraph.googleapis.com/v1/devices:reportStateAndNotification',
+//         data,
+//         {
+//           headers: {
+//             'Content-Type': 'application/json',
+//             Authorization: 'Bearer ' + ACCESS_TOKEN,
+//             'X-GFE-SSL': 'yes'
+//           }
+//         }
+//       )
 
-const appPort = process.env.PORT || Config.expressPort
 
-const expressServer = expressApp.listen(appPort, async () => {
-  const server = expressServer.address()
-  const {address, port} = server
+//     console.log('[Report State]  Response: ' + console.log(util.inspect(response, false, null)))
 
-  console.log(`Smart home server listening at ${address}:${port}`)
+//   }catch (error) {
+//     logger.error(`[Report State] HTTP error (user ${userid}): ${error}`)
+//   }
+// }
 
-  if (Config.useNgrok) {
-    try {
-      const url = await ngrok.connect(Config.expressPort)
-      console.log('')
-      console.log('COPY & PASTE NGROK URL BELOW')
-      console.log(url)
-      console.log('')
-      console.log('=====')
-      console.log('Visit the Actions on Google console at http://console.actions.google.com')
-      console.log('Replace the webhook URL in the Actions section with:')
-      console.log('    ' + url + '/smarthome')
-
-      console.log('')
-      console.log('In the console, set the Authorization URL to:')
-      console.log('    ' + url + '/fakeauth')
-
-      console.log('')
-      console.log('Then set the Token URL to:')
-      console.log('    ' + url + '/faketoken')
-      console.log('')
-
-      console.log('Finally press the \'TEST DRAFT\' button')
-    } catch (err) {
-      console.error('Ngrok was unable to start')
-      console.error(err)
-      process.exit()
-    }
-  }
-})
 
 const initSensors = async () => {
-  // eslint-disable-next-line
+//   bridge.removeBridgedAccessories(ACCESSORIES)
+//   ACCESSORIES = []
+  
   let { output: sensors } = await amqp.request(AMQP_APOLLO_QUEUE, {
     info: {
       operation: 'get-sensor'
     }
   })
 
+  //   console.log('====', sensors)
+  
+  
   sensors = sensors.filter(s => !!s.name && !!s.type)
+  
+  sensors.map(sensor => {
+    console.log('###', sensor)
+    
 
-  sensors = sensors.map(sensor => ({
-    id: sensor._id,
-    // TODO: convert HomeKit typy to Google Home
-    type: 'action.devices.types.OUTLET',
-    traits: [ 'action.devices.traits.OnOff' ],
-    defaultNames: [ 'Smart Outlet' ],
-    name: sensor.name,
-    nicknames: [ 'smart plug' ],
-    roomHint: 'Basement',
-    willReportState: true,
-    states: { online: true, on: false },
-    hwVersion: '1.0.0',
-    swVersion: '2.0.0',
-    model: 'L',
-    manufacturer: 'L',
-    deviceId: sensor._id,
-    localDeviceExecution: false
-  }))
-  // console.log('###', sensors)
+    // const accConfig = {
+    //   id: sensor._id,
+    //   mqttStatusTopic: sensor.mqttStatusTopic,
+    //   mqttSetTopic: sensor.mqttSetTopic,
+    //   name: sensor.name,
+    //   category: sensor.type
+    // }
+    // const acc = createAccessory(accConfig)
+  
+    // ACCESSORIES.push(acc)
+    // logger.debug('adding service', accConfig.service, 'to accessory', accConfig.name)
+    // addService[s.service](acc, s, String(i))
+  
+    // services[accConfig.category]({
+    //   accConfig,
+    //   logger,
+    //   amqp,
+    //   getSensorStatus,
+    //   Service,
+    //   Characteristic,
+    //   HAP,
+    //   EventBridge
+    // })(acc)
+  
+    // bridge.addBridgedAccessory(acc)
+  
+    // logger.info(`Added  ${accConfig.category} ${acc.displayName}`)
+  })
 }
 
-const listener = (message) => {
-  logger.info(`MESSAGE: ${inspect(message, {depth: 7, colors: true})}`)
+const listener = () => {
+  console.log(ACCESS_TOKEN) // TODO
+    
 }
 
-amqp.listen(AMQP_GOOGLE_HOME_QUEUE, listener)
-initSensors()
+
+
+
+const createBridge = async () => {
+  await newAccessToken()
+  amqp.listen(AMQP_GOOGLE_HOME_QUEUE, listener)
+
+  await initSensors()
+}
+
+createBridge()
