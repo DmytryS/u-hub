@@ -1,19 +1,29 @@
 [![Build Status](https://travis-ci.com/DmytryS/u-hub.svg?branch=master)](https://travis-ci.com/DmytryS/u-hub)
 
-https://stackoverflow.com/questions/52430091/can-i-use-an-insecure-endpoint-for-kubernetes-api-in-docker-for-mac
+# Start
 
-To enable NFS:
+To start all microservices:
 
-Enable PodPreset on mac os
+> docker-compose up
 
-`screen ~/Library/Containers/com.docker.docker/Data/vms/0/tty`
+Because microservice `apple-homekit` needs host network - it runs without docker. To start `apple-homekit` microservice:
 
-`vi /etc/kubernetes/manifests/kube-apiserver.yaml`
-
-add lines:
 ```
-- --runtime-config=settings.k8s.io/v1alpha1=true
-- --enable-admission-plugins=NamespaceLifecycle,LimitRanger,ServiceAccount,DefaultStorageClass,DefaultTolerationSeconds,NodeRestriction,MutatingAdmissionWebhook,ValidatingAdmissionWebhook,ResourceQuota,PodPreset
+cd ./services/apple-homekit
+npm i
+npm run start:preset 
 ```
 
-edit path to project in `nfs/provisioning/pvc.yml`
+# Fake devices
+
+For testing there are two fake devices: outlet and temperature sensor. To run them:
+```
+cd fake-devices
+npm i
+npm run start_device_1 # Outlet
+npm run start_device_2 # Temperature sensor
+```
+
+# Run on Kubernetes :kubernetes:
+
+Every service have deployments in ./services/%service-name%/provisioning

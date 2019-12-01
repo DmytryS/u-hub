@@ -8,5 +8,5 @@ package-lock.json
 .npmrc
 .vscode
 persist
-
+**/node_modules
 smart-home-key.json

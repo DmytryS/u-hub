@@ -1,4 +1,4 @@
-import { logger, mqtt } from './lib/index.js'
+import { logger, mqtt } from './lib/index.js.js'
 
 const DEVICE_NAME = 'DEVICE_1'
 const SENSOR_TYPE = 'RELAY'
