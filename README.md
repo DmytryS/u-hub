@@ -3,8 +3,9 @@
 # Start
 
 To start all microservices:
-
-> docker-compose up
+```
+docker-compose up
+```
 
 Because microservice `apple-homekit` needs host network - it runs without docker. To start `apple-homekit` microservice:
 
