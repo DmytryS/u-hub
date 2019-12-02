@@ -56,8 +56,6 @@ const SensorsList = () => {
   }
 
   if (subscriptionData) {
-    console.log('sensor', subscriptionData)
-
     data.sensors = updateData(data.sensors, subscriptionData.sensor)
   }
 
