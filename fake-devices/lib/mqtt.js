@@ -1,5 +1,5 @@
 import mqtt from 'mqtt'
-import logger from './logger.js.js'
+import logger from './logger.js'
 
 const MQTT_URI = 'mqtt://127.0.0.1'
 const options = {
