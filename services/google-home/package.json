@@ -8,7 +8,7 @@
   "scripts": {
     "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon --experimental-modules --experimental-json-modules src/index.js; else node --experimental-modules --experimental-json-modules src/index.js; fi",
     "ngrok": "ngrok http 3000",
-    "test": "npm run lint",
+    "test": "mocha --experimental-modules tests/*.spec.js",
     "lint": "eslint src/**",
     "lint:fix": "eslint src/** --fix"
   },

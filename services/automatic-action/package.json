@@ -5,7 +5,7 @@
   "main": "src/index.js",
   "scripts": {
     "start": "if [[ $(printf '%s' $NODE_ENV) == 'development' ]]; then nodemon -r esm src/index.js; else node -r esm src/index.js; fi",
-    "test": "mocha ./tests -r esm",
+    "test": "mocha --experimental-modules tests/*.spec.js",
     "lint": "eslint src/**",
     "lint:fix": "eslint src/** --fix"
   },
