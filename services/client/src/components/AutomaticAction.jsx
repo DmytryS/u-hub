@@ -5,14 +5,11 @@ import React from 'react'
 import {
   Card,
   Button,
-  FormGroup,
-  FormControl,
-  FormCheck,
+  Form,
   Row,
   Col,
-  FormLabel,
+  Accordion,
 } from 'react-bootstrap'
-
 
 import {
   useMutation,
@@ -35,125 +32,127 @@ const AutomaticAction = ({ automaticAction }) => {
   const [mutateAutomaticAction] = useMutation(MUTATE_AUTOMATIC_ACTION)
 
   return (
-    <Card>
-      <Card.Heading>
-        <Card.Title toggle>
-          {automaticAction.name}
-        </Card.Title>
-      </Card.Heading>
-      <Card.Collapse>
-        <Card.Body>
-          <Row>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Name</FormLabel>
-                <FormControl
-                  type="text"
-                  placeholder="Enter value to compare"
-                  value={automaticAction.name || ''}
-                  onChange={
-                    (e) => mutateAutomaticAction({
-                      variables: {
-                        automaticAction: {
-                          id: automaticAction.id,
-                          name: e.target.value,
+    <Accordion defaultActiveKey="0">
+      <Card>
+        <Card.Header>
+          <Card.Title>
+            {automaticAction.name}
+          </Card.Title>
+        </Card.Header>
+        <Accordion.Collapse eventKey="0">
+          <Card.Body>
+            <Row>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter value to compare"
+                    value={automaticAction.name || ''}
+                    onChange={
+                      (e) => mutateAutomaticAction({
+                        variables: {
+                          automaticAction: {
+                            id: automaticAction.id,
+                            name: e.target.value,
+                          },
                         },
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Condition</FormLabel>
-                <FormControl
-                  componentClass="select"
-                  placeholder="Enter description for automatic action"
-                  value={automaticAction.condition || ''}
-                  onChange={
-                    (e) => mutateAutomaticAction({
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Condition</Form.Label>
+                  <Form.Control
+                    as="select"
+                    placeholder="Enter description for automatic action"
+                    value={automaticAction.condition || ''}
+                    onChange={
+                      (e) => mutateAutomaticAction({
+                        variables: {
+                          automaticAction: {
+                            id: automaticAction.id,
+                            condition: e.target.value,
+                          },
+                        },
+                      })
+                    }
+                  >
+                    {
+                      conditions.map((condition) => (
+                        <option key={`${automaticAction.id}_${condition}`} value={condition}>
+                          {condition}
+                        </option>
+                      ))
+                    }
+                  </Form.Control>
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Value to compare</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter value to compare"
+                    value={automaticAction.valueToCompare || ''}
+                    onChange={
+                      (e) => mutateAutomaticAction({
+                        variables: {
+                          automaticAction: {
+                            id: automaticAction.id,
+                            valueToCompare: parseInt(e.target.value, 10),
+                          },
+                        },
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Enabled</Form.Label>
+                  <Form.Check
+                    checked={automaticAction.enabled || false}
+                    onChange={
+                      (e) => mutateAutomaticAction({
+                        variables: {
+                          automaticAction: {
+                            id: automaticAction.id,
+                            enabled: e.target.checked,
+                          },
+                        },
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                <ActionsList automaticAction={automaticAction} />
+              </Col>
+              <Col xs={6} md={4}>
+                <Button
+                  variant="danger"
+                  onClick={
+                    () => mutateAutomaticAction({
                       variables: {
                         automaticAction: {
                           id: automaticAction.id,
-                          condition: e.target.value,
+                          deleted: true,
                         },
                       },
                     })
                   }
                 >
-                  {
-                    conditions.map((condition) => (
-                      <option key={`${automaticAction.id}_${condition}`} value={condition}>
-                        {condition}
-                      </option>
-                    ))
-                  }
-                </FormControl>
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Value to compare</FormLabel>
-                <FormControl
-                  type="text"
-                  placeholder="Enter value to compare"
-                  value={automaticAction.valueToCompare || ''}
-                  onChange={
-                    (e) => mutateAutomaticAction({
-                      variables: {
-                        automaticAction: {
-                          id: automaticAction.id,
-                          valueToCompare: parseInt(e.target.value, 10),
-                        },
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Enabled</FormLabel>
-                <FormCheck
-                  checked={automaticAction.enabled || false}
-                  onChange={
-                    (e) => mutateAutomaticAction({
-                      variables: {
-                        automaticAction: {
-                          id: automaticAction.id,
-                          enabled: e.target.checked,
-                        },
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              <ActionsList automaticAction={automaticAction} />
-            </Col>
-            <Col xs={6} md={4}>
-              <Button
-                bsStyle="danger"
-                onClick={
-                  () => mutateAutomaticAction({
-                    variables: {
-                      automaticAction: {
-                        id: automaticAction.id,
-                        deleted: true,
-                      },
-                    },
-                  })
-                }
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </Button>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card.Collapse>
-    </Card>
+                  <FontAwesomeIcon icon={faTrash} />
+                </Button>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Accordion.Collapse>
+      </Card>
+    </Accordion>
   )
 }
 

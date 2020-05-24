@@ -4,11 +4,9 @@ import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 import {
   Button,
-  FormGroup,
-  FormControl,
+  Form,
   Row,
   Col,
-  FormLabel,
 } from 'react-bootstrap'
 import {
   useMutation,
@@ -128,10 +126,10 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
       <h3>Actions</h3>
       <Row>
         <Col xs={6} md={4}>
-          <FormGroup>
-            <FormLabel>Sensor</FormLabel>
-            <FormControl
-              componentClass="select"
+          <Form.Group>
+            <Form.Label>Sensor</Form.Label>
+            <Form.Control
+              as="select"
               placeholder="Select sensor for action"
               value={sensor}
               onChange={
@@ -146,13 +144,13 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
                   </option>
                 ))
               }
-            </FormControl>
-          </FormGroup>
+            </Form.Control>
+          </Form.Group>
         </Col>
         <Col xs={6} md={4}>
-          <FormGroup>
-            <FormLabel>Value to change on</FormLabel>
-            <FormControl
+          <Form.Group>
+            <Form.Label>Value to change on</Form.Label>
+            <Form.Control
               type="text"
               placeholder="Enter value to compare"
               value={valueToChangeOn}
@@ -160,13 +158,13 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
                 (e) => { setValueToChangeOn(parseInt(e.target.value, 10)) }
               }
             />
-          </FormGroup>
+          </Form.Group>
         </Col>
         <Col xs={6} md={4}>
-          <FormGroup>
+          <Form.Group>
             <br />
             <Button
-              bsStyle="success"
+              variant="success"
               onClick={
                 () => {
                   if (automaticAction) {
@@ -202,7 +200,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
             >
               <FontAwesomeIcon icon={faPlus} />
             </Button>
-          </FormGroup>
+          </Form.Group>
         </Col>
       </Row>
       {

@@ -5,8 +5,8 @@
     "start": "webpack-dev-server --config ./webpack.config.js",
     "watch": "webpack --mode development --progress --watch --colors",
     "build-production": "env NODE_ENV=production webpack --mode production",
-    "lint": "eslint --ext .js --ext .jsx .",
-    "lint:fix": "eslint --ext .js --ext .jsx . --fix"
+    "lint": "eslint --ext .js --ext .jsx --config .eslintrc",
+    "lint:fix": "eslint --ext .js --ext .jsx --fix --config .eslintrc"
   },
   "dependencies": {
     "@apollo/react-hooks": "^3.1.5",

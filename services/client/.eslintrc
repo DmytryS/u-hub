@@ -4,7 +4,8 @@
   ],
   "plugins": [
     "react",
-    "jsx-a11y"
+    "jsx-a11y",
+    "eslint-plugin-import"
   ],
   "rules": {
     "react/destructuring-assignment": 0,

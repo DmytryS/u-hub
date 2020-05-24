@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { useQuery } from '@apollo/react-hooks'
-import { Navbar, Button, Modal } from 'react-bootstrap'
+import { Nav, Button, Modal } from 'react-bootstrap'
 import QRCode from 'qrcode.react'
 import { Link } from 'react-router-dom'
 import { QUERY_APPLE_HOME_KIT } from '../lib/fetch'
@@ -15,39 +15,35 @@ const Header = () => {
 
   if (loading) {
     return (
-      <Navbar>
-        <Navbar.Header>
-          <Navbar.Brand>
-            <Link to="/">Main</Link>
-          </Navbar.Brand>
-          <Navbar.Brand>
-            <Link to="/scheduled_actions">Schedules</Link>
-          </Navbar.Brand>
-          <Navbar.Brand>
-            <div>
-              loading apple homekit info
-            </div>
-          </Navbar.Brand>
-        </Navbar.Header>
-      </Navbar>
+      <Nav>
+        <Nav.Item>
+          <Link to="/">Main</Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Link to="/scheduled_actions">Schedules</Link>
+        </Nav.Item>
+        <Nav.Item>
+          <div>
+            loading apple homekit info
+          </div>
+        </Nav.Item>
+      </Nav>
     )
   }
 
   return (
     <div>
-      <Navbar>
-        <Navbar.Header>
-          <Navbar.Brand>
-            <Link to="/">Main</Link>
-          </Navbar.Brand>
-          <Navbar.Brand>
-            <Link to="/scheduled_actions">Schedules</Link>
-          </Navbar.Brand>
-          <Navbar.Brand onClick={handleShowQRCode}>
-            Connect Apple HomeKit
-          </Navbar.Brand>
-        </Navbar.Header>
-      </Navbar>
+      <Nav>
+        <Nav.Item>
+          <Link to="/">Main</Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Link to="/scheduled_actions">Schedules</Link>
+        </Nav.Item>
+        <Nav.Item onClick={handleShowQRCode}>
+          Connect Apple HomeKit
+        </Nav.Item>
+      </Nav>
       <Modal show={showQRCode} onHide={handleCloseQRCode}>
         <Modal.Header closeButton>
           <Modal.Title>Scan QR code on your iPhone</Modal.Title>

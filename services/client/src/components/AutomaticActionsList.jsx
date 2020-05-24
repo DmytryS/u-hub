@@ -9,10 +9,7 @@ import {
 } from '@apollo/react-hooks'
 import {
   Button,
-  FormGroup,
-  FormLabel,
-  FormControl,
-  FormCheck,
+  Form,
   Row,
   Col,
 } from 'react-bootstrap'
@@ -101,9 +98,9 @@ const AutomaticActionsList = ({ sensor }) => {
       <h3>Automatic actions</h3>
       <Row>
         <Col xs={6} md={4}>
-          <FormGroup>
-            <FormLabel>Name</FormLabel>
-            <FormControl
+          <Form.Group>
+            <Form.Label>Name</Form.Label>
+            <Form.Control
               type="text"
               placeholder="Enter value to compare"
               value={name}
@@ -111,13 +108,13 @@ const AutomaticActionsList = ({ sensor }) => {
                 (e) => { setName(e.target.value) }
               }
             />
-          </FormGroup>
+          </Form.Group>
         </Col>
         <Col xs={6} md={4}>
-          <FormGroup>
-            <FormLabel>Condition</FormLabel>
-            <FormControl
-              componentClass="select"
+          <Form.Group>
+            <Form.Label>Condition</Form.Label>
+            <Form.Control
+              as="select"
               placeholder="Enter description for automatic action"
               value={condition}
               onChange={
@@ -132,13 +129,13 @@ const AutomaticActionsList = ({ sensor }) => {
                   </option>
                 ))
               }
-            </FormControl>
-          </FormGroup>
+            </Form.Control>
+          </Form.Group>
         </Col>
         <Col xs={6} md={4}>
-          <FormGroup>
-            <FormLabel>Value to compare</FormLabel>
-            <FormControl
+          <Form.Group>
+            <Form.Label>Value to compare</Form.Label>
+            <Form.Control
               type="text"
               placeholder="Enter value to compare"
               value={valueToCompare}
@@ -146,12 +143,12 @@ const AutomaticActionsList = ({ sensor }) => {
                 (e) => { setValueToCompare(parseInt(e.target.value, 10)) }
               }
             />
-          </FormGroup>
+          </Form.Group>
         </Col>
         <Col xs={6} md={4}>
-          <FormGroup>
-            <FormLabel>Enabled</FormLabel>
-            <FormCheck
+          <Form.Group>
+            <Form.Label>Enabled</Form.Label>
+            <Form.Check
               checked={enabled}
               onChange={
                 (e) => {
@@ -159,13 +156,13 @@ const AutomaticActionsList = ({ sensor }) => {
                 }
               }
             />
-          </FormGroup>
+          </Form.Group>
         </Col>
         <Col xs={6} md={4}>
-          <FormGroup>
+          <Form.Group>
             <br />
             <Button
-              bsStyle="success"
+              variant="success"
               onClick={
                 () => {
                   mutateAutomaticAction({
@@ -188,7 +185,7 @@ const AutomaticActionsList = ({ sensor }) => {
             >
               <FontAwesomeIcon icon={faPlus} />
             </Button>
-          </FormGroup>
+          </Form.Group>
         </Col>
       </Row>
       {

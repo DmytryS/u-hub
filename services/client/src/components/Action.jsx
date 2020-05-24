@@ -4,12 +4,9 @@ import PropTypes from 'prop-types'
 import React from 'react'
 import {
   Button,
-  FormGroup,
-  // Glyphicon,
-  FormControl,
+  Form,
   Row,
   Col,
-  FormLabel,
 } from 'react-bootstrap'
 import {
   useMutation,
@@ -28,19 +25,19 @@ const Action = ({ automaticAction, scheduledAction, action }) => {
     <div>
       <Row>
         <Col xs={6} md={4}>
-          <FormGroup>
-            <FormLabel>Sensor</FormLabel>
-            <FormControl
+          <Form.Group>
+            <Form.Label>Sensor</Form.Label>
+            <Form.Control
               type="text"
               value={action.sensor.name}
               disabled
             />
-          </FormGroup>
+          </Form.Group>
         </Col>
         <Col xs={6} md={4}>
-          <FormGroup>
-            <FormLabel>Value to change on</FormLabel>
-            <FormControl
+          <Form.Group>
+            <Form.Label>Value to change on</Form.Label>
+            <Form.Control
               type="text"
               placeholder="Enter value to change on"
               value={action.valueToChangeOn}
@@ -74,13 +71,13 @@ const Action = ({ automaticAction, scheduledAction, action }) => {
                 }
               }
             />
-          </FormGroup>
+          </Form.Group>
         </Col>
         <Col xs={6} md={4}>
-          <FormGroup>
+          <Form.Group>
             <br />
             <Button
-              bsStyle="danger"
+              variant="danger"
               onClick={
                 () => {
                   if (automaticAction) {
@@ -113,7 +110,7 @@ const Action = ({ automaticAction, scheduledAction, action }) => {
             >
               <FontAwesomeIcon icon={faTrash} />
             </Button>
-          </FormGroup>
+          </Form.Group>
         </Col>
       </Row>
     </div>

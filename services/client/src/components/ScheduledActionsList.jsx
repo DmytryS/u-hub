@@ -3,10 +3,7 @@ import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import React, { useState } from 'react'
 import {
   Button,
-  FormGroup,
-  FormLabel,
-  FormControl,
-  FormCheck,
+  Form,
   Row,
   Col,
 } from 'react-bootstrap'
@@ -73,9 +70,9 @@ const ScheduledActionsList = () => {
       <h3>Scheduled actions</h3>
       <Row>
         <Col xs={6} md={4}>
-          <FormGroup>
-            <FormLabel>Name</FormLabel>
-            <FormControl
+          <Form.Group>
+            <Form.Label>Name</Form.Label>
+            <Form.Control
               type="text"
               placeholder="Enter schedule name"
               value={name}
@@ -83,12 +80,12 @@ const ScheduledActionsList = () => {
                 (e) => { setName(e.target.value) }
               }
             />
-          </FormGroup>
+          </Form.Group>
         </Col>
         <Col xs={6} md={4}>
-          <FormGroup>
-            <FormLabel>Schedule</FormLabel>
-            <FormControl
+          <Form.Group>
+            <Form.Label>Schedule</Form.Label>
+            <Form.Control
               type="text"
               placeholder="Enter cron string"
               value={schedule}
@@ -96,12 +93,12 @@ const ScheduledActionsList = () => {
                 (e) => { setSchedule(e.target.value) }
               }
             />
-          </FormGroup>
+          </Form.Group>
         </Col>
         <Col xs={6} md={4}>
-          <FormGroup>
-            <FormLabel>Enabled</FormLabel>
-            <FormCheck
+          <Form.Group>
+            <Form.Label>Enabled</Form.Label>
+            <Form.Check
               checked={enabled}
               onChange={
                 (e) => {
@@ -109,13 +106,13 @@ const ScheduledActionsList = () => {
                 }
               }
             />
-          </FormGroup>
+          </Form.Group>
         </Col>
         <Col xs={6} md={4}>
-          <FormGroup>
+          <Form.Group>
             <br />
             <Button
-              bsStyle="success"
+              variant="success"
               onClick={
                 () => {
                   mutateScheduledAction({
@@ -136,7 +133,7 @@ const ScheduledActionsList = () => {
             >
               <FontAwesomeIcon icon={faPlus} />
             </Button>
-          </FormGroup>
+          </Form.Group>
         </Col>
       </Row>
       {

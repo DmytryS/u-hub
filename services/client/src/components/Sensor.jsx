@@ -7,17 +7,12 @@ import {
   Row,
   Col,
   Button,
-  FormGroup,
-  FormControl,
-  FormLabel,
+  Form,
+  Accordion,
 } from 'react-bootstrap'
-import {
-  useMutation,
-} from '@apollo/react-hooks'
+import { useMutation } from '@apollo/react-hooks'
 import AutomaticActionsList from './AutomaticActionsList'
-import {
-  MUTATE_SENSOR,
-} from '../lib/fetch'
+import { MUTATE_SENSOR } from '../lib/fetch'
 
 const sensorTypes = [
   'AirPurifier',
@@ -98,149 +93,152 @@ const Sensor = ({ sensor }) => {
   // console.log('#######', data)
 
   return (
-    <Card>
-      <Card.Heading>
-        <Card.Title toggle>
-          {sensor.name || 'Unknown'}
-        </Card.Title>
-      </Card.Heading>
-      <Card.Collapse>
-        <Card.Body>
-          <Row id={sensor.id}>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Name</FormLabel>
-                <FormControl
-                  type="text"
-                  placeholder="Enter value to compare"
-                  value={sensor.name || ''}
-                  onChange={
-                    (e) => mutateSensor({
-                      variables: {
-                        sensor: {
-                          id: sensor.id,
-                          name: e.target.value,
+    <Accordion defaultActiveKey="0">
+      <Card>
+        <Card.Header>
+          <Card.Title>
+            {sensor.name || 'Unknown'}
+          </Card.Title>
+        </Card.Header>
+        <Accordion.Collapse eventKey="0">
+          <Card.Body>
+            <Row id={sensor.id}>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter value to compare"
+                    value={sensor.name || ''}
+                    onChange={
+                      (e) => mutateSensor({
+                        variables: {
+                          sensor: {
+                            id: sensor.id,
+                            name: e.target.value,
+                          },
                         },
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Description</FormLabel>
-                <FormControl
-                  type="text"
-                  placeholder="Enter sensor description"
-                  value={sensor.description || ''}
-                  onChange={
-                    (e) => mutateSensor({
-                      variables: {
-                        sensor: {
-                          id: sensor.id,
-                          description: e.target.value,
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Description</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter sensor description"
+                    value={sensor.description || ''}
+                    onChange={
+                      (e) => mutateSensor({
+                        variables: {
+                          sensor: {
+                            id: sensor.id,
+                            description: e.target.value,
+                          },
                         },
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Type</FormLabel>
-                <FormControl
-                  componentClass="select"
-                  placeholder="Select sensor type"
-                  value={sensor.type || 'default'}
-                  onChange={
-                    (e) => mutateSensor({
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Type</Form.Label>
+                  <Form.Control
+                    // type="select"
+                    as="select"
+                    placeholder="Select sensor type"
+                    value={sensor.type || 'default'}
+                    onChange={
+                      (e) => mutateSensor({
+                        variables: {
+                          sensor: {
+                            id: sensor.id,
+                            type: e.target.value,
+                          },
+                        },
+                      })
+                    }
+                  >
+                    <option value="default" disabled>-</option>
+                    {
+                      sensorTypes.map((sensorType) => (
+                        <option key={`${sensor.id}_${sensorType}`} value={sensorType}>
+                          {sensorType}
+                        </option>
+                      ))
+                    }
+                  </Form.Control>
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Mqtt set topic</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter set topic"
+                    value={sensor.mqttSetTopic || ''}
+                    onChange={
+                      (e) => mutateSensor({
+                        variables: {
+                          sensor: {
+                            id: sensor.id,
+                            mqttSetTopic: e.target.value,
+                          },
+                        },
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Mqtt status topic</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter status topic"
+                    value={sensor.mqttStatusTopic || ''}
+                    onChange={
+                      (e) => mutateSensor({
+                        variables: {
+                          sensor: {
+                            id: sensor.id,
+                            mqttStatusTopic: e.target.value,
+                          },
+                        },
+                      })
+                    }
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                {/* {data.value.value} */}
+              </Col>
+              <Col xs={6} md={4}>
+                <Button
+                  variant="danger"
+                  onClick={
+                    () => mutateSensor({
                       variables: {
                         sensor: {
                           id: sensor.id,
-                          type: e.target.value,
+                          deleted: true,
                         },
                       },
                     })
                   }
                 >
-                  <option value="default" disabled>-</option>
-                  {
-                    sensorTypes.map((sensorType) => (
-                      <option key={`${sensor.id}_${sensorType}`} value={sensorType}>
-                        {sensorType}
-                      </option>
-                    ))
-                  }
-                </FormControl>
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Mqtt set topic</FormLabel>
-                <FormControl
-                  type="text"
-                  placeholder="Enter set topic"
-                  value={sensor.mqttSetTopic || ''}
-                  onChange={
-                    (e) => mutateSensor({
-                      variables: {
-                        sensor: {
-                          id: sensor.id,
-                          mqttSetTopic: e.target.value,
-                        },
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Mqtt status topic</FormLabel>
-                <FormControl
-                  type="text"
-                  placeholder="Enter status topic"
-                  value={sensor.mqttStatusTopic || ''}
-                  onChange={
-                    (e) => mutateSensor({
-                      variables: {
-                        sensor: {
-                          id: sensor.id,
-                          mqttStatusTopic: e.target.value,
-                        },
-                      },
-                    })
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              {/* {data.value.value} */}
-            </Col>
-            <Col xs={6} md={4}>
-              <Button
-                bsStyle="danger"
-                onClick={
-                  () => mutateSensor({
-                    variables: {
-                      sensor: {
-                        id: sensor.id,
-                        deleted: true,
-                      },
-                    },
-                  })
-                }
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </Button>
-            </Col>
-          </Row>
-          <AutomaticActionsList sensor={sensor} />
-        </Card.Body>
-      </Card.Collapse>
-    </Card>
+                  <FontAwesomeIcon icon={faTrash} />
+                </Button>
+              </Col>
+            </Row>
+            <AutomaticActionsList sensor={sensor} />
+          </Card.Body>
+        </Accordion.Collapse>
+      </Card>
+    </Accordion>
   )
 }
 

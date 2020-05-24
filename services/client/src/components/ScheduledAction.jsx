@@ -5,12 +5,10 @@ import React from 'react'
 import {
   Card,
   Button,
-  FormGroup,
-  FormControl,
-  FormCheck,
+  Form,
   Row,
   Col,
-  FormLabel,
+  Accordion,
 } from 'react-bootstrap'
 import {
   useMutation,
@@ -24,101 +22,103 @@ const ScheduledAction = ({ scheduledAction }) => {
   const [mutateScheduledAction] = useMutation(MUTATE_SCHEDULED_ACTION)
 
   return (
-    <Card>
-      <Card.Heading>
-        <Card.Title toggle>
-          {scheduledAction.name}
-        </Card.Title>
-      </Card.Heading>
-      <Card.Collapse>
-        <Card.Body>
-          <Row>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Name</FormLabel>
-                <FormControl
-                  type="text"
-                  placeholder="Enter value to compare"
-                  value={scheduledAction.name || ''}
-                  onChange={
-                    (e) => {
-                      mutateScheduledAction({
+    <Accordion defaultActiveKey="0">
+      <Card>
+        <Card.Header>
+          <Card.Title>
+            {scheduledAction.name}
+          </Card.Title>
+        </Card.Header>
+        <Accordion.Collapse eventKey="0">
+          <Card.Body>
+            <Row>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter value to compare"
+                    value={scheduledAction.name || ''}
+                    onChange={
+                      (e) => {
+                        mutateScheduledAction({
+                          variables: {
+                            scheduledAction: {
+                              id: scheduledAction.id,
+                              name: e.target.value,
+                            },
+                          },
+                        })
+                      }
+                    }
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Schedule</Form.Label>
+                  <Form.Control
+                    type="text"
+                    placeholder="Enter cron string"
+                    value={scheduledAction.schedule || ''}
+                    onChange={
+                      (e) => {
+                        mutateScheduledAction({
+                          variables: {
+                            scheduledAction: {
+                              id: scheduledAction.id,
+                              schedule: e.target.value,
+                            },
+                          },
+                        })
+                      }
+                    }
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                <Form.Group>
+                  <Form.Label>Enabled</Form.Label>
+                  <Form.Check
+                    checked={scheduledAction.enabled || false}
+                    onChange={
+                      (e) => mutateScheduledAction({
                         variables: {
                           scheduledAction: {
                             id: scheduledAction.id,
-                            name: e.target.value,
+                            enabled: e.target.checked,
                           },
                         },
                       })
                     }
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Schedule</FormLabel>
-                <FormControl
-                  type="text"
-                  placeholder="Enter cron string"
-                  value={scheduledAction.schedule || ''}
-                  onChange={
-                    (e) => {
-                      mutateScheduledAction({
-                        variables: {
-                          scheduledAction: {
-                            id: scheduledAction.id,
-                            schedule: e.target.value,
-                          },
-                        },
-                      })
-                    }
-                  }
-                />
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              <FormGroup>
-                <FormLabel>Enabled</FormLabel>
-                <FormCheck
-                  checked={scheduledAction.enabled || false}
-                  onChange={
-                    (e) => mutateScheduledAction({
+                  />
+                </Form.Group>
+              </Col>
+              <Col xs={6} md={4}>
+                <ActionsList scheduledAction={scheduledAction} />
+              </Col>
+              <Col xs={6} md={4}>
+                <Button
+                  variant="danger"
+                  onClick={
+                    () => mutateScheduledAction({
                       variables: {
                         scheduledAction: {
                           id: scheduledAction.id,
-                          enabled: e.target.checked,
+                          deleted: true,
                         },
                       },
                     })
                   }
-                />
-              </FormGroup>
-            </Col>
-            <Col xs={6} md={4}>
-              <ActionsList scheduledAction={scheduledAction} />
-            </Col>
-            <Col xs={6} md={4}>
-              <Button
-                bsStyle="danger"
-                onClick={
-                  () => mutateScheduledAction({
-                    variables: {
-                      scheduledAction: {
-                        id: scheduledAction.id,
-                        deleted: true,
-                      },
-                    },
-                  })
-                }
-              >
-                <FontAwesomeIcon icon={faTrash} />
-              </Button>
-            </Col>
-          </Row>
-        </Card.Body>
-      </Card.Collapse>
-    </Card>
+                >
+                  <FontAwesomeIcon icon={faTrash} />
+                </Button>
+              </Col>
+            </Row>
+          </Card.Body>
+        </Accordion.Collapse>
+      </Card>
+    </Accordion>
   )
 }
 
