@@ -18,6 +18,7 @@ const { ApolloServer } = ApolloServerExpress
 const app = express()
 
 app.use(cors())
+app.use(logger.middleware)
 
 const resolvers = {
   Subscription: {
