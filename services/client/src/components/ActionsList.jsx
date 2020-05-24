@@ -1,13 +1,14 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 import {
   Button,
   FormGroup,
-  Glyphicon,
   FormControl,
   Row,
   Col,
-  ControlLabel,
+  FormLabel,
 } from 'react-bootstrap'
 import {
   useMutation,
@@ -51,7 +52,7 @@ const sensorActionTypes = [
 
 const updateData = (array, newEl) => {
   const existingElIndex = array
-    .findIndex(k => k.id === newEl.id)
+    .findIndex((k) => k.id === newEl.id)
 
   if (existingElIndex === -1 && !newEl.deleted) {
     array.push(newEl)
@@ -128,7 +129,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
       <Row>
         <Col xs={6} md={4}>
           <FormGroup>
-            <ControlLabel>Sensor</ControlLabel>
+            <FormLabel>Sensor</FormLabel>
             <FormControl
               componentClass="select"
               placeholder="Select sensor for action"
@@ -139,7 +140,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
             >
               <option value="default" disabled>-</option>
               {
-                data.sensors.map(s => (
+                data.sensors.map((s) => (
                   <option key={`${s.id}_${s.id}`} value={s.id}>
                     {`${s.name} ${s.type}`}
                   </option>
@@ -150,7 +151,7 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
         </Col>
         <Col xs={6} md={4}>
           <FormGroup>
-            <ControlLabel>Value to change on</ControlLabel>
+            <FormLabel>Value to change on</FormLabel>
             <FormControl
               type="text"
               placeholder="Enter value to compare"
@@ -199,21 +200,21 @@ const ActionsList = ({ automaticAction, scheduledAction }) => {
                 }
               }
             >
-              <Glyphicon glyph="plus" />
+              <FontAwesomeIcon icon={faPlus} />
             </Button>
           </FormGroup>
         </Col>
       </Row>
       {
         automaticAction
-          ? automaticAction.actions.map(a => (
+          ? automaticAction.actions.map((a) => (
             <Action
               key={a.id}
               automaticAction={automaticAction}
               action={a}
             />
           ))
-          : scheduledAction.actions.map(a => (
+          : scheduledAction.actions.map((a) => (
             <Action
               key={a.id}
               scheduledAction={scheduledAction}

@@ -1,28 +1,47 @@
 /* eslint-disable import/no-extraneous-dependencies */
-const webpack = require('webpack')
-const webpackMerge = require('webpack-merge')
+const Dotenv = require('dotenv-webpack')
 const path = require('path')
 const HtmlWebpackPlugin = require('html-webpack-plugin')
 
-const webpackCommon = require('./webpack-common.config')
-
 const { PORT } = process.env
 
-module.exports = webpackMerge(webpackCommon, {
+module.exports = {
   mode: 'development',
-  entry: ['babel-polyfill', './src/App.jsx'],
+  // watch: true,
+  entry: path.resolve(__dirname, './src/App.jsx'),
   output: {
+    path: path.join(__dirname, 'dist'),
+    filename: 'bundle.js',
     publicPath: '/',
-    path: path.resolve(__dirname, './build/client'),
-    filename: 'scripts/[name].[hash].js',
-    chunkFilename: 'scripts/[name].[contenthash].js',
+  },
+  module: {
+    rules: [
+      {
+        test: /\.(js|jsx)$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
+        options: {
+          presets: ['@babel/preset-env', '@babel/react'],
+        },
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader'],
+      },
+    ],
+  },
+  resolve: {
+    extensions: ['.js', '.jsx'],
   },
   plugins: [
-    new webpack.HotModuleReplacementPlugin(),
+    new Dotenv({
+      safe: false,
+      silent: false,
+      path: path.resolve(__dirname, './.env'),
+    }),
     new HtmlWebpackPlugin({
       template: './index.html',
       filename: 'index.html',
-      chunks: ['main', 'vendors'],
       inject: 'body',
     }),
   ],
@@ -33,7 +52,8 @@ module.exports = webpackMerge(webpackCommon, {
     },
     // https: true,
     host: '0.0.0.0',
-    port: PORT || 3000,
+
+    port: PORT || 3001,
     hot: true,
     stats: 'minimal',
     clientLogLevel: 'info',
@@ -41,5 +61,6 @@ module.exports = webpackMerge(webpackCommon, {
     compress: true,
     inline: true,
     historyApiFallback: true,
+    writeToDisk: false,
   },
-})
+}

@@ -41,7 +41,7 @@
           "_id"
         ]
       }
-    ],
+    ]
   },
   "env": {
     "browser": true,

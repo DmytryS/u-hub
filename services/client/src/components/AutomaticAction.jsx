@@ -1,16 +1,19 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {
-  Panel,
+  Card,
   Button,
   FormGroup,
-  Glyphicon,
   FormControl,
-  Checkbox,
+  FormCheck,
   Row,
   Col,
-  ControlLabel,
+  FormLabel,
 } from 'react-bootstrap'
+
+
 import {
   useMutation,
 } from '@apollo/react-hooks'
@@ -32,24 +35,24 @@ const AutomaticAction = ({ automaticAction }) => {
   const [mutateAutomaticAction] = useMutation(MUTATE_AUTOMATIC_ACTION)
 
   return (
-    <Panel>
-      <Panel.Heading>
-        <Panel.Title toggle>
+    <Card>
+      <Card.Heading>
+        <Card.Title toggle>
           {automaticAction.name}
-        </Panel.Title>
-      </Panel.Heading>
-      <Panel.Collapse>
-        <Panel.Body>
+        </Card.Title>
+      </Card.Heading>
+      <Card.Collapse>
+        <Card.Body>
           <Row>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Name</ControlLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl
                   type="text"
                   placeholder="Enter value to compare"
                   value={automaticAction.name || ''}
                   onChange={
-                    e => mutateAutomaticAction({
+                    (e) => mutateAutomaticAction({
                       variables: {
                         automaticAction: {
                           id: automaticAction.id,
@@ -63,13 +66,13 @@ const AutomaticAction = ({ automaticAction }) => {
             </Col>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Condition</ControlLabel>
+                <FormLabel>Condition</FormLabel>
                 <FormControl
                   componentClass="select"
                   placeholder="Enter description for automatic action"
                   value={automaticAction.condition || ''}
                   onChange={
-                    e => mutateAutomaticAction({
+                    (e) => mutateAutomaticAction({
                       variables: {
                         automaticAction: {
                           id: automaticAction.id,
@@ -80,7 +83,7 @@ const AutomaticAction = ({ automaticAction }) => {
                   }
                 >
                   {
-                    conditions.map(condition => (
+                    conditions.map((condition) => (
                       <option key={`${automaticAction.id}_${condition}`} value={condition}>
                         {condition}
                       </option>
@@ -91,13 +94,13 @@ const AutomaticAction = ({ automaticAction }) => {
             </Col>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Value to compare</ControlLabel>
+                <FormLabel>Value to compare</FormLabel>
                 <FormControl
                   type="text"
                   placeholder="Enter value to compare"
                   value={automaticAction.valueToCompare || ''}
                   onChange={
-                    e => mutateAutomaticAction({
+                    (e) => mutateAutomaticAction({
                       variables: {
                         automaticAction: {
                           id: automaticAction.id,
@@ -111,11 +114,11 @@ const AutomaticAction = ({ automaticAction }) => {
             </Col>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Enabled</ControlLabel>
-                <Checkbox
+                <FormLabel>Enabled</FormLabel>
+                <FormCheck
                   checked={automaticAction.enabled || false}
                   onChange={
-                    e => mutateAutomaticAction({
+                    (e) => mutateAutomaticAction({
                       variables: {
                         automaticAction: {
                           id: automaticAction.id,
@@ -144,13 +147,13 @@ const AutomaticAction = ({ automaticAction }) => {
                   })
                 }
               >
-                <Glyphicon glyph="trash" />
+                <FontAwesomeIcon icon={faTrash} />
               </Button>
             </Col>
           </Row>
-        </Panel.Body>
-      </Panel.Collapse>
-    </Panel>
+        </Card.Body>
+      </Card.Collapse>
+    </Card>
   )
 }
 

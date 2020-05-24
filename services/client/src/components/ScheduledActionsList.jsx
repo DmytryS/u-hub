@@ -1,11 +1,12 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import React, { useState } from 'react'
 import {
   Button,
   FormGroup,
-  ControlLabel,
-  Glyphicon,
+  FormLabel,
   FormControl,
-  Checkbox,
+  FormCheck,
   Row,
   Col,
 } from 'react-bootstrap'
@@ -24,7 +25,7 @@ import {
 
 const updateData = (array, newEl) => {
   const existingElIndex = array
-    .findIndex(k => k.id === newEl.id)
+    .findIndex((k) => k.id === newEl.id)
 
   if (existingElIndex === -1 && !newEl.deleted) {
     array.push(newEl)
@@ -73,7 +74,7 @@ const ScheduledActionsList = () => {
       <Row>
         <Col xs={6} md={4}>
           <FormGroup>
-            <ControlLabel>Name</ControlLabel>
+            <FormLabel>Name</FormLabel>
             <FormControl
               type="text"
               placeholder="Enter schedule name"
@@ -86,7 +87,7 @@ const ScheduledActionsList = () => {
         </Col>
         <Col xs={6} md={4}>
           <FormGroup>
-            <ControlLabel>Schedule</ControlLabel>
+            <FormLabel>Schedule</FormLabel>
             <FormControl
               type="text"
               placeholder="Enter cron string"
@@ -99,8 +100,8 @@ const ScheduledActionsList = () => {
         </Col>
         <Col xs={6} md={4}>
           <FormGroup>
-            <ControlLabel>Enabled</ControlLabel>
-            <Checkbox
+            <FormLabel>Enabled</FormLabel>
+            <FormCheck
               checked={enabled}
               onChange={
                 (e) => {
@@ -133,13 +134,13 @@ const ScheduledActionsList = () => {
                 }
               }
             >
-              <Glyphicon glyph="plus" />
+              <FontAwesomeIcon icon={faPlus} />
             </Button>
           </FormGroup>
         </Col>
       </Row>
       {
-        data.scheduledActions.map(scheduledAction => (
+        data.scheduledActions.map((scheduledAction) => (
           <ScheduledAction key={scheduledAction.id} scheduledAction={scheduledAction} />
         ))
       }

@@ -1,13 +1,15 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {
   Button,
   FormGroup,
-  Glyphicon,
+  // Glyphicon,
   FormControl,
   Row,
   Col,
-  ControlLabel,
+  FormLabel,
 } from 'react-bootstrap'
 import {
   useMutation,
@@ -27,7 +29,7 @@ const Action = ({ automaticAction, scheduledAction, action }) => {
       <Row>
         <Col xs={6} md={4}>
           <FormGroup>
-            <ControlLabel>Sensor</ControlLabel>
+            <FormLabel>Sensor</FormLabel>
             <FormControl
               type="text"
               value={action.sensor.name}
@@ -37,7 +39,7 @@ const Action = ({ automaticAction, scheduledAction, action }) => {
         </Col>
         <Col xs={6} md={4}>
           <FormGroup>
-            <ControlLabel>Value to change on</ControlLabel>
+            <FormLabel>Value to change on</FormLabel>
             <FormControl
               type="text"
               placeholder="Enter value to change on"
@@ -109,7 +111,7 @@ const Action = ({ automaticAction, scheduledAction, action }) => {
                 }
               }
             >
-              <Glyphicon glyph="trash" />
+              <FontAwesomeIcon icon={faTrash} />
             </Button>
           </FormGroup>
         </Col>

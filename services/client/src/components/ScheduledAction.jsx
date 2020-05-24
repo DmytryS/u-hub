@@ -1,15 +1,16 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 import React from 'react'
 import {
-  Panel,
+  Card,
   Button,
   FormGroup,
-  Glyphicon,
   FormControl,
-  Checkbox,
+  FormCheck,
   Row,
   Col,
-  ControlLabel,
+  FormLabel,
 } from 'react-bootstrap'
 import {
   useMutation,
@@ -23,18 +24,18 @@ const ScheduledAction = ({ scheduledAction }) => {
   const [mutateScheduledAction] = useMutation(MUTATE_SCHEDULED_ACTION)
 
   return (
-    <Panel>
-      <Panel.Heading>
-        <Panel.Title toggle>
+    <Card>
+      <Card.Heading>
+        <Card.Title toggle>
           {scheduledAction.name}
-        </Panel.Title>
-      </Panel.Heading>
-      <Panel.Collapse>
-        <Panel.Body>
+        </Card.Title>
+      </Card.Heading>
+      <Card.Collapse>
+        <Card.Body>
           <Row>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Name</ControlLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl
                   type="text"
                   placeholder="Enter value to compare"
@@ -56,7 +57,7 @@ const ScheduledAction = ({ scheduledAction }) => {
             </Col>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Schedule</ControlLabel>
+                <FormLabel>Schedule</FormLabel>
                 <FormControl
                   type="text"
                   placeholder="Enter cron string"
@@ -78,11 +79,11 @@ const ScheduledAction = ({ scheduledAction }) => {
             </Col>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Enabled</ControlLabel>
-                <Checkbox
+                <FormLabel>Enabled</FormLabel>
+                <FormCheck
                   checked={scheduledAction.enabled || false}
                   onChange={
-                    e => mutateScheduledAction({
+                    (e) => mutateScheduledAction({
                       variables: {
                         scheduledAction: {
                           id: scheduledAction.id,
@@ -111,13 +112,13 @@ const ScheduledAction = ({ scheduledAction }) => {
                   })
                 }
               >
-                <Glyphicon glyph="trash" />
+                <FontAwesomeIcon icon={faTrash} />
               </Button>
             </Col>
           </Row>
-        </Panel.Body>
-      </Panel.Collapse>
-    </Panel>
+        </Card.Body>
+      </Card.Collapse>
+    </Card>
   )
 }
 

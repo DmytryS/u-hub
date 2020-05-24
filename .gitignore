@@ -9,4 +9,6 @@ package-lock.json
 .vscode
 persist
 **/node_modules
+**/build
+**/dist
 smart-home-key.json

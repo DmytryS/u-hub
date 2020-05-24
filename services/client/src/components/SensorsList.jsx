@@ -7,7 +7,7 @@ import { QUERY_SENSORS, SUBSCRIBE_SENSORS } from '../lib/fetch'
 const updateData = (existingArray, el) => {
   const handle = (array, newEl) => {
     const existingElIndex = array
-      .findIndex(k => k.id === newEl.id)
+      .findIndex((k) => k.id === newEl.id)
 
     if (existingElIndex === -1 && !newEl.deleted) {
       array.push(newEl)
@@ -63,7 +63,7 @@ const SensorsList = () => {
     <div>
       <Header />
       {
-        data.sensors.map(sensor => (
+        data.sensors.map((sensor) => (
           <Sensor key={sensor.id} sensor={sensor} />
         ))
       }

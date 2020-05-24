@@ -1,3 +1,5 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faPlus } from '@fortawesome/free-solid-svg-icons'
 import PropTypes from 'prop-types'
 import React, { useState } from 'react'
 import {
@@ -8,10 +10,9 @@ import {
 import {
   Button,
   FormGroup,
-  ControlLabel,
-  Glyphicon,
+  FormLabel,
   FormControl,
-  Checkbox,
+  FormCheck,
   Row,
   Col,
 } from 'react-bootstrap'
@@ -33,7 +34,7 @@ const conditions = [
 
 const updateData = (array, newEl) => {
   const existingElIndex = array
-    .findIndex(k => k.id === newEl.id)
+    .findIndex((k) => k.id === newEl.id)
 
   if (existingElIndex === -1 && !newEl.deleted) {
     array.push(newEl)
@@ -101,7 +102,7 @@ const AutomaticActionsList = ({ sensor }) => {
       <Row>
         <Col xs={6} md={4}>
           <FormGroup>
-            <ControlLabel>Name</ControlLabel>
+            <FormLabel>Name</FormLabel>
             <FormControl
               type="text"
               placeholder="Enter value to compare"
@@ -114,7 +115,7 @@ const AutomaticActionsList = ({ sensor }) => {
         </Col>
         <Col xs={6} md={4}>
           <FormGroup>
-            <ControlLabel>Condition</ControlLabel>
+            <FormLabel>Condition</FormLabel>
             <FormControl
               componentClass="select"
               placeholder="Enter description for automatic action"
@@ -125,7 +126,7 @@ const AutomaticActionsList = ({ sensor }) => {
             >
               <option value="default" disabled>-</option>
               {
-                conditions.map(c => (
+                conditions.map((c) => (
                   <option key={c} value={c}>
                     {c}
                   </option>
@@ -136,7 +137,7 @@ const AutomaticActionsList = ({ sensor }) => {
         </Col>
         <Col xs={6} md={4}>
           <FormGroup>
-            <ControlLabel>Value to compare</ControlLabel>
+            <FormLabel>Value to compare</FormLabel>
             <FormControl
               type="text"
               placeholder="Enter value to compare"
@@ -149,8 +150,8 @@ const AutomaticActionsList = ({ sensor }) => {
         </Col>
         <Col xs={6} md={4}>
           <FormGroup>
-            <ControlLabel>Enabled</ControlLabel>
-            <Checkbox
+            <FormLabel>Enabled</FormLabel>
+            <FormCheck
               checked={enabled}
               onChange={
                 (e) => {
@@ -185,13 +186,13 @@ const AutomaticActionsList = ({ sensor }) => {
                 }
               }
             >
-              <Glyphicon glyph="plus" />
+              <FontAwesomeIcon icon={faPlus} />
             </Button>
           </FormGroup>
         </Col>
       </Row>
       {
-        data.automaticActions.map(automaticAction => (
+        data.automaticActions.map((automaticAction) => (
           <AutomaticAction key={automaticAction.id} automaticAction={automaticAction} />
         ))
       }

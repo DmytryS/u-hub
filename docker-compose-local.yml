@@ -1,0 +1,144 @@
+version: "3"
+services:
+  mongo:
+    container_name: mongo
+    hostname: mongo
+    image: "mongo:latest"
+    restart: always
+    ports:
+      - "27017:27017"
+    environment:
+      - MONGO_DATA_DIR=/data/db
+      - MONGO_LOG_DIR=/dev/null
+    volumes:
+      - ./data/db:/data/db
+  rabbit:
+    container_name: rabbit
+    image: rabbitmq:3.7-management-alpine
+    hostname: rabbit
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    ports:
+      - "5672:5672"
+  mosquitto:
+    container_name: mosquitto
+    image: toke/mosquitto:latest
+    hostname: mosquitto
+    restart: always
+    ports:
+      - "1883:1883"
+  apollo:
+    container_name: apollo
+    image: node:12-alpine
+    restart: always
+    command: npm start
+    ports:
+      - "3000:3000"
+    depends_on:
+      - mosquitto
+      - mongo
+      - rabbit
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./services/apollo/.env
+      - ./infrastructure/mongo/.env
+      - ./infrastructure/rabbit/.env
+    user: node:node
+    working_dir: /app/services/apollo
+    volumes:
+      - ./:/app
+  # apple-homekit:
+  #   build:
+  #     context: ./services/apple-homekit
+  #   restart: always
+  #   network_mode: host
+  #   depends_on:
+  #     - apollo
+  #   env_file:
+  #     - ./services/apple-homekit/.env
+  #     - ./infrastructure/rabbit/.env
+  #   volumes:
+  #     - ./services/apple-homekit/src:/usr/src/app/src:cached
+  automatic-action:
+    container_name: automatic-action
+    image: node:12-alpine
+    restart: always
+    command: npm start
+    depends_on:
+      # - apple-homekit
+      - apollo
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./services/automatic-action/.env
+      - ./infrastructure/rabbit/.env
+    user: node:node
+    working_dir: /app/services/automatic-action
+    volumes:
+      - ./:/app
+  client:
+    container_name: client
+    image: node:12-alpine
+    restart: always
+    command: npm start
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3001:3001"
+    depends_on:
+      - automatic-action
+    env_file:
+      - ./services/client/.env
+      - ./infrastructure/rabbit/.env
+    user: node:node
+    working_dir: /app/services/client
+    volumes:
+      - ./:/app
+  # google-home:
+  #   build:
+  #     context: ./services/google-home
+  #   restart: always
+  #   depends_on:
+  #     - client
+  #   env_file:
+  #     - ./services/google-home/.env
+  #     - ./infrastructure/rabbit/.env
+  #   volumes:
+  #     - ./services/google-home/src:/usr/src/app/src:cached
+  mqtt-listener:
+    container_name: mqtt-listener
+    image: node:12-alpine
+    restart: always
+    command: npm start
+    depends_on:
+      # - google-home
+      - client
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./services/mqtt-listener/.env
+      - ./infrastructure/rabbit/.env
+      - ./infrastructure/mosquitto/.env
+    user: node:node
+    working_dir: /app/services/mqtt-listener
+    volumes:
+      - ./:/app
+  scheduled-action:
+    container_name: scheduled-action
+    image: node:12-alpine
+    restart: always
+    command: npm start
+    depends_on:
+      - mqtt-listener
+    environment:
+      - NODE_ENV=development
+    env_file:
+      - ./infrastructure/rabbit/.env
+      - ./services/scheduled-action/.env
+    user: node:node
+    working_dir: /app/services/scheduled-action
+    volumes:
+      - ./:/app

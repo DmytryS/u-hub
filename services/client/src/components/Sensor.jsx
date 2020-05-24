@@ -1,14 +1,15 @@
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
+import { faTrash } from '@fortawesome/free-solid-svg-icons'
 import React from 'react'
 import PropTypes from 'prop-types'
 import {
-  Panel,
+  Card,
   Row,
   Col,
   Button,
   FormGroup,
-  Glyphicon,
   FormControl,
-  ControlLabel,
+  FormLabel,
 } from 'react-bootstrap'
 import {
   useMutation,
@@ -97,24 +98,24 @@ const Sensor = ({ sensor }) => {
   // console.log('#######', data)
 
   return (
-    <Panel>
-      <Panel.Heading>
-        <Panel.Title toggle>
+    <Card>
+      <Card.Heading>
+        <Card.Title toggle>
           {sensor.name || 'Unknown'}
-        </Panel.Title>
-      </Panel.Heading>
-      <Panel.Collapse>
-        <Panel.Body>
+        </Card.Title>
+      </Card.Heading>
+      <Card.Collapse>
+        <Card.Body>
           <Row id={sensor.id}>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Name</ControlLabel>
+                <FormLabel>Name</FormLabel>
                 <FormControl
                   type="text"
                   placeholder="Enter value to compare"
                   value={sensor.name || ''}
                   onChange={
-                    e => mutateSensor({
+                    (e) => mutateSensor({
                       variables: {
                         sensor: {
                           id: sensor.id,
@@ -128,13 +129,13 @@ const Sensor = ({ sensor }) => {
             </Col>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Description</ControlLabel>
+                <FormLabel>Description</FormLabel>
                 <FormControl
                   type="text"
                   placeholder="Enter sensor description"
                   value={sensor.description || ''}
                   onChange={
-                    e => mutateSensor({
+                    (e) => mutateSensor({
                       variables: {
                         sensor: {
                           id: sensor.id,
@@ -148,13 +149,13 @@ const Sensor = ({ sensor }) => {
             </Col>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Type</ControlLabel>
+                <FormLabel>Type</FormLabel>
                 <FormControl
                   componentClass="select"
                   placeholder="Select sensor type"
                   value={sensor.type || 'default'}
                   onChange={
-                    e => mutateSensor({
+                    (e) => mutateSensor({
                       variables: {
                         sensor: {
                           id: sensor.id,
@@ -166,7 +167,7 @@ const Sensor = ({ sensor }) => {
                 >
                   <option value="default" disabled>-</option>
                   {
-                    sensorTypes.map(sensorType => (
+                    sensorTypes.map((sensorType) => (
                       <option key={`${sensor.id}_${sensorType}`} value={sensorType}>
                         {sensorType}
                       </option>
@@ -177,13 +178,13 @@ const Sensor = ({ sensor }) => {
             </Col>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Mqtt set topic</ControlLabel>
+                <FormLabel>Mqtt set topic</FormLabel>
                 <FormControl
                   type="text"
                   placeholder="Enter set topic"
                   value={sensor.mqttSetTopic || ''}
                   onChange={
-                    e => mutateSensor({
+                    (e) => mutateSensor({
                       variables: {
                         sensor: {
                           id: sensor.id,
@@ -197,13 +198,13 @@ const Sensor = ({ sensor }) => {
             </Col>
             <Col xs={6} md={4}>
               <FormGroup>
-                <ControlLabel>Mqtt status topic</ControlLabel>
+                <FormLabel>Mqtt status topic</FormLabel>
                 <FormControl
                   type="text"
                   placeholder="Enter status topic"
                   value={sensor.mqttStatusTopic || ''}
                   onChange={
-                    e => mutateSensor({
+                    (e) => mutateSensor({
                       variables: {
                         sensor: {
                           id: sensor.id,
@@ -232,14 +233,14 @@ const Sensor = ({ sensor }) => {
                   })
                 }
               >
-                <Glyphicon glyph="trash" />
+                <FontAwesomeIcon icon={faTrash} />
               </Button>
             </Col>
           </Row>
           <AutomaticActionsList sensor={sensor} />
-        </Panel.Body>
-      </Panel.Collapse>
-    </Panel>
+        </Card.Body>
+      </Card.Collapse>
+    </Card>
   )
 }
 
